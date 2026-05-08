@@ -17,6 +17,7 @@ post_install do |installer|
     pods_root = File.join(__dir__, 'Pods')
     tbxml_shim = File.join(pods_root, 'iOS-GPX-Framework', 'GPX', 'TBXML.h')
     gpx_element_impl = File.join(pods_root, 'iOS-GPX-Framework', 'GPX', 'GPXElement.m')
+    gpx_element_subclass_header = File.join(pods_root, 'iOS-GPX-Framework', 'GPX', 'GPXElementSubclass.h')
     minimum_ios_deployment_target = Gem::Version.new('12.0')
 
     unless File.exist?(tbxml_shim)
@@ -63,6 +64,18 @@ post_install do |installer|
                 TBXML_IMPL
             end
             puts "Injected TBXML compatibility implementation into #{gpx_element_impl}"
+        end
+    end
+
+    if File.exist?(gpx_element_subclass_header)
+        header_content = File.read(gpx_element_subclass_header)
+        if header_content.include?('#import "TBXML.h"')
+            header_content = header_content.sub(
+                '#import "TBXML.h"',
+                "@class TBXML;\ntypedef struct _TBXMLElement TBXMLElement;"
+            )
+            File.write(gpx_element_subclass_header, header_content)
+            puts "Patched TBXML import in #{gpx_element_subclass_header}"
         end
     end
 
