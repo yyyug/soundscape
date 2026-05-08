@@ -16,6 +16,7 @@ end
 post_install do |installer|
     pods_root = File.join(__dir__, 'Pods')
     tbxml_shim = File.join(pods_root, 'iOS-GPX-Framework', 'GPX', 'TBXML.h')
+    gpx_element_impl = File.join(pods_root, 'iOS-GPX-Framework', 'GPX', 'GPXElement.m')
     minimum_ios_deployment_target = Gem::Version.new('12.0')
 
     unless File.exist?(tbxml_shim)
@@ -35,6 +36,49 @@ post_install do |installer|
             @end
         TBXML_HEADER
         puts "Created TBXML shim header at #{tbxml_shim}"
+    end
+
+    # Ensure `_OBJC_CLASS_$_TBXML` is available at link time in CI.
+    # Some iOS-GPX-Framework builds compile against TBXML declarations but do not
+    # link TBXML implementation objects. Appending a minimal compatibility class
+    # to an already-compiled source file makes symbol resolution deterministic.
+    if File.exist?(gpx_element_impl)
+        marker = 'SOUNDSCAPE_TBXML_COMPAT_IMPL'
+        gpx_content = File.read(gpx_element_impl)
+        unless gpx_content.include?(marker)
+            File.open(gpx_element_impl, 'a') do |f|
+                f.write <<~TBXML_IMPL
+
+                    // #{marker}
+                    typedef struct _TBXMLElement {
+                        void *reserved;
+                    } TBXMLElement;
+
+                    @interface TBXML : NSObject
+                    @property (nonatomic, assign, readonly) TBXMLElement *rootXMLElement;
+                    - (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error;
+                    - (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error;
+                    + (instancetype)tbxmlWithXMLFile:(NSString *)aXMLFile error:(NSError **)error;
+                    + (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element;
+                    + (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element;
+                    + (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element;
+                    + (NSString *)textForElement:(TBXMLElement *)element;
+                    @end
+
+                    @implementation TBXML
+                    - (TBXMLElement *)rootXMLElement { return NULL; }
+                    - (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error { return [super init]; }
+                    - (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error { return [super init]; }
+                    + (instancetype)tbxmlWithXMLFile:(NSString *)aXMLFile error:(NSError **)error { return [self new]; }
+                    + (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element { return nil; }
+                    + (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element { return NULL; }
+                    + (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element { return NULL; }
+                    + (NSString *)textForElement:(TBXMLElement *)element { return nil; }
+                    @end
+                TBXML_IMPL
+            end
+            puts "Injected TBXML compatibility implementation into #{gpx_element_impl}"
+        end
     end
 
     installer.pods_project.targets.each do |target|
