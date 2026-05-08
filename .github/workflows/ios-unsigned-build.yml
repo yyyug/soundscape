@@ -24,7 +24,7 @@ jobs:
           path: |
             apps/ios/Pods
             ~/Library/Caches/CocoaPods
-            ~/.bundle
+            apps/ios/vendor/bundle
           key: ${{ runner.os }}-pods-${{ hashFiles('apps/ios/Podfile.lock', 'apps/ios/Podfile', 'apps/ios/Gemfile.lock', 'apps/ios/patches/**/*.diff') }}
           restore-keys: |
             ${{ runner.os }}-pods-
@@ -33,7 +33,12 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: true
+          bundler-cache: false
+
+      - name: Install Ruby Gems
+        run: |
+          bundle config set path 'vendor/bundle'
+          bundle install --jobs 4 --retry 3
 
       - name: Install Pods
         run: bundle exec pod install
