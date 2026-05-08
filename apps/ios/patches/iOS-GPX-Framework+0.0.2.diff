@@ -150,7 +150,7 @@ index 8337e5ece..6ebc1d64d 100644
  
  #import "GPXElement.h"
 -#import "TBXML.h"
-+#import <TBXML/TBXML.h>
++#import "TBXML.h"
  
  @interface GPXElement ()
  
