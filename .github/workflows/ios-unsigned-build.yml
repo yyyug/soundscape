@@ -24,7 +24,8 @@ jobs:
           path: |
             apps/ios/Pods
             ~/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-pods-${{ hashFiles('apps/ios/Podfile.lock', 'apps/ios/Podfile', 'apps/ios/patches/**/*.diff') }}
+            ~/.bundle
+          key: ${{ runner.os }}-pods-${{ hashFiles('apps/ios/Podfile.lock', 'apps/ios/Podfile', 'apps/ios/Gemfile.lock', 'apps/ios/patches/**/*.diff') }}
           restore-keys: |
             ${{ runner.os }}-pods-
 
@@ -32,21 +33,17 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: false
-
-      - name: Install CocoaPods
-        run: gem install cocoapods
-
-      - name: Install CocoaPods Patch Plugin
-        run: gem install cocoapods-patch
+          bundler-cache: true
 
       - name: Install Pods
-        run: pod install
+        run: bundle exec pod install
 
       - name: Cache Swift Packages
         uses: actions/cache@v4
         with:
-          path: apps/ios/build/SourcePackages
+          path: |
+            apps/ios/build/SourcePackages
+            ~/Library/Caches/org.swift.swiftpm
           key: ${{ runner.os }}-spm-${{ hashFiles('apps/ios/GuideDogs.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
@@ -74,7 +71,6 @@ jobs:
             -destination 'generic/platform=iOS' \
             -derivedDataPath build \
             OTHER_CFLAGS="-I$ANH_ROOT -I$ANH_INCLUDE" \
-            HEADER_SEARCH_PATHS="\$(inherited) $ANH_ROOT $ANH_INCLUDE" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
