@@ -46,6 +46,17 @@ post_install do |installer|
     if File.exist?(gpx_element_impl)
         marker = 'SOUNDSCAPE_TBXML_COMPAT_IMPL'
         gpx_content = File.read(gpx_element_impl)
+
+        unless gpx_content.include?('#import "TBXML.h"')
+            gpx_content = gpx_content.sub(
+                '#import "GPXElementSubclass.h"',
+                "#import \"GPXElementSubclass.h\"\n#import \"TBXML.h\""
+            )
+            File.write(gpx_element_impl, gpx_content)
+            puts "Ensured TBXML import in #{gpx_element_impl}"
+            gpx_content = File.read(gpx_element_impl)
+        end
+
         unless gpx_content.include?(marker)
             File.open(gpx_element_impl, 'a') do |f|
                 f.write <<~TBXML_IMPL
@@ -72,20 +83,7 @@ post_install do |installer|
         if header_content.include?('#import "TBXML.h"')
             header_content = header_content.sub(
                 '#import "TBXML.h"',
-                <<~TBXML_DECLS.strip
-                    typedef struct _TBXMLElement TBXMLElement;
-
-                    @interface TBXML : NSObject
-                    @property (nonatomic, assign, readonly) TBXMLElement *rootXMLElement;
-                    - (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error;
-                    - (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error;
-                    + (instancetype)tbxmlWithXMLFile:(NSString *)aXMLFile error:(NSError **)error;
-                    + (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element;
-                    + (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element;
-                    + (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element;
-                    + (NSString *)textForElement:(TBXMLElement *)element;
-                    @end
-                TBXML_DECLS
+                "@class TBXML;\ntypedef struct _TBXMLElement TBXMLElement;"
             )
             File.write(gpx_element_subclass_header, header_content)
             puts "Patched TBXML import in #{gpx_element_subclass_header}"
