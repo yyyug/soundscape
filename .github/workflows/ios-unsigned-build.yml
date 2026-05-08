@@ -33,8 +33,19 @@ jobs:
       - name: Install Pods
         run: pod install
 
+      - name: Resolve Swift Packages
+        run: |
+          xcodebuild \
+            -workspace GuideDogs.xcworkspace \
+            -scheme Soundscape \
+            -resolvePackageDependencies \
+            -derivedDataPath build
+
       - name: Build Unsigned iPhone App
         run: |
+          ANH_INCLUDE="$PWD/build/SourcePackages/checkouts/azure-notificationhubs-ios/WindowsAzureMessaging/WindowsAzureMessaging/Internal"
+          test -f "$ANH_INCLUDE/ANHAsync.h"
+
           xcodebuild \
             -workspace GuideDogs.xcworkspace \
             -scheme Soundscape \
@@ -42,6 +53,7 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -derivedDataPath build \
+            OTHER_CFLAGS="-I$ANH_INCLUDE" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
