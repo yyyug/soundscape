@@ -27,6 +27,9 @@ jobs:
       - name: Install CocoaPods
         run: gem install cocoapods
 
+      - name: Install CocoaPods Patch Plugin
+        run: gem install cocoapods-patch
+
       - name: Install Pods
         run: pod install
 
