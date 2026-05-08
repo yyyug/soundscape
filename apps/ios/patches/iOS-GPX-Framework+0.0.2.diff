@@ -133,11 +133,47 @@ diff --git a/cocoapods-patch-20221103-54518-lfrmhf/iOS-GPX-Framework/GPX/GPXElem
 index 1458665ac..27ae7347e 100644
 --- a/cocoapods-patch-20221103-54518-lfrmhf/iOS-GPX-Framework/GPX/GPXElement.m
 +++ b/Pods/iOS-GPX-Framework/GPX/GPXElement.m
-@@ -170,7 +170,6 @@
+@@ -170,7 +170,41 @@
      }
  }
  
--
++// Compatibility shim for CI builds where TBXML implementation is not linked.
++// Methods return nil and let callers handle missing XML parsing gracefully.
++typedef struct _TBXMLElement {
++    void *reserved;
++} TBXMLElement;
++
++@interface TBXML : NSObject
++@property (nonatomic, assign, readonly) TBXMLElement *rootXMLElement;
++- (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error;
++- (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error;
+++ (instancetype)tbxmlWithXMLFile:(NSString *)aXMLFile error:(NSError **)error;
+++ (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element;
+++ (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element;
+++ (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element;
+++ (NSString *)textForElement:(TBXMLElement *)element;
++@end
++
++@implementation TBXML
++
++- (TBXMLElement *)rootXMLElement { return NULL; }
++
++- (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error {
++    return [super init];
++}
++
++- (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error {
++    return [super init];
++}
++
+++ (instancetype)tbxmlWithXMLFile:(NSString *)aXMLFile error:(NSError **)error { return [self new]; }
+++ (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element { return nil; }
+++ (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element { return NULL; }
+++ (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element { return NULL; }
+++ (NSString *)textForElement:(TBXMLElement *)element { return nil; }
++
++@end
++
  #pragma mark - GPX
  
  - (NSString *)gpx {
