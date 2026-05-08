@@ -1,3 +1,5 @@
+require 'fileutils'
+
 platform :ios, '14.1'
 plugin 'cocoapods-patch'
 use_frameworks!
@@ -11,6 +13,17 @@ target 'Soundscape' do
 end
 
 post_install do |installer|
+    pods_root = File.join(__dir__, 'Pods')
+    tbxml_header = Dir.glob(File.join(pods_root, 'TBXML', '**', 'TBXML.h')).first
+
+    if tbxml_header
+        %w[Public Private].each do |visibility|
+            header_dir = File.join(pods_root, 'Headers', visibility, 'TBXML')
+            FileUtils.mkdir_p(header_dir)
+            FileUtils.cp(tbxml_header, File.join(header_dir, 'TBXML.h'))
+        end
+    end
+
     installer.pods_project.targets.each do |target|
         next unless target.name == 'iOS-GPX-Framework'
 
