@@ -150,7 +150,17 @@ index 8337e5ece..6ebc1d64d 100644
  
  #import "GPXElement.h"
 -#import "TBXML.h"
++#if __has_include(<TBXML/TBXML.h>)
++#import <TBXML/TBXML.h>
++#elif __has_include("TBXML.h")
++#import "TBXML.h"
++#elif __has_include("../../TBXML/TBXML.h")
++#import "../../TBXML/TBXML.h"
++#elif __has_include("../../Headers/Public/TBXML/TBXML.h")
 +#import "../../Headers/Public/TBXML/TBXML.h"
++#else
++#error "TBXML header not found"
++#endif
  
  @interface GPXElement ()
  
