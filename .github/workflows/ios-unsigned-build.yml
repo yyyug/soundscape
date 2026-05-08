@@ -18,6 +18,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/ios/Pods
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-pods-${{ hashFiles('apps/ios/Podfile.lock', 'apps/ios/Podfile', 'apps/ios/patches/**/*.diff') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -33,6 +43,14 @@ jobs:
       - name: Install Pods
         run: pod install
 
+      - name: Cache Swift Packages
+        uses: actions/cache@v4
+        with:
+          path: apps/ios/build/SourcePackages
+          key: ${{ runner.os }}-spm-${{ hashFiles('apps/ios/GuideDogs.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
       - name: Resolve Swift Packages
         run: |
           xcodebuild \
@@ -43,8 +61,10 @@ jobs:
 
       - name: Build Unsigned iPhone App
         run: |
-          ANH_INCLUDE="$PWD/build/SourcePackages/checkouts/azure-notificationhubs-ios/WindowsAzureMessaging/WindowsAzureMessaging/Internal"
+          ANH_ROOT="$PWD/build/SourcePackages/checkouts/azure-notificationhubs-ios/WindowsAzureMessaging/WindowsAzureMessaging"
+          ANH_INCLUDE="$ANH_ROOT/Internal"
           test -f "$ANH_INCLUDE/ANHAsync.h"
+          test -f "$ANH_ROOT/SBTemplateRegistration.h"
 
           xcodebuild \
             -workspace GuideDogs.xcworkspace \
@@ -53,7 +73,8 @@ jobs:
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
             -derivedDataPath build \
-            OTHER_CFLAGS="-I$ANH_INCLUDE" \
+            OTHER_CFLAGS="-I$ANH_ROOT -I$ANH_INCLUDE" \
+            HEADER_SEARCH_PATHS="\$(inherited) $ANH_ROOT $ANH_INCLUDE" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
