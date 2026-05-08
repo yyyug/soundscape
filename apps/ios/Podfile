@@ -14,7 +14,12 @@ end
 
 post_install do |installer|
     pods_root = File.join(__dir__, 'Pods')
-    tbxml_header = Dir.glob(File.join(pods_root, 'TBXML', '**', 'TBXML.h')).first
+    tbxml_candidates = Dir.glob(File.join(pods_root, '**', 'TBXML.h')).reject do |path|
+        path.include?('/Headers/') || path.include?('\\Headers\\')
+    end
+    tbxml_header = tbxml_candidates.first
+
+    puts "TBXML header candidates: #{tbxml_candidates.join(', ')}"
 
     if tbxml_header
         %w[Public Private].each do |visibility|
@@ -22,6 +27,9 @@ post_install do |installer|
             FileUtils.mkdir_p(header_dir)
             FileUtils.cp(tbxml_header, File.join(header_dir, 'TBXML.h'))
         end
+        puts "Copied TBXML header from #{tbxml_header}"
+    else
+        puts 'TBXML header not found during post_install'
     end
 
     installer.pods_project.targets.each do |target|
