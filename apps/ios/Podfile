@@ -50,21 +50,6 @@ post_install do |installer|
                 f.write <<~TBXML_IMPL
 
                     // #{marker}
-                    typedef struct _TBXMLElement {
-                        void *reserved;
-                    } TBXMLElement;
-
-                    @interface TBXML : NSObject
-                    @property (nonatomic, assign, readonly) TBXMLElement *rootXMLElement;
-                    - (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error;
-                    - (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error;
-                    + (instancetype)tbxmlWithXMLFile:(NSString *)aXMLFile error:(NSError **)error;
-                    + (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element;
-                    + (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element;
-                    + (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element;
-                    + (NSString *)textForElement:(TBXMLElement *)element;
-                    @end
-
                     @implementation TBXML
                     - (TBXMLElement *)rootXMLElement { return NULL; }
                     - (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error { return [super init]; }
