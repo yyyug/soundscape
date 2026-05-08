@@ -72,7 +72,20 @@ post_install do |installer|
         if header_content.include?('#import "TBXML.h"')
             header_content = header_content.sub(
                 '#import "TBXML.h"',
-                "@class TBXML;\ntypedef struct _TBXMLElement TBXMLElement;"
+                <<~TBXML_DECLS.strip
+                    typedef struct _TBXMLElement TBXMLElement;
+
+                    @interface TBXML : NSObject
+                    @property (nonatomic, assign, readonly) TBXMLElement *rootXMLElement;
+                    - (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error;
+                    - (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error;
+                    + (instancetype)tbxmlWithXMLFile:(NSString *)aXMLFile error:(NSError **)error;
+                    + (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element;
+                    + (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element;
+                    + (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element;
+                    + (NSString *)textForElement:(TBXMLElement *)element;
+                    @end
+                TBXML_DECLS
             )
             File.write(gpx_element_subclass_header, header_content)
             puts "Patched TBXML import in #{gpx_element_subclass_header}"
