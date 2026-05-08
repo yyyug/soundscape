@@ -458,6 +458,34 @@ index 3e8eb6bf3..141d99956 100644
  {
      _longitudeValue = [GPXType valueForLongitude:longitude];
  }
+diff --git a/Pods/iOS-GPX-Framework/GPX/TBXML.h b/Pods/iOS-GPX-Framework/GPX/TBXML.h
+new file mode 100644
+index 000000000..5af1f83f1
+--- /dev/null
++++ b/Pods/iOS-GPX-Framework/GPX/TBXML.h
+@@ -0,0 +1,26 @@
++//
++//  TBXML.h
++//  iOS-GPX-Framework compatibility shim
++//
++
++#import <Foundation/Foundation.h>
++
++typedef struct _TBXMLElement TBXMLElement;
++
++@interface TBXML : NSObject
++
++@property (nonatomic, assign, readonly) TBXMLElement *rootXMLElement;
++
++- (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error;
++- (instancetype)initWithXMLData:(NSData *)data error:(NSError **)error;
++
+++ (NSString *)valueOfAttributeNamed:(NSString *)name forElement:(TBXMLElement *)element;
+++ (TBXMLElement *)childElementNamed:(NSString *)name parentElement:(TBXMLElement *)element;
+++ (TBXMLElement *)nextSiblingNamed:(NSString *)name searchFromElement:(TBXMLElement *)element;
+++ (NSString *)textForElement:(TBXMLElement *)element;
++
++@end
 diff --git a/cocoapods-patch-20221103-54518-lfrmhf/iOS-GPX-Framework/GPX/GPXPointSegment.h b/Pods/iOS-GPX-Framework/GPX/GPXPointSegment.h
 index 69376ef1b..6b13e09e2 100644
 --- a/cocoapods-patch-20221103-54518-lfrmhf/iOS-GPX-Framework/GPX/GPXPointSegment.h
