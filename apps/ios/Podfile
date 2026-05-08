@@ -15,6 +15,7 @@ end
 post_install do |installer|
     pods_root = File.join(__dir__, 'Pods')
     tbxml_shim = File.join(pods_root, 'iOS-GPX-Framework', 'GPX', 'TBXML.h')
+    minimum_ios_deployment_target = Gem::Version.new('12.0')
 
     unless File.exist?(tbxml_shim)
         File.write(tbxml_shim, <<~TBXML_HEADER)
@@ -36,9 +37,14 @@ post_install do |installer|
     end
 
     installer.pods_project.targets.each do |target|
-        next unless target.name == 'iOS-GPX-Framework'
-
         target.build_configurations.each do |config|
+            deployment_target = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+            if deployment_target.nil? || Gem::Version.new(deployment_target) < minimum_ios_deployment_target
+                config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = minimum_ios_deployment_target.to_s
+            end
+
+            next unless target.name == 'iOS-GPX-Framework'
+
             header_search_paths = Array(config.build_settings['HEADER_SEARCH_PATHS'])
             header_search_paths |= [
                 '$(inherited)',
