@@ -68,7 +68,7 @@ jobs:
           test -f "$ANH_INCLUDE/ANHAsync.h"
           test -f "$ANH_ROOT/SBTemplateRegistration.h"
 
-          rm -rf build/ModuleCache.noindex
+          rm -rf build/ModuleCache.noindex build/Build/Intermediates.noindex/PrecompiledHeaders
 
           xcodebuild \
             -workspace GuideDogs.xcworkspace \
