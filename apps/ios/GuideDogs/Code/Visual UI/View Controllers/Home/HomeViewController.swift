@@ -811,6 +811,7 @@ private final class ExplorationPOIListViewController: UITableViewController {
     private let coordinator = ExplorationPOIDataCoordinator()
 
     private var items: [ExplorationPOIItem] = []
+    private var accessibilityActionIndices: [ObjectIdentifier: Int] = [:]
     private let loadingIndicator = UIActivityIndicatorView(style: .medium)
 
     var onSelectPOI: ((POI, String) -> Void)?
@@ -879,32 +880,34 @@ private final class ExplorationPOIListViewController: UITableViewController {
         cell.detailTextLabel?.text = "\(item.source.localizedName) • \(distance) • \(relativeDirection)"
         cell.accessoryType = .disclosureIndicator
 
-        cell.accessibilityCustomActions = [
-            UIAccessibilityCustomAction(name: GDLocalizedString("location_action.beacon"), target: self, selector: #selector(onSetBeacon(_:))),
-            UIAccessibilityCustomAction(name: GDLocalizedString("location_action.preview"), target: self, selector: #selector(onStreetPreview(_:)))
-        ]
+        let beaconAction = UIAccessibilityCustomAction(name: GDLocalizedString("location_action.beacon"), target: self, selector: #selector(onSetBeacon(_:)))
+        let previewAction = UIAccessibilityCustomAction(name: GDLocalizedString("location_action.preview"), target: self, selector: #selector(onStreetPreview(_:)))
+
+        accessibilityActionIndices[ObjectIdentifier(beaconAction)] = indexPath.row
+        accessibilityActionIndices[ObjectIdentifier(previewAction)] = indexPath.row
+        cell.accessibilityCustomActions = [beaconAction, previewAction]
         cell.tag = indexPath.row
 
         return cell
     }
 
     @objc private func onSetBeacon(_ action: UIAccessibilityCustomAction) -> Bool {
-        guard items.indices.contains(action.view?.tag ?? -1) else {
+        guard let index = accessibilityActionIndices[ObjectIdentifier(action)],
+              items.indices.contains(index) else {
             return false
         }
 
-        let index = action.view?.tag ?? 0
         let selected = items[index]
         onSelectPOI?(selected.poi, mode.telemetryContext)
         return true
     }
 
     @objc private func onStreetPreview(_ action: UIAccessibilityCustomAction) -> Bool {
-        guard items.indices.contains(action.view?.tag ?? -1) else {
+        guard let index = accessibilityActionIndices[ObjectIdentifier(action)],
+              items.indices.contains(index) else {
             return false
         }
 
-        let index = action.view?.tag ?? 0
         let selected = items[index]
         onSelectPOI?(selected.poi, mode.telemetryContext)
         return true

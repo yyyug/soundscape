@@ -44,6 +44,8 @@ class CalloutButtonPanelViewController: UIViewController {
     
     var logContext: String?
     var onShowLocationDetailsRequested: (() -> Void)?
+    var onShowAroundPOIListRequested: (() -> Void)?
+    var onShowAheadPOIListRequested: (() -> Void)?
 
     private var headingObserver: Heading?
     private lazy var statusFooterLabel: UILabel = {
@@ -106,6 +108,7 @@ class CalloutButtonPanelViewController: UIViewController {
                                                              hint: GDLocalizedString("ui.action_button.around_me.acc_hint"),
                                                              traits: [.button]) {
             element.accessibilityIdentifier = "btn.aroundme"
+            element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAroundPOIListAccessibilityAction))]
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: exploreContainer,
@@ -113,6 +116,7 @@ class CalloutButtonPanelViewController: UIViewController {
                                                              hint: GDLocalizedString("ui.action_button.ahead_of_me.acc_hint"),
                                                              traits: [.button]) {
             element.accessibilityIdentifier = "btn.aheadofme"
+            element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAheadPOIListAccessibilityAction))]
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: markedPointsContainer,
@@ -274,6 +278,16 @@ class CalloutButtonPanelViewController: UIViewController {
 
     @objc private func onLocationDetailsAccessibilityAction() -> Bool {
         onShowLocationDetailsRequested?()
+        return true
+    }
+
+    @objc private func onAroundPOIListAccessibilityAction() -> Bool {
+        onShowAroundPOIListRequested?()
+        return true
+    }
+
+    @objc private func onAheadPOIListAccessibilityAction() -> Bool {
+        onShowAheadPOIListRequested?()
         return true
     }
     
