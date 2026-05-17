@@ -146,7 +146,7 @@
                                             <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             <color key="highlightedColor" red="0.1333333333" green="0.25882352939999997" blue="0.40000000000000002" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <userDefinedRuntimeAttributes>
-                                                <userDefinedRuntimeAttribute type="string" keyPath="localization" value="siri_shortcuts.title.beta"/>
+                                                <userDefinedRuntimeAttribute type="string" keyPath="localization" value="siri_shortcuts.title"/>
                                             </userDefinedRuntimeAttributes>
                                         </label>
                                         <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="waveform" catalog="system" id="k5P-R0-5zU" customClass="TintedImageView" customModule="Soundscape" customModuleProvider="target">
@@ -1082,7 +1082,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="C8r-30-eFo"/>
                     <userDefinedRuntimeAttributes>
-                        <userDefinedRuntimeAttribute type="string" keyPath="localization" value="siri_shortcuts.title.beta"/>
+                        <userDefinedRuntimeAttribute type="string" keyPath="localization" value="siri_shortcuts.title"/>
                     </userDefinedRuntimeAttributes>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="50j-zC-LbD" userLabel="First Responder" sceneMemberID="firstResponder"/>

@@ -66,12 +66,8 @@ class MenuViewController: UIViewController {
     
     override func loadView() {
         // Build views for menu items
-        menuView.addMenuItem(.recreation)
-        menuView.addMenuItem(.devices)
         menuView.addMenuItem(.settings)
         menuView.addMenuItem(.help)
-        menuView.addMenuItem(.learningResources)
-        menuView.addMenuItem(.feedback)
         menuView.addMenuItem(.rate)
         menuView.addMenuItem(.share)
         
@@ -84,7 +80,6 @@ class MenuViewController: UIViewController {
         menuView.topView.closeButton.addTarget(self, action: #selector(onCloseMenuTouchUpInside), for: .touchUpInside)
         
         menuView.backgroundOverlay.addTarget(self, action: #selector(onCloseMenuTouchUpInside), for: .touchUpInside)
-        menuView.crosscheckButton.addTarget(self, action: #selector(onCrosscheckTouchUpInside), for: .touchUpInside)
         
         // Set the view
         view = menuView
@@ -159,8 +154,4 @@ class MenuViewController: UIViewController {
         closeMenu()
     }
     
-    @objc func onCrosscheckTouchUpInside() {
-        GDLogAppInfo("Play crosscheck audio")
-        AppContext.process(CheckAudioEvent())
-    }
 }

@@ -1,0 +1,12 @@
+FROM debian:bookworm-slim
+
+ARG IMPOSM_VERSION=0.11.1
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates wget tar gzip \
+    && rm -rf /var/lib/apt/lists/* \
+    && mkdir -p /opt/imposm \
+    && wget -q -O - "https://github.com/omniscale/imposm3/releases/download/v${IMPOSM_VERSION}/imposm-${IMPOSM_VERSION}-linux-x86-64.tar.gz" \
+      | tar -xz --strip-components=1 -C /opt/imposm
+
+ENTRYPOINT ["/opt/imposm/imposm"]

@@ -8,6 +8,10 @@
 
 import CoreLocation
 
+extension Notification.Name {
+    static let explorationNoCalloutsDebug = Notification.Name("GDAExplorationNoCalloutsDebug")
+}
+
 struct ExplorationModeToggled: UserInitiatedEvent {
     let sender: AnyObject?
     let mode: ExplorationGenerator.Mode
@@ -195,7 +199,17 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
         }
         
         if callouts.isEmpty {
+            if event.mode == .aroundMe || event.mode == .aheadOfMe {
+                NotificationCenter.default.post(name: .explorationNoCalloutsDebug,
+                                                object: self,
+                                                userInfo: noCalloutsDebugUserInfo(for: event.mode, location: loc))
+            }
             callouts.append(RelativeStringCallout(event.mode.origin, event.mode.noCalloutsMessage, position: 0.0))
+        }
+
+        if SettingsContext.shared.announceFacingAndAccuracyAfterCallouts,
+           let statusText = facingAndAccuracyText() {
+            callouts.append(RelativeStringCallout(event.mode.origin, statusText, position: 0.0))
         }
         
         let group = CalloutGroup(callouts, action: .interruptAndClear, playModeSounds: true, logContext: event.logContext)
@@ -374,6 +388,33 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
         properties["activity"] = motionActivity.currentActivity.rawValue
         
         GDATelemetry.track("command.\(event.mode.rawValue)", with: properties)
+    }
+
+    private func noCalloutsDebugUserInfo(for mode: Mode, location: CLLocation) -> [AnyHashable: Any] {
+        let heading = geo.heading(orderedBy: [.user, .device, .course]).value ?? Heading.defaultValue
+        let headingText = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f", heading)
+        let accuracyText = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
+
+        return [
+            "mode": mode.rawValue,
+            "latitude": location.coordinate.latitude,
+            "longitude": location.coordinate.longitude,
+            "heading": heading,
+            "headingText": headingText,
+            "accuracyText": accuracyText
+        ]
+    }
+
+    private func facingAndAccuracyText() -> String? {
+        guard let location = geo.location else {
+            return nil
+        }
+
+        let heading = geo.heading(orderedBy: [.user, .device, .course]).value ?? Heading.defaultValue
+        let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
+        let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
+
+        return GDLocalizedString("status.facing_accuracy.announcement", facing, accuracy)
     }
     
     func cancelCalloutsForEntity(id: String) {

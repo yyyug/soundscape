@@ -33,12 +33,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: false
-
-      - name: Install Ruby Gems
-        run: |
-          bundle config set path 'vendor/bundle'
-          bundle install --jobs 4 --retry 3
+          bundler-cache: true
 
       - name: Install Pods
         run: bundle exec pod install
@@ -48,8 +43,7 @@ jobs:
         with:
           path: |
             apps/ios/build/SourcePackages
-              # Exclude clang module cache
-              # ~/Library/Caches/org.swift.swiftpm
+            ~/Library/Caches/org.swift.swiftpm
           key: ${{ runner.os }}-spm-${{ hashFiles('apps/ios/GuideDogs.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
@@ -77,10 +71,6 @@ jobs:
 
           rm -rf build/ModuleCache.noindex
           rm -rf build/Build
-            rm -rf ~/Library/Caches/org.swift.swiftpm
-            rm -rf ~/Library/Caches/clang/ModuleCache
-            rm -rf ~/Library/Caches/com.apple.dt.Xcode/ModuleCache*
-            rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
           xcodebuild \
             -workspace GuideDogs.xcworkspace \

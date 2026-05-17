@@ -133,6 +133,7 @@ class HomeViewController: UIViewController {
         
         // Subscribe to notifications
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleLocationUpdatedNotification), name: Notification.Name.locationUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleExplorationNoCalloutsDebugNotification), name: .explorationNoCalloutsDebug, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.continueUserAction), name: Notification.Name.continueUserAction, object: nil)
         
         AppContext.shared.remoteCommandManager.delegate = self
@@ -423,6 +424,9 @@ class HomeViewController: UIViewController {
         } else if let vc = segue.destination as? CalloutButtonPanelViewController {
             calloutButtonViewController = vc
             calloutButtonViewController?.logContext = telemetryContext
+            calloutButtonViewController?.onShowLocationDetailsRequested = { [weak self] in
+                self?.showLocationDetailsForCurrentLocation()
+            }
         } else if let navigationController = segue.destination as? UINavigationController,
                   let viewController = navigationController.topViewController as? PreviewViewController {
             let locationDetail = sender as? LocationDetail
@@ -508,6 +512,23 @@ extension HomeViewController {
         
         lastLocation = location
     }
+
+    @objc private func handleExplorationNoCalloutsDebugNotification(_ notification: Notification) {
+        guard presentedViewController == nil else {
+            return
+        }
+
+        let mode = (notification.userInfo?["mode"] as? String) ?? "unknown"
+        let headingText = (notification.userInfo?["headingText"] as? String) ?? "unknown"
+        let accuracyText = (notification.userInfo?["accuracyText"] as? String) ?? "unknown"
+        let latitude = (notification.userInfo?["latitude"] as? Double) ?? AppContext.shared.geolocationManager.location?.coordinate.latitude ?? 0.0
+        let longitude = (notification.userInfo?["longitude"] as? Double) ?? AppContext.shared.geolocationManager.location?.coordinate.longitude ?? 0.0
+
+        let message = String(format: "Mode: %@\nFacing: %@\nGPS accuracy: %@\nLat/Lon: %.6f, %.6f", mode, headingText, accuracyText, latitude, longitude)
+        let alert = UIAlertController(title: "Debug: no callouts", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.dismiss"), style: .default))
+        present(alert, animated: true)
+    }
     
     @objc private func continueUserAction(_ notification: Notification) {
         guard !AppContext.shared.isStreetPreviewing else {
@@ -533,6 +554,18 @@ extension HomeViewController {
         }
     }
     
+}
+
+private extension HomeViewController {
+    func showLocationDetailsForCurrentLocation() {
+        guard let location = AppContext.shared.geolocationManager.location else {
+            present(ErrorAlerts.buildLocationAlert(), animated: true)
+            return
+        }
+
+        let detail = LocationDetail(location: location, telemetryContext: "current_location")
+        performSegue(withIdentifier: "LocationDetailView", sender: detail)
+    }
 }
 
 // MARK: Update View Methods

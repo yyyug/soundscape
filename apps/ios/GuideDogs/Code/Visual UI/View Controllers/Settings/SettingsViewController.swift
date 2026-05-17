@@ -11,6 +11,10 @@ import UIKit
 import AppCenterAnalytics
 
 class SettingsViewController: BaseTableViewController {
+    private enum GeneralRow {
+        static let checkAudio = 5
+        static let announceFacingAndAccuracy = 6
+    }
     
     private enum Section: Int, CaseIterable {
         case general = 0
@@ -18,8 +22,7 @@ class SettingsViewController: BaseTableViewController {
         case callouts = 2
         case streetPreview = 3
         case troubleshooting = 4
-        case about = 5
-        case telemetry = 6
+        case telemetry = 5
     }
     
     private enum CalloutsRow: Int, CaseIterable {
@@ -35,7 +38,7 @@ class SettingsViewController: BaseTableViewController {
         IndexPath(row: 2, section: Section.general.rawValue): "beaconSettings",
         IndexPath(row: 3, section: Section.general.rawValue): "volumeSettings",
         IndexPath(row: 4, section: Section.general.rawValue): "manageDevices",
-        IndexPath(row: 5, section: Section.general.rawValue): "siriShortcuts",
+        IndexPath(row: 7, section: Section.general.rawValue): "siriShortcuts",
         
         IndexPath(row: 0, section: Section.audio.rawValue): "mixAudio",
 
@@ -46,7 +49,6 @@ class SettingsViewController: BaseTableViewController {
         
         IndexPath(row: 0, section: Section.streetPreview.rawValue): "streetPreview",
         IndexPath(row: 0, section: Section.troubleshooting.rawValue): "troubleshooting",
-        IndexPath(row: 0, section: Section.about.rawValue): "about",
         IndexPath(row: 0, section: Section.telemetry.rawValue): "telemetry"
     ]
     
@@ -80,12 +82,11 @@ class SettingsViewController: BaseTableViewController {
         guard let sectionType = Section(rawValue: section) else { return 0 }
         
         switch sectionType {
-        case .general: return 6
+        case .general: return 8
         case .audio: return 1
         case .callouts: return SettingsContext.shared.automaticCalloutsEnabled ? 4 : 1
         case .streetPreview: return 1
         case .troubleshooting: return 1
-        case .about: return 1
         case .telemetry: return 1
         }
     }
@@ -98,6 +99,27 @@ class SettingsViewController: BaseTableViewController {
         }
 
         switch sectionType {
+        case .general where indexPath.row == GeneralRow.checkAudio:
+            let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+            cell.backgroundColor = Colors.Background.primary
+            cell.textLabel?.text = GDLocalizedString("troubleshooting.check_audio")
+            cell.textLabel?.textColor = Colors.Foreground.primary
+            cell.textLabel?.adjustsFontForContentSizeCategory = true
+            cell.accessoryType = .none
+            cell.selectionStyle = .default
+            return cell
+
+        case .general where indexPath.row == GeneralRow.announceFacingAndAccuracy:
+            let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+            cell.backgroundColor = Colors.Background.primary
+            cell.textLabel?.text = GDLocalizedString("settings.announce_facing_accuracy.title")
+            cell.textLabel?.textColor = Colors.Foreground.primary
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.adjustsFontForContentSizeCategory = true
+            cell.accessoryType = SettingsContext.shared.announceFacingAndAccuracyAfterCallouts ? .checkmark : .none
+            cell.selectionStyle = .default
+            return cell
+
         case .callouts:
             let cell = tableView.dequeueReusableCell(withIdentifier: identifier ?? "default", for: indexPath) as! CalloutSettingsCellView
             cell.delegate = self
@@ -139,7 +161,6 @@ class SettingsViewController: BaseTableViewController {
         case .general: return GDLocalizedString("settings.section.general")
         case .audio: return GDLocalizedString("settings.audio.media_controls")
         case .callouts: return GDLocalizedString("menu.manage_callouts")
-        case .about: return GDLocalizedString("settings.section.about")
         case .streetPreview: return GDLocalizedString("preview.title")
         case .troubleshooting: return GDLocalizedString("settings.section.troubleshooting")
         case .telemetry: return GDLocalizedString("settings.section.telemetry")
@@ -151,9 +172,30 @@ class SettingsViewController: BaseTableViewController {
 
         switch sectionType {
         case .audio: return GDLocalizedString("settings.audio.mix_with_others.description")
+        case .general: return GDLocalizedString("settings.announce_facing_accuracy.subtitle")
         case .streetPreview: return GDLocalizedString("preview.include_unnamed_roads.subtitle")
         case .telemetry: return GDLocalizedString("settings.section.telemetry.footer")
         default: return nil
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+
+        guard indexPath.section == Section.general.rawValue else {
+            return
+        }
+
+        switch indexPath.row {
+        case GeneralRow.checkAudio:
+            AppContext.process(CheckAudioEvent())
+        case GeneralRow.announceFacingAndAccuracy:
+            SettingsContext.shared.announceFacingAndAccuracyAfterCallouts.toggle()
+            tableView.reloadRows(at: [indexPath], with: .none)
+        default:
+            return
         }
     }
 }

@@ -53,6 +53,7 @@ class SettingsContext {
         fileprivate static let previewIntersectionsIncludeUnnamedRoads = "GDASettingsPreviewIntersectionsIncludeUnnamedRoads"
         fileprivate static let audioSessionMixesWithOthers = "GDAAudioSessionMixesWithOthers"
         fileprivate static let markerSortStyle           = "GDAMarkerSortStyle"
+        fileprivate static let announceFacingAndAccuracyAfterCallouts = "GDAAnnounceFacingAndAccuracyAfterCallouts"
         
         fileprivate static let ttsGain = "GDATTSAudioGain"
         fileprivate static let beaconGain = "GDABeaconAudioGain"
@@ -102,7 +103,8 @@ class SettingsContext {
             Keys.senseDestination: true,
             Keys.previewIntersectionsIncludeUnnamedRoads: false,
             Keys.audioSessionMixesWithOthers: true,
-            Keys.markerSortStyle: SortStyle.distance.rawValue
+            Keys.markerSortStyle: SortStyle.distance.rawValue,
+            Keys.announceFacingAndAccuracyAfterCallouts: false
         ])
         
         resetLocaleIfNeeded()
@@ -282,6 +284,15 @@ class SettingsContext {
         }
         set {
             userDefaults.set(newValue, forKey: Keys.audioSessionMixesWithOthers)
+        }
+    }
+
+    var announceFacingAndAccuracyAfterCallouts: Bool {
+        get {
+            return userDefaults.bool(forKey: Keys.announceFacingAndAccuracyAfterCallouts)
+        }
+        set {
+            userDefaults.set(newValue, forKey: Keys.announceFacingAndAccuracyAfterCallouts)
         }
     }
     

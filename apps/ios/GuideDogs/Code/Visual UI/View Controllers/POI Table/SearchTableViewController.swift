@@ -72,10 +72,6 @@ class SearchTableViewController: BaseTableViewController {
             rows.append(MoreLocations.markers)
         }
         
-        if delegate?.allowCurrentLocation ?? true && AppContext.shared.isStreetPreviewing == false {
-            rows.append(MoreLocations.currentLocation)
-        }
-        
         return rows
     }()
     

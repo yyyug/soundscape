@@ -139,3 +139,12 @@ __pycache__/
 # Security excludes
 # =========================
 private_keys/
+
+# Generated artifacts and local offline pipeline outputs
+artifacts/
+downloaded-ipa/
+offline-hk/.env
+offline-hk/data/
+offline-hk/output/
+offline-hk/imposm_cache/
+offline-hk/imposm_diff/

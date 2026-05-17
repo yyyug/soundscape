@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgis/postgis:15-3.4
+    container_name: soundscape-hk-postgis
+    environment:
+      POSTGRES_USER: osm
+      POSTGRES_PASSWORD: osm
+      POSTGRES_DB: osm
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/00-init-db.sql
+      - ./postgis-vt-util.sql:/docker-entrypoint-initdb.d/01-postgis-vt-util.sql
+      - ../svcs/data/tilefunc.sql:/docker-entrypoint-initdb.d/02-tilefunc.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U osm"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - soundscape
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  soundscape:
+    driver: bridge

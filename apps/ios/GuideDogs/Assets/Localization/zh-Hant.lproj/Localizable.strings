@@ -1238,16 +1238,16 @@
 "siri_shortcuts.title" = "Siri Shortcuts";
 
 /* Settings item title. Controls whether facing and GPS accuracy are spoken after manual callouts. */
-"settings.announce_facing_accuracy.title" = "Announce facing and GPS accuracy after callouts";
+"settings.announce_facing_accuracy.title" = "在提示後播報面向與 GPS 精度";
 
 /* Settings item description. Explains what the facing/GPS announcement toggle does. */
-"settings.announce_facing_accuracy.subtitle" = "When enabled, Soundscape adds your facing direction and GPS accuracy after each manual callout.";
+"settings.announce_facing_accuracy.subtitle" = "啟用後，Soundscape 會在每次手動提示後加播目前面向方向與 GPS 精度。";
 
 /* Home status line shown at the bottom of the callout panel. {NumberedPlaceholder="%1$@", "%2$@"} */
-"status.facing_accuracy.label" = "Facing %1$@ | GPS accuracy %2$@";
+"status.facing_accuracy.label" = "面向 %1$@ | GPS 精度 %2$@";
 
 /* Spoken status announcement after manual callouts when enabled. {NumberedPlaceholder="%1$@", "%2$@"} */
-"status.facing_accuracy.announcement" = "Facing %1$@, GPS accuracy %2$@";
+"status.facing_accuracy.announcement" = "面向 %1$@，GPS 精度 %2$@";
 
 /* Referes to the Apple iOS Siri Shortcuts feature in Beta. {NumberedPlaceholder="Siri"} */
 "siri_shortcuts.title.beta" = "Siri Shortcuts (Beta)";

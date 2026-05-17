@@ -43,8 +43,25 @@ class CalloutButtonPanelViewController: UIViewController {
     @IBOutlet weak var markedPointsAnimation: NVActivityIndicatorView!
     
     var logContext: String?
+    var onShowLocationDetailsRequested: (() -> Void)?
+
+    private var headingObserver: Heading?
+    private lazy var statusFooterLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = Colors.Foreground.primary
+        label.font = UIFont.preferredFont(forTextStyle: .footnote)
+        label.adjustsFontForContentSizeCategory = true
+        label.textAlignment = .center
+        label.numberOfLines = 1
+        return label
+    }()
     
     // MARK: View Life Cycle
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,11 +70,15 @@ class CalloutButtonPanelViewController: UIViewController {
         headerLabel.text = GDLocalizedString("callouts.panel.title").uppercasedWithAppLocale()
                 
         configureButtonLabels()
+        configureStatusFooter()
+        subscribeStatusUpdates()
+        updateFacingAndAccuracyStatus()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleDidToggleLocateNotification), name: Notification.Name.didToggleLocate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleDidToggleOrientateNotification), name: Notification.Name.didToggleOrientate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleDidToggleLookAheadNotification), name: Notification.Name.didToggleLookAhead, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleDidToggleMarkedPointsNotification), name: Notification.Name.didToggleMarkedPoints, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleLocationUpdatedNotification), name: .locationUpdated, object: nil)
     }
     
     override func viewDidLayoutSubviews() {
@@ -77,6 +98,7 @@ class CalloutButtonPanelViewController: UIViewController {
                                                              hint: GDLocalizedString("ui.action_button.my_location.acc_hint"),
                                                              traits: [.button]) {
             element.accessibilityIdentifier = "btn.mylocation"
+            element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("location_detail.title.default"), target: self, selector: #selector(onLocationDetailsAccessibilityAction))]
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: orientContainer,
@@ -117,6 +139,39 @@ class CalloutButtonPanelViewController: UIViewController {
         buttonLabels.forEach { ( label) in
             label.font = font
         }
+    }
+
+    private func configureStatusFooter() {
+        view.addSubview(statusFooterLabel)
+
+        NSLayoutConstraint.activate([
+            statusFooterLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8.0),
+            statusFooterLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8.0),
+            statusFooterLabel.topAnchor.constraint(greaterThanOrEqualTo: markedPointsContainer.bottomAnchor, constant: 4.0),
+            statusFooterLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -4.0)
+        ])
+    }
+
+    private func subscribeStatusUpdates() {
+        headingObserver = AppContext.shared.geolocationManager.heading(orderedBy: [.user, .device, .course])
+        headingObserver?.onHeadingDidUpdate { [weak self] _ in
+            self?.updateFacingAndAccuracyStatus()
+        }
+    }
+
+    private func updateFacingAndAccuracyStatus() {
+        guard let location = AppContext.shared.geolocationManager.location else {
+            statusFooterLabel.text = nil
+            return
+        }
+
+        let heading = headingObserver?.value ?? Heading.defaultValue
+        let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
+        let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
+        let status = GDLocalizedString("status.facing_accuracy.label", facing, accuracy)
+
+        statusFooterLabel.text = status
+        statusFooterLabel.accessibilityLabel = status
     }
     
     // MARK: `IBAction`
@@ -211,6 +266,15 @@ class CalloutButtonPanelViewController: UIViewController {
     
     @objc func handleDidToggleMarkedPointsNotification(_ notification: Notification) {
         onMarkedPointsTouchUpInside(notification.object as AnyObject?)
+    }
+
+    @objc private func handleLocationUpdatedNotification(_ notification: Notification) {
+        updateFacingAndAccuracyStatus()
+    }
+
+    @objc private func onLocationDetailsAccessibilityAction() -> Bool {
+        onShowLocationDetailsRequested?()
+        return true
     }
     
     // MARK: Button Animations
