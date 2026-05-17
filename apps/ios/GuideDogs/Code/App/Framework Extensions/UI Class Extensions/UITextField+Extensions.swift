@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension UITextField {
     func addCustomClearButton(with image: UIImage, mode: UITextField.ViewMode) {
