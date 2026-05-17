@@ -41,23 +41,28 @@ post_install do |installer|
 
     # Ensure `_OBJC_CLASS_$_TBXML` is available at link time in CI.
     # Some iOS-GPX-Framework builds compile against TBXML declarations but do not
-    # link TBXML implementation objects. Appending a minimal compatibility class
-    # to an already-compiled source file makes symbol resolution deterministic.
+    # link TBXML implementation objects. The patch already includes a guarded TBXML
+    # implementation, so we just need to ensure proper includes.
     if File.exist?(gpx_element_impl)
         marker = 'SOUNDSCAPE_TBXML_COMPAT_IMPL'
         gpx_content = File.read(gpx_element_impl)
 
+        # Only add import if not already present (patch may have already added it)
         unless gpx_content.include?('#import "TBXML.h"')
-            gpx_content = gpx_content.sub(
-                '#import "GPXElementSubclass.h"',
-                "#import \"GPXElementSubclass.h\"\n#import \"TBXML.h\""
-            )
-            File.write(gpx_element_impl, gpx_content)
-            puts "Ensured TBXML import in #{gpx_element_impl}"
-            gpx_content = File.read(gpx_element_impl)
+            # Only add if the Podfile shim was created
+            if File.exist?(tbxml_shim)
+                gpx_content = gpx_content.sub(
+                    '#import "GPXElementSubclass.h"',
+                    "#import \"GPXElementSubclass.h\"\n#import \"TBXML.h\""
+                )
+                File.write(gpx_element_impl, gpx_content)
+                puts "Ensured TBXML import in #{gpx_element_impl}"
+                gpx_content = File.read(gpx_element_impl)
+            end
         end
 
-        unless gpx_content.include?(marker)
+        # Skip adding marker implementation if already present from patch
+        unless gpx_content.include?(marker) || gpx_content.include?('#ifndef TBXML_H')
             File.open(gpx_element_impl, 'a') do |f|
                 f.write <<~TBXML_IMPL
 
@@ -75,6 +80,8 @@ post_install do |installer|
                 TBXML_IMPL
             end
             puts "Injected TBXML compatibility implementation into #{gpx_element_impl}"
+        else
+            puts "Patch already contains TBXML compatibility implementation, skipping Podfile injection"
         end
     end
 

@@ -143,6 +143,9 @@ index 1458665ac..27ae7347e 100644
 +    void *reserved;
 +} TBXMLElement;
 +
++// Only define TBXML if it's not already available
++#ifndef TBXML_H
++
 +@interface TBXML : NSObject
 +@property (nonatomic, assign, readonly) TBXMLElement *rootXMLElement;
 +- (instancetype)initWithXMLString:(NSString *)aXMLString error:(NSError **)error;
@@ -173,6 +176,8 @@ index 1458665ac..27ae7347e 100644
 ++ (NSString *)textForElement:(TBXMLElement *)element { return nil; }
 +
 +@end
++
++#endif // TBXML_H
 +
  #pragma mark - GPX
  
