@@ -170,6 +170,32 @@ struct MarkersAndRoutesList_Previews: PreviewProvider {
     }
 }
 
+private struct RoutePrimaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .foregroundColor(.primaryBackground)
+            .background(configuration.isPressed ? Color.secondaryForeground : Color.primaryForeground)
+            .cornerRadius(10)
+    }
+}
+
+private struct RouteSecondaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.vertical, 10)
+            .padding(.horizontal, 12)
+            .foregroundColor(.primaryForeground)
+            .background(configuration.isPressed ? Color.secondaryBackground : Color.tertiaryBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.secondaryForeground, lineWidth: 1)
+            )
+            .cornerRadius(10)
+    }
+}
+
 struct RoutesMenuListView: View {
     @EnvironmentObject var navHelper: MarkersAndRoutesListNavigationHelper
 
@@ -299,13 +325,13 @@ private struct RouteCreateManualView: View {
                         Text(GDLocalizationUnnecessary("Select Saved Marker"))
                             .frame(maxWidth: .infinity)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(RoutePrimaryButtonStyle())
 
                     Button(GDLocalizationUnnecessary("Search by Location")) {
                         presentSearchWaypoint()
                     }
                     .frame(maxWidth: .infinity)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(RouteSecondaryButtonStyle())
                 }
                 .padding(.horizontal)
             } else {
@@ -314,7 +340,7 @@ private struct RouteCreateManualView: View {
                         addCurrentLocation()
                     }
                     .frame(maxWidth: .infinity)
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(RoutePrimaryButtonStyle())
 
                     Button(GDLocalizationUnnecessary("Remove Recently Added Point")) {
                         if !waypoints.isEmpty {
@@ -323,7 +349,7 @@ private struct RouteCreateManualView: View {
                     }
                     .disabled(waypoints.isEmpty)
                     .frame(maxWidth: .infinity)
-                    .buttonStyle(.bordered)
+                    .buttonStyle(RouteSecondaryButtonStyle())
                 }
                 .padding(.horizontal)
             }
@@ -344,7 +370,7 @@ private struct RouteCreateManualView: View {
                 saveRoute()
             }
             .frame(maxWidth: .infinity)
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(RoutePrimaryButtonStyle())
             .disabled(waypoints.count < 2)
             .padding(.horizontal)
             .padding(.bottom, 16)
@@ -466,7 +492,7 @@ private final class RouteAutoRecorderStore: ObservableObject {
         state = .idle
 
         guard samples.count >= 2 else {
-            throw RouteRealmError.invalidData
+            throw RouteRealmError.databaseError
         }
 
         let markerDetails: [LocationDetail] = try samples.compactMap { location in
@@ -590,25 +616,25 @@ private struct RouteCreateAutoView: View {
                     recorder.start()
                 }
                 .disabled(recorder.state == .recording)
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(RoutePrimaryButtonStyle())
 
                 Button(GDLocalizationUnnecessary("Pause")) {
                     recorder.pause()
                 }
                 .disabled(recorder.state != .recording)
-                .buttonStyle(.bordered)
+                .buttonStyle(RouteSecondaryButtonStyle())
 
                 Button(GDLocalizationUnnecessary("Resume")) {
                     recorder.resume()
                 }
                 .disabled(recorder.state != .paused)
-                .buttonStyle(.bordered)
+                .buttonStyle(RouteSecondaryButtonStyle())
             }
 
             Button(GDLocalizationUnnecessary("Stop and Save Route")) {
                 stopAndSave()
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(RoutePrimaryButtonStyle())
             .disabled(recorder.sampleCount < 2)
 
             Spacer()
