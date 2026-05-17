@@ -140,7 +140,7 @@ struct MarkersAndRoutesList: View {
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 if selectedList == .routes {
-                    NavigationLink(destination: RouteEditView(style: .add, deleteAction: nil).environmentObject(navHelper as ViewNavigationHelper)) {
+                    NavigationLink(destination: RouteCreateFlowView().environmentObject(navHelper as ViewNavigationHelper)) {
                         Image(systemName: "plus")
                             .font(.system(size: 22)) // Purposely fix the size since this is in a nav bar
                             .foregroundColor(.primaryForeground)

@@ -9,6 +9,7 @@
 import UIKit
 import CoreMotion
 import CoreLocation
+import MapKit
 import MessageUI
 import CocoaLumberjackSwift
 import SwiftUI
@@ -27,6 +28,7 @@ class HomeViewController: UIViewController {
         // Main Menu Segues
         
         static let showRecreationActivities = "ShowRecreationActivities"
+        static let showRoutes = "ShowRoutes"
         static let showManageDevices = "ShowManageDevices"
         static let showStatus = "ShowStatus"
         static let showHelp = "ShowHelpSegue"
@@ -39,6 +41,7 @@ class HomeViewController: UIViewController {
         static func segue(for menuItem: MenuItem) -> String? {
             switch menuItem {
             case .recreation: return Segue.showRecreationActivities
+            case .routes:     return Segue.showRoutes
             case .devices:    return Segue.showManageDevices
             case .help:       return Segue.showHelp
             case .settings:   return Segue.showSettings
@@ -427,6 +430,12 @@ class HomeViewController: UIViewController {
             calloutButtonViewController?.onShowLocationDetailsRequested = { [weak self] in
                 self?.showLocationDetailsForCurrentLocation()
             }
+            calloutButtonViewController?.onShowAroundPOIListRequested = { [weak self] in
+                self?.presentExplorationPOICategoryScreen(for: .aroundMe)
+            }
+            calloutButtonViewController?.onShowAheadPOIListRequested = { [weak self] in
+                self?.presentExplorationPOICategoryScreen(for: .aheadOfMe)
+            }
         } else if let navigationController = segue.destination as? UINavigationController,
                   let viewController = navigationController.topViewController as? PreviewViewController {
             let locationDetail = sender as? LocationDetail
@@ -467,7 +476,16 @@ extension HomeViewController: UIViewControllerTransitioningDelegate {
         }
         
         return MenuAnimator(.close) { [weak self] (finished) in
-            guard finished, let segue = Segue.segue(for: dismissed.selected) else {
+            guard finished else {
+                return
+            }
+
+            if dismissed.selected == .routes {
+                self?.showRoutes()
+                return
+            }
+
+            guard let segue = Segue.segue(for: dismissed.selected) else {
                 return
             }
             
@@ -479,6 +497,19 @@ extension HomeViewController: UIViewControllerTransitioningDelegate {
 // MARK: Actions
 
 extension HomeViewController {
+
+    private func showRoutes() {
+        let navHelper = MarkersAndRoutesListNavigationHelper()
+
+        let root = RoutesMenuListView()
+            .environmentObject(navHelper)
+            .environmentObject(UserLocationStore())
+            .environment(\.realmConfiguration, RealmHelper.databaseConfig)
+
+        let host = UIHostingController<AnyView>(rootView: AnyView(root))
+        navHelper.host = host
+        navigationController?.pushViewController(host, animated: true)
+    }
     
     @IBAction func onMenuTouchUpInside() {
         // Construct the menu and present it
@@ -557,6 +588,29 @@ extension HomeViewController {
 }
 
 private extension HomeViewController {
+    enum ExplorationPOIMode {
+        case aroundMe
+        case aheadOfMe
+
+        var categoryTitle: String {
+            switch self {
+            case .aroundMe:
+                return GDLocalizedString("exploration.poi.category.title.around")
+            case .aheadOfMe:
+                return GDLocalizedString("exploration.poi.category.title.ahead")
+            }
+        }
+
+        var telemetryContext: String {
+            switch self {
+            case .aroundMe:
+                return "around_me_poi_list"
+            case .aheadOfMe:
+                return "ahead_of_me_poi_list"
+            }
+        }
+    }
+
     func showLocationDetailsForCurrentLocation() {
         guard let location = AppContext.shared.geolocationManager.location else {
             present(ErrorAlerts.buildLocationAlert(), animated: true)
@@ -565,6 +619,682 @@ private extension HomeViewController {
 
         let detail = LocationDetail(location: location, telemetryContext: "current_location")
         performSegue(withIdentifier: "LocationDetailView", sender: detail)
+    }
+
+    func presentExplorationPOICategoryScreen(for mode: ExplorationPOIMode) {
+        guard let location = AppContext.shared.geolocationManager.location else {
+            present(ErrorAlerts.buildLocationAlert(), animated: true)
+            return
+        }
+
+        let heading: CLLocationDirection
+        switch mode {
+        case .aroundMe:
+            heading = AppContext.shared.geolocationManager.collectionHeading.value ?? Heading.defaultValue
+        case .aheadOfMe:
+            heading = AppContext.shared.geolocationManager.heading(orderedBy: [.user, .device, .course]).value ?? Heading.defaultValue
+        }
+
+        let categoryVC = ExplorationPOICategoryViewController(mode: mode,
+                                                              userLocation: location,
+                                                              heading: heading)
+        categoryVC.onSelectPOI = { [weak self] poi, telemetry in
+            let detail = LocationDetail(entity: poi, telemetryContext: telemetry)
+            self?.performSegue(withIdentifier: "LocationDetailView", sender: detail)
+        }
+
+        navigationController?.pushViewController(categoryVC, animated: true)
+    }
+}
+
+private enum ExplorationPOISource {
+    case osm
+    case apple
+    case overture
+
+    var localizedName: String {
+        switch self {
+        case .osm:
+            return GDLocalizedString("exploration.poi.source.osm")
+        case .apple:
+            return GDLocalizedString("exploration.poi.source.apple")
+        case .overture:
+            return GDLocalizedString("exploration.poi.source.overture")
+        }
+    }
+
+    var priority: Int {
+        switch self {
+        case .osm:
+            return 3
+        case .overture:
+            return 2
+        case .apple:
+            return 1
+        }
+    }
+}
+
+private enum ExplorationPOICategory: CaseIterable {
+    case all
+    case supermarket
+    case convenience
+    case pharmacy
+    case cafe
+    case restaurant
+    case transit
+    case parks
+
+    var localizedName: String {
+        switch self {
+        case .all:
+            return GDLocalizedString("exploration.poi.category.all")
+        case .supermarket:
+            return GDLocalizedString("exploration.poi.category.supermarket")
+        case .convenience:
+            return GDLocalizedString("exploration.poi.category.convenience")
+        case .pharmacy:
+            return GDLocalizedString("exploration.poi.category.pharmacy")
+        case .cafe:
+            return GDLocalizedString("exploration.poi.category.cafe")
+        case .restaurant:
+            return GDLocalizedString("exploration.poi.category.restaurant")
+        case .transit:
+            return GDLocalizedString("exploration.poi.category.transit")
+        case .parks:
+            return GDLocalizedString("exploration.poi.category.parks")
+        }
+    }
+
+    var overtureCategory: String {
+        switch self {
+        case .all:
+            return ""
+        case .supermarket:
+            return "supermarket"
+        case .convenience:
+            return "convenience"
+        case .pharmacy:
+            return "pharmacy"
+        case .cafe:
+            return "cafe"
+        case .restaurant:
+            return "restaurant"
+        case .transit:
+            return "transit"
+        case .parks:
+            return "park"
+        }
+    }
+
+    var appleQueries: [String] {
+        switch self {
+        case .all:
+            return ["point of interest"]
+        case .supermarket:
+            return ["supermarket", "grocery store"]
+        case .convenience:
+            return ["convenience store"]
+        case .pharmacy:
+            return ["pharmacy", "chemist"]
+        case .cafe:
+            return ["cafe", "coffee shop"]
+        case .restaurant:
+            return ["restaurant"]
+        case .transit:
+            return ["transit stop", "bus stop", "train station"]
+        case .parks:
+            return ["park"]
+        }
+    }
+}
+
+private struct ExplorationPOIItem {
+    let poi: POI
+    let source: ExplorationPOISource
+    let distance: CLLocationDistance
+}
+
+private final class ExplorationPOICategoryViewController: UITableViewController {
+    private let mode: HomeViewController.ExplorationPOIMode
+    private let userLocation: CLLocation
+    private let heading: CLLocationDirection
+
+    var onSelectPOI: ((POI, String) -> Void)?
+
+    init(mode: HomeViewController.ExplorationPOIMode, userLocation: CLLocation, heading: CLLocationDirection) {
+        self.mode = mode
+        self.userLocation = userLocation
+        self.heading = heading
+        super.init(style: .insetGrouped)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = mode.categoryTitle
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "CategoryCell")
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return ExplorationPOICategory.allCases.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let category = ExplorationPOICategory.allCases[indexPath.row]
+        cell.textLabel?.text = category.localizedName
+        cell.accessoryType = .disclosureIndicator
+        return cell
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let category = ExplorationPOICategory.allCases[indexPath.row]
+        let listVC = ExplorationPOIListViewController(mode: mode,
+                                                      category: category,
+                                                      userLocation: userLocation,
+                                                      heading: heading)
+        listVC.onSelectPOI = onSelectPOI
+        navigationController?.pushViewController(listVC, animated: true)
+    }
+}
+
+private final class ExplorationPOIListViewController: UITableViewController {
+    private let mode: HomeViewController.ExplorationPOIMode
+    private let category: ExplorationPOICategory
+    private let userLocation: CLLocation
+    private let heading: CLLocationDirection
+    private let coordinator = ExplorationPOIDataCoordinator()
+
+    private var items: [ExplorationPOIItem] = []
+    private let loadingIndicator = UIActivityIndicatorView(style: .medium)
+
+    var onSelectPOI: ((POI, String) -> Void)?
+
+    init(mode: HomeViewController.ExplorationPOIMode,
+         category: ExplorationPOICategory,
+         userLocation: CLLocation,
+         heading: CLLocationDirection) {
+        self.mode = mode
+        self.category = category
+        self.userLocation = userLocation
+        self.heading = heading
+        super.init(style: .plain)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        title = category.localizedName
+        tableView.tableFooterView = UIView()
+
+        loadingIndicator.startAnimating()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: loadingIndicator)
+
+        coordinator.loadPOIs(mode: mode,
+                             category: category,
+                             userLocation: userLocation,
+                             heading: heading) { [weak self] items in
+            guard let self = self else {
+                return
+            }
+
+            self.items = items
+            self.loadingIndicator.stopAnimating()
+            self.navigationItem.rightBarButtonItem = nil
+            self.tableView.reloadData()
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return max(items.count, 1)
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if items.isEmpty {
+            let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+            cell.selectionStyle = .none
+            cell.textLabel?.text = GDLocalizedString("exploration.poi.list.empty")
+            cell.textLabel?.textColor = Colors.Foreground.secondary
+            return cell
+        }
+
+        let reuseIdentifier = "POICell"
+        let cell = tableView.dequeueReusableCell(withIdentifier: reuseIdentifier) ?? UITableViewCell(style: .subtitle, reuseIdentifier: reuseIdentifier)
+        let item = items[indexPath.row]
+        let poi = item.poi
+        let distance = LanguageFormatter.string(from: item.distance, rounded: true)
+        let bearing = poi.bearingToClosestLocation(from: userLocation)
+        let relativeDirection = Direction(from: heading, to: bearing, type: .combined).localizedString
+
+        cell.textLabel?.text = poi.localizedName
+        cell.detailTextLabel?.text = "\(item.source.localizedName) • \(distance) • \(relativeDirection)"
+        cell.accessoryType = .disclosureIndicator
+
+        cell.accessibilityCustomActions = [
+            UIAccessibilityCustomAction(name: GDLocalizedString("location_action.beacon"), target: self, selector: #selector(onSetBeacon(_:))),
+            UIAccessibilityCustomAction(name: GDLocalizedString("location_action.preview"), target: self, selector: #selector(onStreetPreview(_:)))
+        ]
+        cell.tag = indexPath.row
+
+        return cell
+    }
+
+    @objc private func onSetBeacon(_ action: UIAccessibilityCustomAction) -> Bool {
+        guard items.indices.contains(action.view?.tag ?? -1) else {
+            return false
+        }
+
+        let index = action.view?.tag ?? 0
+        let selected = items[index]
+        onSelectPOI?(selected.poi, mode.telemetryContext)
+        return true
+    }
+
+    @objc private func onStreetPreview(_ action: UIAccessibilityCustomAction) -> Bool {
+        guard items.indices.contains(action.view?.tag ?? -1) else {
+            return false
+        }
+
+        let index = action.view?.tag ?? 0
+        let selected = items[index]
+        onSelectPOI?(selected.poi, mode.telemetryContext)
+        return true
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        guard items.indices.contains(indexPath.row) else {
+            return
+        }
+
+        let selected = items[indexPath.row]
+        onSelectPOI?(selected.poi, mode.telemetryContext)
+    }
+}
+
+private final class ExplorationPOIDataCoordinator {
+    func loadPOIs(mode: HomeViewController.ExplorationPOIMode,
+                  category: ExplorationPOICategory,
+                  userLocation: CLLocation,
+                  heading: CLLocationDirection,
+                  completion: @escaping ([ExplorationPOIItem]) -> Void) {
+
+        let osmItems = fetchOSMPOIs(category: category,
+                                    mode: mode,
+                                    userLocation: userLocation,
+                                    heading: heading)
+
+        let group = DispatchGroup()
+        var appleItems: [ExplorationPOIItem] = []
+        var overtureItems: [ExplorationPOIItem] = []
+
+        group.enter()
+        fetchApplePOIs(category: category, userLocation: userLocation) { results in
+            appleItems = results
+            group.leave()
+        }
+
+        group.enter()
+        fetchOverturePOIs(category: category, userLocation: userLocation) { results in
+            overtureItems = results
+            group.leave()
+        }
+
+        group.notify(queue: .main) {
+            let merged = self.mergeAndDeduplicate(osmItems + appleItems + overtureItems,
+                                                  mode: mode,
+                                                  userLocation: userLocation,
+                                                  heading: heading)
+            completion(merged)
+        }
+    }
+
+    private func fetchOSMPOIs(category: ExplorationPOICategory,
+                              mode: HomeViewController.ExplorationPOIMode,
+                              userLocation: CLLocation,
+                              heading: CLLocationDirection) -> [ExplorationPOIItem] {
+        guard let dataView = AppContext.shared.spatialDataContext.getDataView(for: userLocation,
+                                                                               searchDistance: SpatialDataContext.cacheDistance) else {
+            return []
+        }
+
+        let pois = dataView.pois.filter { matchesCategory($0, category: category) }
+        let candidates = applyDirectionalFilterIfNeeded(pois,
+                                                        mode: mode,
+                                                        userLocation: userLocation,
+                                                        heading: heading)
+
+        return candidates.map {
+            ExplorationPOIItem(poi: $0,
+                               source: .osm,
+                               distance: $0.distanceToClosestLocation(from: userLocation))
+        }
+    }
+
+    private func fetchApplePOIs(category: ExplorationPOICategory,
+                                userLocation: CLLocation,
+                                completion: @escaping ([ExplorationPOIItem]) -> Void) {
+        let query = category.appleQueries.first ?? "point of interest"
+        let request = MKLocalSearch.Request()
+        request.naturalLanguageQuery = query
+        request.region = MKCoordinateRegion(center: userLocation.coordinate,
+                                            latitudinalMeters: 2000,
+                                            longitudinalMeters: 2000)
+
+        MKLocalSearch(request: request).start { response, _ in
+            guard let mapItems = response?.mapItems else {
+                completion([])
+                return
+            }
+
+            let items: [ExplorationPOIItem] = mapItems.compactMap { mapItem in
+                let coordinate = mapItem.placemark.coordinate
+                guard CLLocationCoordinate2DIsValid(coordinate) else {
+                    return nil
+                }
+
+                let name = mapItem.name ?? mapItem.placemark.name ?? GDLocalizedString("location")
+                let address = mapItem.placemark.title
+                let location = GenericLocation(lat: coordinate.latitude,
+                                               lon: coordinate.longitude,
+                                               name: name,
+                                               address: address)
+                location.amenity = category.overtureCategory
+
+                let distance = location.distanceToClosestLocation(from: userLocation)
+                return ExplorationPOIItem(poi: location, source: .apple, distance: distance)
+            }
+
+            completion(items)
+        }
+    }
+
+    private func fetchOverturePOIs(category: ExplorationPOICategory,
+                                   userLocation: CLLocation,
+                                   completion: @escaping ([ExplorationPOIItem]) -> Void) {
+        guard let baseURL = overturePOIBaseURL() else {
+            completion([])
+            return
+        }
+
+        guard var components = URLComponents(string: baseURL) else {
+            completion([])
+            return
+        }
+
+        var queryItems = components.queryItems ?? []
+        queryItems.append(URLQueryItem(name: "lat", value: String(userLocation.coordinate.latitude)))
+        queryItems.append(URLQueryItem(name: "lon", value: String(userLocation.coordinate.longitude)))
+        queryItems.append(URLQueryItem(name: "radius", value: "2000"))
+        queryItems.append(URLQueryItem(name: "limit", value: "100"))
+
+        if !category.overtureCategory.isEmpty {
+            queryItems.append(URLQueryItem(name: "category", value: category.overtureCategory))
+        }
+
+        components.queryItems = queryItems
+
+        guard let url = components.url else {
+            completion([])
+            return
+        }
+
+        URLSession.shared.dataTask(with: url) { data, _, _ in
+            guard let data = data else {
+                DispatchQueue.main.async { completion([]) }
+                return
+            }
+
+            let items = self.parseOvertureItems(from: data, userLocation: userLocation)
+            DispatchQueue.main.async { completion(items) }
+        }.resume()
+    }
+
+    private func parseOvertureItems(from data: Data, userLocation: CLLocation) -> [ExplorationPOIItem] {
+        guard let json = try? JSONSerialization.jsonObject(with: data) else {
+            return []
+        }
+
+        let rows: [[String: Any]]
+
+        if let array = json as? [[String: Any]] {
+            rows = array
+        } else if let dict = json as? [String: Any] {
+            if let results = dict["results"] as? [[String: Any]] {
+                rows = results
+            } else if let result = dict["result"] as? [[String: Any]] {
+                rows = result
+            } else if let features = dict["features"] as? [[String: Any]] {
+                rows = features
+            } else if let items = dict["items"] as? [[String: Any]] {
+                rows = items
+            } else {
+                rows = []
+            }
+        } else {
+            rows = []
+        }
+
+        return rows.compactMap { row in
+            let rowName = row["name"] as? String
+                ?? row["title"] as? String
+                ?? row["display_name"] as? String
+
+            let props = row["properties"] as? [String: Any]
+            let name = rowName ?? props?["name"] as? String ?? GDLocalizedString("location")
+
+            var latitude = row["lat"] as? CLLocationDegrees
+                ?? row["latitude"] as? CLLocationDegrees
+            var longitude = row["lon"] as? CLLocationDegrees
+                ?? row["lng"] as? CLLocationDegrees
+                ?? row["longitude"] as? CLLocationDegrees
+
+            if (latitude == nil || longitude == nil),
+               let geometry = row["geometry"] as? [String: Any],
+               let coordinates = geometry["coordinates"] as? [CLLocationDegrees],
+               coordinates.count >= 2 {
+                longitude = coordinates[0]
+                latitude = coordinates[1]
+            }
+
+            guard let lat = latitude, let lon = longitude else {
+                return nil
+            }
+
+            let address = row["address"] as? String
+                ?? props?["address"] as? String
+
+            let location = GenericLocation(lat: lat,
+                                           lon: lon,
+                                           name: name,
+                                           address: address)
+            if let category = row["category"] as? String ?? props?["category"] as? String {
+                location.amenity = category
+            }
+
+            let distance = location.distanceToClosestLocation(from: userLocation)
+            return ExplorationPOIItem(poi: location, source: .overture, distance: distance)
+        }
+    }
+
+    private func overturePOIBaseURL() -> String? {
+        if let endpoint = UserDefaults.standard.string(forKey: "overture.poi.api.base_url"), !endpoint.isEmpty {
+            return endpoint
+        }
+
+        if let endpoint = Bundle.main.object(forInfoDictionaryKey: "OverturePOIBaseURL") as? String,
+           !endpoint.isEmpty {
+            return endpoint
+        }
+
+        return nil
+    }
+
+    private func mergeAndDeduplicate(_ items: [ExplorationPOIItem],
+                                     mode: HomeViewController.ExplorationPOIMode,
+                                     userLocation: CLLocation,
+                                     heading: CLLocationDirection) -> [ExplorationPOIItem] {
+        var deduped: [ExplorationPOIItem] = []
+
+        for item in items.sorted(by: { $0.distance < $1.distance }) {
+            if let index = deduped.firstIndex(where: { self.looksLikeDuplicate($0.poi, item.poi, location: userLocation) }) {
+                if item.source.priority > deduped[index].source.priority {
+                    deduped[index] = item
+                }
+                continue
+            }
+
+            deduped.append(item)
+        }
+
+        let directional = applyDirectionalFilterIfNeeded(deduped.map { $0.poi },
+                                                        mode: mode,
+                                                        userLocation: userLocation,
+                                                        heading: heading)
+
+        let directionalSet = Set(directional.map { $0.key })
+        return deduped
+            .filter { directionalSet.contains($0.poi.key) }
+            .sorted { $0.distance < $1.distance }
+            .prefix(80)
+            .map { $0 }
+    }
+
+    private func applyDirectionalFilterIfNeeded(_ pois: [POI],
+                                                mode: HomeViewController.ExplorationPOIMode,
+                                                userLocation: CLLocation,
+                                                heading: CLLocationDirection) -> [POI] {
+        guard mode == .aheadOfMe else {
+            return pois
+        }
+
+        let quadrants = SpatialDataView.getQuadrants(heading: heading)
+        let forward = SpatialDataView.getHeadingDirection(heading: heading)
+
+        return pois.filter {
+            let bearing = $0.bearingToClosestLocation(from: userLocation)
+            return CompassDirection.from(bearing: bearing, quadrants: quadrants) == forward
+        }
+    }
+
+    private func looksLikeDuplicate(_ lhs: POI, _ rhs: POI, location: CLLocation) -> Bool {
+        let lhsName = normalizedName(lhs.localizedName)
+        let rhsName = normalizedName(rhs.localizedName)
+
+        if lhsName.isEmpty || rhsName.isEmpty {
+            return false
+        }
+
+        let lhsLocation = lhs.closestLocation(from: location)
+        let rhsLocation = rhs.closestLocation(from: location)
+        let distance = lhsLocation.distance(from: rhsLocation)
+
+        if lhsName == rhsName && distance < 60 {
+            return true
+        }
+
+        if (lhsName.contains(rhsName) || rhsName.contains(lhsName)) && distance < 30 {
+            return true
+        }
+
+        return false
+    }
+
+    private func normalizedName(_ name: String) -> String {
+        let lowered = name.lowercasedWithAppLocale()
+        let filtered = lowered.filter { $0.isLetter || $0.isNumber }
+        return String(filtered)
+    }
+
+    private func matchesCategory(_ poi: POI, category: ExplorationPOICategory) -> Bool {
+        guard category != .all else {
+            return true
+        }
+
+        if category == .transit, let typeable = poi as? Typeable, typeable.isOfType(.transitStop) {
+            return true
+        }
+
+        let localizedName = poi.localizedName.lowercasedWithAppLocale()
+
+        if let osm = poi as? GDASpatialDataResultEntity {
+            let amenity = osm.amenity.lowercasedWithAppLocale()
+            let tag = osm.nameTag.lowercasedWithAppLocale()
+
+            switch category {
+            case .all:
+                return true
+            case .supermarket:
+                return amenity.contains("supermarket") || tag.contains("supermarket")
+            case .convenience:
+                return amenity.contains("convenience") || tag.contains("convenience")
+            case .pharmacy:
+                return amenity.contains("pharmacy") || amenity.contains("chemist") || tag.contains("pharmacy")
+            case .cafe:
+                return amenity == "cafe" || tag.contains("cafe")
+            case .restaurant:
+                return amenity == "restaurant" || tag.contains("restaurant")
+            case .transit:
+                return superCategoryIsMobility(poi)
+            case .parks:
+                return amenity == "park" || tag.contains("park")
+            }
+        }
+
+        if let generic = poi as? GenericLocation {
+            let amenity = (generic.amenity ?? "").lowercasedWithAppLocale()
+
+            switch category {
+            case .all:
+                return true
+            case .supermarket:
+                return amenity.contains("supermarket") || localizedName.contains("supermarket")
+            case .convenience:
+                return amenity.contains("convenience") || localizedName.contains("convenience")
+            case .pharmacy:
+                return amenity.contains("pharmacy") || localizedName.contains("pharmacy")
+            case .cafe:
+                return amenity.contains("cafe") || localizedName.contains("coffee")
+            case .restaurant:
+                return amenity.contains("restaurant") || localizedName.contains("restaurant")
+            case .transit:
+                return amenity.contains("transit") || localizedName.contains("station") || localizedName.contains("stop")
+            case .parks:
+                return amenity.contains("park") || localizedName.contains("park")
+            }
+        }
+
+        switch category {
+        case .all:
+            return true
+        case .supermarket:
+            return localizedName.contains("supermarket")
+        case .convenience:
+            return localizedName.contains("convenience")
+        case .pharmacy:
+            return localizedName.contains("pharmacy")
+        case .cafe:
+            return localizedName.contains("cafe")
+        case .restaurant:
+            return localizedName.contains("restaurant")
+        case .transit:
+            return superCategoryIsMobility(poi)
+        case .parks:
+            return localizedName.contains("park")
+        }
+    }
+
+    private func superCategoryIsMobility(_ poi: POI) -> Bool {
+        return SuperCategory(rawValue: poi.superCategory) == .mobility
     }
 }
 
