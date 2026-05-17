@@ -69,6 +69,8 @@ jobs:
           test -f "$ANH_ROOT/SBTemplateRegistration.h"
 
           rm -rf build/ModuleCache.noindex
+          rm -rf build/Build
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
           xcodebuild \
             -workspace GuideDogs.xcworkspace \
