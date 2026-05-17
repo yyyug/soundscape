@@ -59,7 +59,9 @@ extension GPXRoot {
     
     class func defaultRoot() -> GPXRoot {
         let creator = "\(AppContext.appDisplayName) \(AppContext.appVersion) (\(AppContext.appBuild))"
-        let root = GPXRoot(creator: creator)
+        guard let root = GPXRoot(creator: creator) else {
+            fatalError("Unable to create GPXRoot")
+        }
         
         let metadata = GPXMetadata()
         metadata.time = Date()
