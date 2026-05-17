@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - .github/workflows/ios-unsigned-build.yml
+      - apps/ios/**
 
 jobs:
   build:
@@ -19,6 +22,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Cache CocoaPods
+        id: pods-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -36,14 +40,17 @@ jobs:
           bundler-cache: false
 
       - name: Install Ruby Gems
+        if: steps.pods-cache.outputs.cache-hit != 'true'
         run: |
           bundle config set path 'vendor/bundle'
           bundle install --jobs 4 --retry 3
 
       - name: Install Pods
+        if: steps.pods-cache.outputs.cache-hit != 'true'
         run: bundle exec pod install
 
       - name: Cache Swift Packages
+        id: spm-cache
         uses: actions/cache@v4
         with:
           path: |
@@ -54,18 +61,13 @@ jobs:
             ${{ runner.os }}-spm-
 
       - name: Resolve Swift Packages
+        if: steps.spm-cache.outputs.cache-hit != 'true'
         run: |
           xcodebuild \
             -workspace GuideDogs.xcworkspace \
             -scheme Soundscape \
             -resolvePackageDependencies \
             -derivedDataPath build
-      - name: Clear Clang Module Cache
-        run: |
-          rm -rf ~/Library/Caches/clang/ModuleCache
-          rm -rf ~/Library/Caches/com.apple.dt.Xcode/ModuleCache*
-          rm -rf ~/Library/Developer/Xcode/DerivedData/*/ModuleCache*
-
 
       - name: Build Unsigned iPhone App
         run: |
