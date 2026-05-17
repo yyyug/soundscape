@@ -69,6 +69,8 @@ jobs:
 
       - name: Build Unsigned iPhone App
         run: |
+          set -euo pipefail
+
           ANH_ROOT="$PWD/build/SourcePackages/checkouts/azure-notificationhubs-ios/WindowsAzureMessaging/WindowsAzureMessaging"
           ANH_INCLUDE="$ANH_ROOT/Internal"
           test -f "$ANH_INCLUDE/ANHAsync.h"
@@ -77,19 +79,34 @@ jobs:
           rm -rf build/ModuleCache.noindex
           rm -rf build/Build
 
-          xcodebuild \
-            -workspace GuideDogs.xcworkspace \
-            -scheme Soundscape \
-            -configuration Release \
-            -sdk iphoneos \
-            -destination 'generic/platform=iOS' \
-            -derivedDataPath build \
-            OTHER_CFLAGS="-I$ANH_ROOT -I$ANH_INCLUDE" \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGN_IDENTITY="" \
-                        \
-            build
+          build_unsigned_app() {
+            xcodebuild \
+              -workspace GuideDogs.xcworkspace \
+              -scheme Soundscape \
+              -configuration Release \
+              -sdk iphoneos \
+              -destination 'generic/platform=iOS' \
+              -derivedDataPath build \
+              OTHER_CFLAGS="-I$ANH_ROOT -I$ANH_INCLUDE" \
+              CODE_SIGNING_ALLOWED=NO \
+              CODE_SIGNING_REQUIRED=NO \
+              CODE_SIGN_IDENTITY="" \
+              -quiet \
+              build
+          }
+
+          set +e
+          build_unsigned_app
+          build_status=$?
+          set -e
+
+          if [ "$build_status" -ne 0 ]; then
+            echo "Initial xcodebuild failed with exit code $build_status. Retrying once after clearing caches."
+            rm -rf build/ModuleCache.noindex
+            rm -rf build/Build
+            rm -rf ~/Library/Developer/Xcode/DerivedData/*/ModuleCache*
+            build_unsigned_app
+          fi
 
       - name: Package Unsigned IPA
         run: |
