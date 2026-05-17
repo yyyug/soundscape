@@ -24,6 +24,19 @@ function Write-Success { Write-Host "[SUCCESS]" -ForegroundColor $Success -NoNew
 function Write-Error { Write-Host "[ERROR]" -ForegroundColor $Error -NoNewline; Write-Host " $args" }
 function Write-Warning { Write-Host "[WARNING]" -ForegroundColor $Warning -NoNewline; Write-Host " $args" }
 
+function Invoke-Checked {
+    param(
+        [Parameter(Mandatory = $true)][string]$FilePath,
+        [Parameter(Mandatory = $true)][string[]]$Arguments,
+        [Parameter(Mandatory = $true)][string]$ErrorMessage
+    )
+
+    & $FilePath @Arguments
+    if ($LASTEXITCODE -ne 0) {
+        throw $ErrorMessage
+    }
+}
+
 function Resolve-DockerCli {
     $cmd = Get-Command docker -ErrorAction SilentlyContinue
     if ($cmd) {
@@ -46,7 +59,9 @@ $DockerExe = Resolve-DockerCli
 # Step 1: Start Docker containers
 Write-Info "Step 1: Starting Docker containers..."
 try {
-    & $DockerExe compose -f "$DockerComposePath\docker-compose.yml" up -d
+    Invoke-Checked -FilePath $DockerExe `
+        -Arguments @("compose", "-f", "$DockerComposePath\docker-compose.yml", "up", "-d") `
+        -ErrorMessage "Failed to start Docker containers"
     Write-Success "Docker containers started"
 } catch {
     Write-Error "Failed to start Docker containers: $_"
@@ -59,7 +74,9 @@ $maxAttempts = 30
 $attempt = 0
 while ($attempt -lt $maxAttempts) {
     try {
-        & $DockerExe compose -f "$DockerComposePath\docker-compose.yml" exec -T postgres pg_isready -U osm | Out-Null
+        Invoke-Checked -FilePath $DockerExe `
+            -Arguments @("compose", "-f", "$DockerComposePath\docker-compose.yml", "exec", "-T", "postgres", "pg_isready", "-U", "osm") `
+            -ErrorMessage "PostgreSQL is not ready yet"
         Write-Success "PostgreSQL is ready"
         break
     } catch {
@@ -75,8 +92,11 @@ while ($attempt -lt $maxAttempts) {
 # Ensure bootstrap SQL is applied even when the Docker volume already exists.
 Write-Info "Applying SQL bootstrap (extensions + TileBBox + soundscape_tile)..."
 Get-Content "$OfflineRoot\init-db.sql" -Raw | & $DockerExe exec -i soundscape-hk-postgis psql -U osm -d osm
+if ($LASTEXITCODE -ne 0) { throw "Failed applying init-db.sql" }
 Get-Content "$OfflineRoot\postgis-vt-util.sql" -Raw | & $DockerExe exec -i soundscape-hk-postgis psql -U osm -d osm
+if ($LASTEXITCODE -ne 0) { throw "Failed applying postgis-vt-util.sql" }
 Get-Content "$RepoRoot\svcs\data\tilefunc.sql" -Raw | & $DockerExe exec -i soundscape-hk-postgis psql -U osm -d osm
+if ($LASTEXITCODE -ne 0) { throw "Failed applying svcs/data/tilefunc.sql" }
 Write-Success "SQL bootstrap applied"
 
 # Step 2: Download OSM PBF
@@ -102,7 +122,9 @@ Write-Info "File size: $FileSize MB"
 # Step 3: Build Linux IMPOSM image
 Write-Info "Step 3: Building Dockerized IMPOSM3 image..."
 try {
-    & $DockerExe build --build-arg "IMPOSM_VERSION=$ImposomVersion" -t $ImposmImage -f "$OfflineRoot\Dockerfile.imposm" "$OfflineRoot"
+    Invoke-Checked -FilePath $DockerExe `
+        -Arguments @("build", "--build-arg", "IMPOSM_VERSION=$ImposomVersion", "-t", $ImposmImage, "-f", "$OfflineRoot\Dockerfile.imposm", "$OfflineRoot") `
+        -ErrorMessage "Failed to build IMPOSM3 image"
     Write-Success "IMPOSM3 image ready"
 } catch {
     Write-Error "Failed to build IMPOSM3 image: $_"
@@ -122,56 +144,23 @@ mkdir -Force "$OfflineRoot\imposm_cache", "$OfflineRoot\imposm_diff" | Out-Null
 try {
     # Read stage
     Write-Info "  - IMPOSM read stage..."
-    & $DockerExe run --rm `
-        -v "${RepoRoot}:/repo" `
-        --network offline-hk_soundscape `
-        $ImposmImage import `
-        -mapping $MappingFile `
-        -read $PBFFileLinux `
-        -srid 4326 `
-        -overwritecache `
-        -cachedir $CacheDir
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "IMPOSM read stage failed"
-        exit 1
-    }
+    Invoke-Checked -FilePath $DockerExe `
+        -Arguments @("run", "--rm", "-v", "${RepoRoot}:/repo", "--network", "offline-hk_soundscape", $ImposmImage, "import", "-mapping", $MappingFile, "-read", $PBFFileLinux, "-srid", "4326", "-overwritecache", "-cachedir", $CacheDir) `
+        -ErrorMessage "IMPOSM read stage failed"
     Write-Success "  - IMPOSM read complete"
     
     # Write stage
     Write-Info "  - IMPOSM write stage..."
-    & $DockerExe run --rm `
-        -v "${RepoRoot}:/repo" `
-        --network offline-hk_soundscape `
-        $ImposmImage import `
-        -mapping $MappingFile `
-        -write `
-        -connection $ConnectionUrl `
-        -srid 4326 `
-        -cachedir $CacheDir
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "IMPOSM write stage failed"
-        exit 1
-    }
+    Invoke-Checked -FilePath $DockerExe `
+        -Arguments @("run", "--rm", "-v", "${RepoRoot}:/repo", "--network", "offline-hk_soundscape", $ImposmImage, "import", "-mapping", $MappingFile, "-write", "-connection", $ConnectionUrl, "-srid", "4326", "-cachedir", $CacheDir) `
+        -ErrorMessage "IMPOSM write stage failed"
     Write-Success "  - IMPOSM write complete"
     
     # Deploy production stage
     Write-Info "  - IMPOSM deployproduction stage..."
-    & $DockerExe run --rm `
-        -v "${RepoRoot}:/repo" `
-        --network offline-hk_soundscape `
-        $ImposmImage import `
-        -mapping $MappingFile `
-        -connection $ConnectionUrl `
-        -srid 4326 `
-        -deployproduction `
-        -cachedir $CacheDir
-    
-    if ($LASTEXITCODE -ne 0) {
-        Write-Error "IMPOSM deployproduction stage failed"
-        exit 1
-    }
+    Invoke-Checked -FilePath $DockerExe `
+        -Arguments @("run", "--rm", "-v", "${RepoRoot}:/repo", "--network", "offline-hk_soundscape", $ImposmImage, "import", "-mapping", $MappingFile, "-connection", $ConnectionUrl, "-srid", "4326", "-deployproduction", "-cachedir", $CacheDir) `
+        -ErrorMessage "IMPOSM deployproduction stage failed"
     Write-Success "IMPOSM ingestion complete"
     
 } catch {
