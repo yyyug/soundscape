@@ -115,29 +115,19 @@ struct MarkersAndRoutesList: View {
                     }
                 }
                 .padding([.top], 1)
-                
-                HStack {
-                    MarkerRouteTabButton(name: GDLocalizedString("markers.title"),
-                                         icon: "marker.fill",
-                                         index: 1,
-                                         of: 2,
-                                         value: .markers,
-                                         selected: $selectedList)
-                    MarkerRouteTabButton(name: GDLocalizedString("routes.title"),
-                                         icon: "route.fill",
-                                         index: 2,
-                                         of: 2,
-                                         value: .routes,
-                                         selected: $selectedList)
-                }
-                .background(Color.secondaryBackground
-                                .ignoresSafeArea(.all, edges: [.bottom])
-                                .shadow(color: .black, radius: 5.0, x: 0.0, y: -1.0))
-                
             }
         }
         .navigationTitle(GDLocalizedTextView("search.view_markers"))
         .toolbar {
+            ToolbarItem(placement: .principal) {
+                Picker("", selection: $selectedList) {
+                    Text(GDLocalizedString("markers.title")).tag(List.markers)
+                    Text(GDLocalizedString("routes.title")).tag(List.routes)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .frame(maxWidth: 260)
+            }
+
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 if selectedList == .routes {
                     NavigationLink(destination: RouteCreateFlowView().environmentObject(navHelper as ViewNavigationHelper)) {
