@@ -48,7 +48,8 @@ jobs:
         with:
           path: |
             apps/ios/build/SourcePackages
-            ~/Library/Caches/org.swift.swiftpm
+              # Exclude clang module cache
+              # ~/Library/Caches/org.swift.swiftpm
           key: ${{ runner.os }}-spm-${{ hashFiles('apps/ios/GuideDogs.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
           restore-keys: |
             ${{ runner.os }}-spm-
@@ -60,6 +61,12 @@ jobs:
             -scheme Soundscape \
             -resolvePackageDependencies \
             -derivedDataPath build
+      - name: Clear Clang Module Cache
+        run: |
+          rm -rf ~/Library/Caches/clang/ModuleCache
+          rm -rf ~/Library/Caches/com.apple.dt.Xcode/ModuleCache*
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*/ModuleCache*
+
 
       - name: Build Unsigned iPhone App
         run: |
@@ -70,7 +77,10 @@ jobs:
 
           rm -rf build/ModuleCache.noindex
           rm -rf build/Build
-          rm -rf ~/Library/Developer/Xcode/DerivedData/*
+            rm -rf ~/Library/Caches/org.swift.swiftpm
+            rm -rf ~/Library/Caches/clang/ModuleCache
+            rm -rf ~/Library/Caches/com.apple.dt.Xcode/ModuleCache*
+            rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
           xcodebuild \
             -workspace GuideDogs.xcworkspace \
