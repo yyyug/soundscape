@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import CoreLocation
+import UIKit
 import MapKit
 
 class EditableMapViewController: UIViewController {

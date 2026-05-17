@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// This class is designed to reduce repeating code when creating a table view.
 /// Given a header, array of `Model` objects and a corresponding `CellConfigurator`, this class implements

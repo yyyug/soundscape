@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol AudioParser {
     static func getAudioData(data: Data) -> Data?

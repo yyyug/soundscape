@@ -7,6 +7,7 @@
 //
 
 import AVFoundation.AVFAudio
+import UIKit
 
 enum AudioPlayerError: Error {
     case fileNotFound

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 ///
 /// The `BannerContainer` is responsible for presenting and dismissing a banner in any view controller

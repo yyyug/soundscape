@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import CoreLocation
 
 /// Constants indicating the app's authorization to use core location services and the accuracy.

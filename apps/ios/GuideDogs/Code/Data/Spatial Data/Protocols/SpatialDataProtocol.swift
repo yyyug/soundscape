@@ -7,6 +7,7 @@
 //
 
 import CoreLocation
+import UIKit
 
 protocol SpatialDataProtocol: AnyObject {
     // MARK: Read-only static properties

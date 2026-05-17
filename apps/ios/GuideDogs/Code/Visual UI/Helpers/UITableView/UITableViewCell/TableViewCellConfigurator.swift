@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// This protocol can be used along with a `TableViewDataSource` to control how
 /// a cell's custom view should be configured in a table

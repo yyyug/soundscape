@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import SafariServices
 
 class PushAlertObserver: NotificationObserver {

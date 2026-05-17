@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct GeoJsonKeys {
     /// Key for accessing the feature_type string of a GeoJson feature

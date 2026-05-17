@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol NotificationContainer {
     func present(_ viewController: UIViewController, presentingViewController: UIViewController, animated: Bool, completion: (() -> Void)?)

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension Notification.Name {
     static let offlineStateDidChange = Notification.Name("GDAOfflineStateDidChange")

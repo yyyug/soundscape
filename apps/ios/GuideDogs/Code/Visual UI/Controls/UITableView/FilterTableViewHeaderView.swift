@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol FilterTableViewHeaderViewDelegate: AnyObject {
     var isEnabled: Bool { get }

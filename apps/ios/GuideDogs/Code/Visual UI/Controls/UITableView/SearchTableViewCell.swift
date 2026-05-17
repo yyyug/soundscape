@@ -7,5 +7,6 @@
 //
 
 import Foundation
+import UIKit
 
 class SearchTableViewCell: UITableViewCell, NibLoadableView { }

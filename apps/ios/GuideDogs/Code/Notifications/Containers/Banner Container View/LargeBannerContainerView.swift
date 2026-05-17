@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol LargeBannerContainerView {
     var largeBannerContainerView: UIView! { get }

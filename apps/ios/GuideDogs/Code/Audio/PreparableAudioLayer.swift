@@ -7,6 +7,7 @@
 //
 
 import AVFoundation
+import UIKit
 
 class PreparableAudioLayer {
     weak var engine: AVAudioEngine?

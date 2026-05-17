@@ -8,6 +8,7 @@
 // and determining which loggers to output to.
 
 import Foundation
+import UIKit
 import CocoaLumberjackSwift
 
 // MARK: Constants

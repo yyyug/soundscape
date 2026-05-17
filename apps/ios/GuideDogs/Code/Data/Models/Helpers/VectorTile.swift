@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import CoreLocation
 
 /// VectorTile is an object which identifies a single vector tile. This includes the x and y coordinates of

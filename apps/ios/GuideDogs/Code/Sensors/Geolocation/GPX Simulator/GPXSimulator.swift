@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreLocation
 import iOS_GPX_Framework
 
 struct GPXIndex {

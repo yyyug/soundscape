@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct Delete: ViewModifier {
     @ScaledMetric(relativeTo: .title) var iconSize: CGFloat = 24.0

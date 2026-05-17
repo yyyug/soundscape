@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// This protocol can be used along with a `TableViewDelegate` to control how
 /// a table's custom header views should be configured

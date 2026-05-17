@@ -9,6 +9,7 @@
 //  This is a hack so they will not get the app's default theme title color.
 
 import MessageUI
+import UIKit
 
 private let defaultTitleAttributes = [NSAttributedString.Key.foregroundColor: UIColor.darkText]
 

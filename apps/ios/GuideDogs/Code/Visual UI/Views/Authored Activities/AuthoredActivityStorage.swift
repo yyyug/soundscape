@@ -7,6 +7,7 @@
 //
 
 import Combine
+import UIKit
 
 struct ActivityModel {
     enum State {

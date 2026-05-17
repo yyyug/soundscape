@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol TableViewSelectDelegate: AnyObject {
     func didSelect(rowAtIndexPath indexPath: IndexPath)

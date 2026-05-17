@@ -1,3 +1,5 @@
+import UIKit
+
 //
 //  UICollectionView+Extensions.swift
 //  Soundscape

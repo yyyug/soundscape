@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol EditableMapViewControllerDelegate: AnyObject {
     var defaultToEditMode: Bool { get }

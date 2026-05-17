@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// This class is designed to reduce repeating code when creating a table view.
 /// This class implements the `UITableViewDelegate` methods, including configuring a custom header view.

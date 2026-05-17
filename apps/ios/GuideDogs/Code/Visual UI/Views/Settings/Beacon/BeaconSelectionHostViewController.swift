@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 class BeaconSelectionHostViewController: UIHostingController<AnyView> {
     required init?(coder aDecoder: NSCoder) {

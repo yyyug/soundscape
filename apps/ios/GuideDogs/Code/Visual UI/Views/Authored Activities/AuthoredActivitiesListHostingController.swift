@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 class AuthoredActivitiesListHostingController: UIHostingController<AnyView> {
     required init?(coder aDecoder: NSCoder) {

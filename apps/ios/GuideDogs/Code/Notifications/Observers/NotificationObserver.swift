@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol NotificationObserver: AnyObject {
     var delegate: NotificationObserverDelegate? { get set }

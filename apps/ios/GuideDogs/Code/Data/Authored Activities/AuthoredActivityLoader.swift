@@ -10,8 +10,10 @@
 //
 
 import Foundation
+import UIKit
 import CoreLocation
 import iOS_GPX_Framework
+import SDWebImage
 
 enum ActivityLoaderError: Error {
     case loadingError

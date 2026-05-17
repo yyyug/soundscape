@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import CoreLocation
 import RealmSwift
 
 /// Point is a class that acts like CLLocationCoordinate2D, but it is hashable. This

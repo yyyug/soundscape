@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class TableViewDataSourcePrefetching<Model, CellConfigurator: TableViewCellConfigurator>: TableViewDataSource<Model, CellConfigurator>, UITableViewDataSourcePrefetching where CellConfigurator.Model == Model {
     

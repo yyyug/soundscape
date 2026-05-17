@@ -7,6 +7,7 @@
 //
 
 import CoreHaptics
+import UIKit
 
 /// A helper/wrapper class for the three concrete implementations of `UIFeedbackGenerator`. `HapticEngine`
 /// acts as a unified API for creating and triggering feedback generators.

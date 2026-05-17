@@ -7,6 +7,7 @@
 //
 
 import CoreMotion
+import UIKit
 
 class EnableMotionFitnessViewController: UIViewController {
     @IBOutlet weak var enableButton: UIButton!

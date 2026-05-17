@@ -7,6 +7,7 @@
 //
 
 import CoreBluetooth
+import UIKit
 
 protocol BLEDeviceDelegate: AnyObject {
     func onError(_ error: Error)

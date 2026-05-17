@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class TableViewCellAccessibilityAction<ObjectType: Any, CellType: Any>: UIAccessibilityCustomAction {
     var object: ObjectType?

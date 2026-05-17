@@ -7,6 +7,7 @@
 //
 
 import Combine
+import UIKit
 
 class MarkerLoader: ObservableObject {
     let queue = DispatchQueue(label: "com.company.appname.markerloader")

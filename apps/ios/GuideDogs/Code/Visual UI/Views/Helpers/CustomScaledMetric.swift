@@ -11,6 +11,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 @propertyWrapper
 struct CustomScaledMetric<Value>: DynamicProperty where Value: BinaryFloatingPoint {

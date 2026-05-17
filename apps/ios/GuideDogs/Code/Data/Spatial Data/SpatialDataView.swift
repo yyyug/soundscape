@@ -7,6 +7,7 @@
 //
 
 import CoreLocation
+import UIKit
 
 class SpatialDataView: SpatialDataViewProtocol {
     

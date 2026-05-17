@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import CoreLocation
+import UIKit
 import MapKit
 
 /// Should contain two objects: latitude and longitude

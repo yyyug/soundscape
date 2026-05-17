@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct VolumeControlSlider: View {
     @State private var largeStep: Bool = UIAccessibility.isVoiceOverRunning

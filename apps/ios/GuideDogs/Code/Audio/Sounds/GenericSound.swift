@@ -7,6 +7,7 @@
 //
 
 import AVFoundation
+import UIKit
 import CoreLocation
 
 enum GenericAudioSource {
