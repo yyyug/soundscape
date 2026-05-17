@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 ///
 /// The `NotificationController` listens for changes that might require we show a notification (e.g. a new page

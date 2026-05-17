@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 private struct UserDefaultKeys {
     static let FirstUse = "GDATelemetryFirstUse"
