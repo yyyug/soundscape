@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /*
  * Implement `ViewControllerRepresentable` and pass instance to a UIKit view

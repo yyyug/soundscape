@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 extension UIAlertAction {
     /// Create and return an action that opens a resource at the specified URL
