@@ -21,6 +21,19 @@ extension Notification.Name {
 }
 
 class SettingsContext {
+    enum CalloutRangeMode: String {
+        case walking
+        case automotive
+
+        var localizedName: String {
+            switch self {
+            case .walking:
+                return GDLocalizedString("callout_mode.walking")
+            case .automotive:
+                return GDLocalizedString("callout_mode.automotive")
+            }
+        }
+    }
     
     struct Keys {
         // MARK: Internal UserDefaults Keys
@@ -54,6 +67,10 @@ class SettingsContext {
         fileprivate static let audioSessionMixesWithOthers = "GDAAudioSessionMixesWithOthers"
         fileprivate static let markerSortStyle           = "GDAMarkerSortStyle"
         fileprivate static let announceFacingAndAccuracyAfterCallouts = "GDAAnnounceFacingAndAccuracyAfterCallouts"
+        fileprivate static let gpsFacingEnabled          = "GDAGPSFacingEnabled"
+        fileprivate static let gpsAccuracyEnabled        = "GDAGPSAccuracyEnabled"
+        fileprivate static let gpsSpeedEnabled           = "GDAGPSSpeedEnabled"
+        fileprivate static let calloutRangeMode          = "GDACalloutRangeMode"
         
         fileprivate static let ttsGain = "GDATTSAudioGain"
         fileprivate static let beaconGain = "GDABeaconAudioGain"
@@ -104,7 +121,11 @@ class SettingsContext {
             Keys.previewIntersectionsIncludeUnnamedRoads: false,
             Keys.audioSessionMixesWithOthers: true,
             Keys.markerSortStyle: SortStyle.distance.rawValue,
-            Keys.announceFacingAndAccuracyAfterCallouts: false
+            Keys.announceFacingAndAccuracyAfterCallouts: false,
+            Keys.gpsFacingEnabled: true,
+            Keys.gpsAccuracyEnabled: true,
+            Keys.gpsSpeedEnabled: false,
+            Keys.calloutRangeMode: CalloutRangeMode.walking.rawValue
         ])
         
         resetLocaleIfNeeded()
@@ -293,6 +314,47 @@ class SettingsContext {
         }
         set {
             userDefaults.set(newValue, forKey: Keys.announceFacingAndAccuracyAfterCallouts)
+        }
+    }
+
+    var gpsFacingEnabled: Bool {
+        get {
+            return userDefaults.bool(forKey: Keys.gpsFacingEnabled)
+        }
+        set {
+            userDefaults.set(newValue, forKey: Keys.gpsFacingEnabled)
+        }
+    }
+
+    var gpsAccuracyEnabled: Bool {
+        get {
+            return userDefaults.bool(forKey: Keys.gpsAccuracyEnabled)
+        }
+        set {
+            userDefaults.set(newValue, forKey: Keys.gpsAccuracyEnabled)
+        }
+    }
+
+    var gpsSpeedEnabled: Bool {
+        get {
+            return userDefaults.bool(forKey: Keys.gpsSpeedEnabled)
+        }
+        set {
+            userDefaults.set(newValue, forKey: Keys.gpsSpeedEnabled)
+        }
+    }
+
+    var calloutRangeMode: CalloutRangeMode {
+        get {
+            guard let rawValue = userDefaults.string(forKey: Keys.calloutRangeMode),
+                  let mode = CalloutRangeMode(rawValue: rawValue) else {
+                return .walking
+            }
+
+            return mode
+        }
+        set {
+            userDefaults.set(newValue.rawValue, forKey: Keys.calloutRangeMode)
         }
     }
     

@@ -365,7 +365,8 @@ private final class SearchPOICoordinator {
         var result: [POI] = []
         
         for poi in items {
-            let key = "\(String(format: "%.4f", poi.coordinate.latitude))-\(String(format: "%.4f", poi.coordinate.longitude))"
+            let coordinate = poi.closestLocation(from: userLocation).coordinate
+            let key = "\(String(format: "%.4f", coordinate.latitude))-\(String(format: "%.4f", coordinate.longitude))"
             if !seen.contains(key) {
                 seen.insert(key)
                 result.append(poi)

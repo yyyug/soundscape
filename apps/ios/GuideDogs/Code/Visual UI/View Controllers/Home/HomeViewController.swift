@@ -911,24 +911,24 @@ private final class ExplorationPOIDataCoordinator {
                   userLocation: CLLocation,
                   heading: CLLocationDirection,
                   completion: @escaping ([ExplorationPOIItem]) -> Void) {
-        AppContext.shared.spatialDataContext.updateSpatialData(at: userLocation) {
-            let osmItems = fetchOSMPOIs(category: category,
-                                        mode: mode,
-                                        userLocation: userLocation,
-                                        heading: heading)
+        AppContext.shared.spatialDataContext.updateSpatialData(at: userLocation) { [self] in
+            let osmItems = self.fetchOSMPOIs(category: category,
+                                             mode: mode,
+                                             userLocation: userLocation,
+                                             heading: heading)
 
             let group = DispatchGroup()
             var appleItems: [ExplorationPOIItem] = []
             var overtureItems: [ExplorationPOIItem] = []
 
             group.enter()
-            fetchApplePOIs(category: category, userLocation: userLocation) { results in
+            self.fetchApplePOIs(category: category, userLocation: userLocation) { results in
                 appleItems = results
                 group.leave()
             }
 
             group.enter()
-            fetchOverturePOIs(category: category, userLocation: userLocation) { results in
+            self.fetchOverturePOIs(category: category, userLocation: userLocation) { results in
                 overtureItems = results
                 group.leave()
             }
