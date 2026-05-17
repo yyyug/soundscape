@@ -45,7 +45,7 @@ jobs:
           bundle install --jobs 4 --retry 3
 
       - name: Install Pods
-        run: bundle exec pod install --deployment
+        run: bundle exec pod install
 
       - name: Cache Swift Packages
         id: spm-cache
