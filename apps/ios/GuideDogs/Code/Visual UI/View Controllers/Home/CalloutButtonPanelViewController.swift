@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import CoreLocation
 import NVActivityIndicatorView
 
 extension NSNotification.Name {
@@ -23,6 +24,7 @@ class CalloutButtonPanelViewController: UIViewController {
     
     @IBOutlet var headerLabel: UILabel!
     @IBOutlet var buttonLabels: [UILabel]!
+    @IBOutlet weak var modeLabel: UILabel!
     
     // Buttons
     @IBOutlet weak var locateContainer: UIView!
@@ -72,9 +74,10 @@ class CalloutButtonPanelViewController: UIViewController {
         headerLabel.text = GDLocalizedString("callouts.panel.title").uppercasedWithAppLocale()
                 
         configureButtonLabels()
+        updateModeLabel()
         configureStatusFooter()
         subscribeStatusUpdates()
-        updateFacingAndAccuracyStatus()
+        updateGPSStatus()
         
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleDidToggleLocateNotification), name: Notification.Name.didToggleLocate, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleDidToggleOrientateNotification), name: Notification.Name.didToggleOrientate, object: nil)
@@ -100,7 +103,10 @@ class CalloutButtonPanelViewController: UIViewController {
                                                              hint: GDLocalizedString("ui.action_button.my_location.acc_hint"),
                                                              traits: [.button]) {
             element.accessibilityIdentifier = "btn.mylocation"
-            element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("location_detail.title.default"), target: self, selector: #selector(onLocationDetailsAccessibilityAction))]
+            element.accessibilityCustomActions = [
+                UIAccessibilityCustomAction(name: GDLocalizedString("ui.action_button.my_location.action.start_audio_beacon"), target: self, selector: #selector(onStartAudioBeaconAccessibilityAction)),
+                UIAccessibilityCustomAction(name: GDLocalizedString("location_detail.title.default"), target: self, selector: #selector(onLocationDetailsAccessibilityAction))
+            ]
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: orientContainer,
@@ -120,10 +126,10 @@ class CalloutButtonPanelViewController: UIViewController {
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: markedPointsContainer,
-                                                             label: GDLocalizedString("callouts.nearby_markers"),
-                                                             hint: GDLocalizedString("ui.action_button.nearby_markers.acc_hint"),
+                                                             label: SettingsContext.shared.calloutRangeMode.localizedName,
+                                                             hint: GDLocalizedString("ui.action_button.callout_mode.acc_hint"),
                                                              traits: [.button]) {
-            element.accessibilityIdentifier = "btn.nearbymarkers"
+            element.accessibilityIdentifier = "btn.calloutmode"
         }
     }
     
@@ -159,23 +165,62 @@ class CalloutButtonPanelViewController: UIViewController {
     private func subscribeStatusUpdates() {
         headingObserver = AppContext.shared.geolocationManager.heading(orderedBy: [.user, .device, .course])
         headingObserver?.onHeadingDidUpdate { [weak self] _ in
-            self?.updateFacingAndAccuracyStatus()
+            self?.updateGPSStatus()
         }
     }
 
-    private func updateFacingAndAccuracyStatus() {
+    private func updateModeLabel() {
+        modeLabel.text = SettingsContext.shared.calloutRangeMode.localizedName
+    }
+
+    private func updateGPSStatus() {
         guard let location = AppContext.shared.geolocationManager.location else {
             statusFooterLabel.text = nil
+            statusFooterLabel.accessibilityLabel = nil
             return
         }
 
+        var components: [String] = []
         let heading = headingObserver?.value ?? Heading.defaultValue
-        let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
-        let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
-        let status = GDLocalizedString("status.facing_accuracy.label", facing, accuracy)
+
+        if SettingsContext.shared.gpsFacingEnabled {
+            let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
+            components.append(GDLocalizedString("status.gps.facing.component", facing))
+        }
+
+        if SettingsContext.shared.gpsAccuracyEnabled {
+            let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
+            components.append(GDLocalizedString("status.gps.accuracy.component", accuracy))
+        }
+
+        if SettingsContext.shared.gpsSpeedEnabled,
+           let speed = formattedSpeed(from: location) {
+            components.append(GDLocalizedString("status.gps.speed.component", speed))
+        }
+
+        let status = components.isEmpty ? nil : components.joined(separator: " | ")
 
         statusFooterLabel.text = status
         statusFooterLabel.accessibilityLabel = status
+    }
+
+    private func formattedSpeed(from location: CLLocation) -> String? {
+        guard location.speed >= 0 else {
+            return nil
+        }
+
+        let preferredUnit: UnitSpeed = SettingsContext.shared.metricUnits ? .kilometersPerHour : .milesPerHour
+        let converted = Measurement(value: location.speed, unit: UnitSpeed.metersPerSecond).converted(to: preferredUnit)
+        let formatter = MeasurementFormatter()
+        formatter.unitOptions = .providedUnit
+        formatter.unitStyle = .short
+
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 1
+        numberFormatter.minimumFractionDigits = 0
+        formatter.numberFormatter = numberFormatter
+
+        return formatter.string(from: converted)
     }
     
     // MARK: `IBAction`
@@ -195,21 +240,36 @@ class CalloutButtonPanelViewController: UIViewController {
             self?.updateAnimation(imageView, animationView, false)
         }
         
-        let event: Event
-        
-        if let preview = AppContext.shared.eventProcessor.activeBehavior as? PreviewBehavior<IntersectionDecisionPoint> {
-            event = PreviewMyLocationEvent(current: preview.currentDecisionPoint.value, completionHandler: completion)
-        } else {
-            event = ExplorationModeToggled(.locate, sender: sender, logContext: logContext, completion: completion)
+        // Prefetch fresh spatial data for reverse geocoding accuracy
+        guard let location = AppContext.shared.geolocationManager.location else {
+            let event: Event
+            if let preview = AppContext.shared.eventProcessor.activeBehavior as? PreviewBehavior<IntersectionDecisionPoint> {
+                event = PreviewMyLocationEvent(current: preview.currentDecisionPoint.value, completionHandler: completion)
+            } else {
+                event = ExplorationModeToggled(.locate, sender: sender, logContext: logContext, completion: completion)
+            }
+            AppContext.process(event)
+            return
         }
         
-        AppContext.process(event)
+        // Prefetch spatial data before triggering locate mode
+        AppContext.shared.spatialDataContext.updateSpatialData(at: location) { [weak self] in
+            guard let self = self else { return }
+            
+            let event: Event
+            if let preview = AppContext.shared.eventProcessor.activeBehavior as? PreviewBehavior<IntersectionDecisionPoint> {
+                event = PreviewMyLocationEvent(current: preview.currentDecisionPoint.value, completionHandler: completion)
+            } else {
+                event = ExplorationModeToggled(.locate, sender: sender, logContext: self.logContext, completion: completion)
+            }
+            AppContext.process(event)
+        }
     }
     
     @IBAction private func onOrientateTouchUpInside(_ sender: AnyObject?) {
         updateAnimation(orientateImageView, orientateAnimation, true)
 
-        AppContext.process(ExplorationModeToggled(.aroundMe, sender: sender, logContext: logContext) { [weak self] _ in
+        runExplorationModeWithFreshSpatialData(.aroundMe, sender: sender) { [weak self] _ in
             guard let imageView = self?.orientateImageView else {
                 return
             }
@@ -219,13 +279,13 @@ class CalloutButtonPanelViewController: UIViewController {
             }
             
             self?.updateAnimation(imageView, animationView, false)
-        })
+        }
     }
     
     @IBAction private func onLookAheadTouchUpInside(_ sender: AnyObject?) {
         updateAnimation(exploreImageView, exploreAnimation, true)
         
-        AppContext.process(ExplorationModeToggled(.aheadOfMe, sender: sender, logContext: logContext) { [weak self] _ in
+        runExplorationModeWithFreshSpatialData(.aheadOfMe, sender: sender) { [weak self] _ in
             guard let imageView = self?.exploreImageView else {
                 return
             }
@@ -235,23 +295,73 @@ class CalloutButtonPanelViewController: UIViewController {
             }
             
             self?.updateAnimation(imageView, animationView, false)
-        })
+        }
     }
     
     @IBAction private func onMarkedPointsTouchUpInside(_ sender: AnyObject?) {
+        if sender is UIButton {
+            presentCalloutModeSelector()
+            return
+        }
+
+        playNearbyMarkers(sender)
+    }
+
+    private func playNearbyMarkers(_ sender: AnyObject?) {
         updateAnimation(markedPointImageView, markedPointsAnimation, true)
-        
+
         AppContext.process(ExplorationModeToggled(.nearbyMarkers, sender: sender, logContext: logContext) { [weak self] _ in
             guard let imageView = self?.markedPointImageView else {
                 return
             }
-            
+
             guard let animationView = self?.markedPointsAnimation else {
                 return
             }
-            
+
             self?.updateAnimation(imageView, animationView, false)
         })
+    }
+
+    private func runExplorationModeWithFreshSpatialData(_ mode: ExplorationGenerator.Mode,
+                                                        sender: AnyObject?,
+                                                        completion: @escaping (Bool) -> Void) {
+        let triggerMode = {
+            AppContext.process(ExplorationModeToggled(mode, sender: sender, logContext: self.logContext, completion: completion))
+        }
+
+        guard let location = AppContext.shared.geolocationManager.location else {
+            triggerMode()
+            return
+        }
+
+        _ = AppContext.shared.spatialDataContext.updateSpatialData(at: location) {
+            triggerMode()
+        }
+    }
+
+    private func presentCalloutModeSelector() {
+        let alert = UIAlertController(title: GDLocalizedString("callout_mode.selector.title"),
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
+
+        for mode in [SettingsContext.CalloutRangeMode.walking, SettingsContext.CalloutRangeMode.automotive] {
+            let title = mode == SettingsContext.shared.calloutRangeMode ? "✓ \(mode.localizedName)" : mode.localizedName
+            alert.addAction(UIAlertAction(title: title, style: .default, handler: { [weak self] _ in
+                SettingsContext.shared.calloutRangeMode = mode
+                self?.updateModeLabel()
+                self?.updateGPSStatus()
+            }))
+        }
+
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
+
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = markedPointsContainer
+            popover.sourceRect = markedPointsContainer.bounds
+        }
+
+        present(alert, animated: true)
     }
     
     // MARK: Notifications
@@ -273,12 +383,30 @@ class CalloutButtonPanelViewController: UIViewController {
     }
 
     @objc private func handleLocationUpdatedNotification(_ notification: Notification) {
-        updateFacingAndAccuracyStatus()
+        updateGPSStatus()
     }
 
     @objc private func onLocationDetailsAccessibilityAction() -> Bool {
         onShowLocationDetailsRequested?()
         return true
+    }
+
+    @objc private func onStartAudioBeaconAccessibilityAction() -> Bool {
+        guard let location = AppContext.shared.geolocationManager.location else {
+            return false
+        }
+
+        do {
+            let name = GDLocalizedString("directions.my_location")
+            try AppContext.shared.spatialDataContext.destinationManager.setDestination(location: location,
+                                                                                       behavior: name,
+                                                                                       enableAudio: true,
+                                                                                       userLocation: location,
+                                                                                       logContext: "home_my_location_action")
+            return true
+        } catch {
+            return false
+        }
     }
 
     @objc private func onAroundPOIListAccessibilityAction() -> Bool {

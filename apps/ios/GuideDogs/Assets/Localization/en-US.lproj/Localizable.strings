@@ -1249,6 +1249,45 @@
 /* Spoken status announcement after manual callouts when enabled. {NumberedPlaceholder="%1$@", "%2$@"} */
 "status.facing_accuracy.announcement" = "Facing %1$@, GPS accuracy %2$@";
 
+/* GPS info menu entry in Settings > General. */
+"settings.gps_information.menu" = "GPS Information";
+
+/* Title for the dedicated GPS Information settings page. */
+"settings.gps_information.title" = "GPS Information";
+
+/* Footer description on the GPS Information settings page. */
+"settings.gps_information.footer" = "Choose what GPS details Soundscape shows at the bottom of Home and optionally announces after manual callouts.";
+
+/* Toggle title in GPS Information settings page. */
+"settings.gps_information.announce_after_callouts" = "Announce GPS details after manual callouts";
+
+/* Toggle title in GPS Information settings page. */
+"settings.gps_information.show_facing" = "Include facing direction";
+
+/* Toggle title in GPS Information settings page. */
+"settings.gps_information.show_accuracy" = "Include GPS accuracy";
+
+/* Toggle title in GPS Information settings page. */
+"settings.gps_information.show_speed" = "Include speed";
+
+/* Status component used in Home footer and optional spoken GPS status. {NumberedPlaceholder="%@"} */
+"status.gps.facing.component" = "Facing %@";
+
+/* Status component used in Home footer and optional spoken GPS status. {NumberedPlaceholder="%@"} */
+"status.gps.accuracy.component" = "GPS accuracy %@";
+
+/* Status component used in Home footer and optional spoken GPS status. {NumberedPlaceholder="%@"} */
+"status.gps.speed.component" = "Speed %@";
+
+/* Label for callout range mode when using walking distances and trigger ranges. */
+"callout_mode.walking" = "Walking";
+
+/* Label for callout range mode when using automotive distances and trigger ranges. */
+"callout_mode.automotive" = "Automotive";
+
+/* Action-sheet title for selecting callout range mode. */
+"callout_mode.selector.title" = "Select callout mode";
+
 /* Referes to the Apple iOS Siri Shortcuts feature in Beta. {NumberedPlaceholder="Siri"} */
 "siri_shortcuts.title.beta" = "Siri Shortcuts (Beta)";
 
@@ -1632,6 +1671,57 @@
 
 /* Sleep Button, similar to `sleep.wake_up_when_i_leave`. Text that is shown in a small round button. It should be constrained to two lines with up to 12 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
 "sleep.ui.wake_on_leave" = "Wake On\nLeave";
+
+/* Accessibility custom action title for opening category-based POI lists from Around/Ahead buttons. */
+"exploration.poi.list.action" = "Browse Nearby Places";
+
+/* Navigation title for category selection from Around Me. */
+"exploration.poi.category.title.around" = "Around Me Categories";
+
+/* Navigation title for category selection from Ahead of Me. */
+"exploration.poi.category.title.ahead" = "Ahead of Me Categories";
+
+/* Category filter option representing all places. */
+"exploration.poi.category.all" = "All Places";
+
+/* Category filter option for supermarkets. */
+"exploration.poi.category.supermarket" = "Supermarkets";
+
+/* Category filter option for convenience stores. */
+"exploration.poi.category.convenience" = "Convenience Stores";
+
+/* Category filter option for pharmacies. */
+"exploration.poi.category.pharmacy" = "Pharmacies";
+
+/* Category filter option for cafes. */
+"exploration.poi.category.cafe" = "Cafes";
+
+/* Category filter option for restaurants. */
+"exploration.poi.category.restaurant" = "Restaurants";
+
+/* Category filter option for transit locations. */
+"exploration.poi.category.transit" = "Transit";
+
+/* Category filter option for parks. */
+"exploration.poi.category.parks" = "Parks";
+
+/* Source label for OpenStreetMap. */
+"exploration.poi.source.osm" = "OpenStreetMap";
+
+/* Source label for Apple Maps search results. */
+"exploration.poi.source.apple" = "Apple Maps";
+
+/* Source label for Overture POI endpoint results. */
+"exploration.poi.source.overture" = "Overture";
+
+/* Empty state message when no POIs match selected category/mode. */
+"exploration.poi.list.empty" = "No places found in this category.";
+
+/* Action button text for opening Apple Maps with location. */
+"location_action.open_in_apple_maps" = "Open in Apple Maps";
+
+/* Accessibility hint for opening location in Apple Maps. */
+"location_action.open_in_apple_maps.hint" = "Opens this location in Apple Maps app";
 
 /* Sleep Button,  similar to `sleep.wake_up_now`. Text that is shown in a small round button. It should be constrained to two lines with up to 12 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
 "sleep.ui.wake_up_now" = "Wake Up\nNow";
@@ -2080,6 +2170,12 @@
 
 /* Accessibility Notification, Double tap to hear about nearby places that you have marked */
 "ui.action_button.nearby_markers.acc_hint" = "Double tap to hear about nearby places that you have marked";
+
+/* Accessibility hint for the callout mode button on Home. */
+"ui.action_button.callout_mode.acc_hint" = "Double tap to change callout mode";
+
+/* VoiceOver custom action for My Location. */
+"ui.action_button.my_location.action.start_audio_beacon" = "Start audio beacon";
 
 /* Similar to `help.orient.page_title`. Text that is shown in a small square button. It should be constrained to two lines with up to 8 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
 "ui.action_button.around_me" = "Around\nMe";
@@ -3546,3 +3642,10 @@
 
 /* Callout - a short audio clip with speech and/or sound effect serving as a piece of information. For example, the application can output an audio callout to notify the user that the battery is low. */
 "faq.tip.two_finger_double_tap" = "Tapping the screen twice with two fingers will silence any active callouts.";
+
+
+/* Action button text for opening Apple Maps with location. */
+"location_action.open_in_apple_maps" = "Open in Apple Maps";
+
+/* Accessibility hint for opening location in Apple Maps. */
+"location_action.open_in_apple_maps.hint" = "Opens this location in Apple Maps app";

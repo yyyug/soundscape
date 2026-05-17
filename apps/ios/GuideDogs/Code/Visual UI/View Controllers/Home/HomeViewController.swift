@@ -28,7 +28,6 @@ class HomeViewController: UIViewController {
         // Main Menu Segues
         
         static let showRecreationActivities = "ShowRecreationActivities"
-        static let showRoutes = "ShowRoutes"
         static let showManageDevices = "ShowManageDevices"
         static let showStatus = "ShowStatus"
         static let showHelp = "ShowHelpSegue"
@@ -41,7 +40,6 @@ class HomeViewController: UIViewController {
         static func segue(for menuItem: MenuItem) -> String? {
             switch menuItem {
             case .recreation: return Segue.showRecreationActivities
-            case .routes:     return Segue.showRoutes
             case .devices:    return Segue.showManageDevices
             case .help:       return Segue.showHelp
             case .settings:   return Segue.showSettings
@@ -480,11 +478,6 @@ extension HomeViewController: UIViewControllerTransitioningDelegate {
                 return
             }
 
-            if dismissed.selected == .routes {
-                self?.showRoutes()
-                return
-            }
-
             guard let segue = Segue.segue(for: dismissed.selected) else {
                 return
             }
@@ -497,20 +490,6 @@ extension HomeViewController: UIViewControllerTransitioningDelegate {
 // MARK: Actions
 
 extension HomeViewController {
-
-    private func showRoutes() {
-        let navHelper = MarkersAndRoutesListNavigationHelper()
-
-        let root = RoutesMenuListView()
-            .environmentObject(navHelper)
-            .environmentObject(UserLocationStore())
-            .environment(\.realmConfiguration, RealmHelper.databaseConfig)
-
-        let host = UIHostingController<AnyView>(rootView: AnyView(root))
-        navHelper.host = host
-        navigationController?.pushViewController(host, animated: true)
-    }
-    
     @IBAction func onMenuTouchUpInside() {
         // Construct the menu and present it
         let vc = MenuViewController()
@@ -617,8 +596,10 @@ private extension HomeViewController {
             return
         }
 
-        let detail = LocationDetail(location: location, telemetryContext: "current_location")
-        performSegue(withIdentifier: "LocationDetailView", sender: detail)
+        AppContext.shared.spatialDataContext.updateSpatialData(at: location) { [weak self] in
+            let detail = LocationDetail(location: location, telemetryContext: "current_location")
+            self?.performSegue(withIdentifier: "LocationDetailView", sender: detail)
+        }
     }
 
     func presentExplorationPOICategoryScreen(for mode: ExplorationPOIMode) {
@@ -930,34 +911,35 @@ private final class ExplorationPOIDataCoordinator {
                   userLocation: CLLocation,
                   heading: CLLocationDirection,
                   completion: @escaping ([ExplorationPOIItem]) -> Void) {
+        AppContext.shared.spatialDataContext.updateSpatialData(at: userLocation) {
+            let osmItems = fetchOSMPOIs(category: category,
+                                        mode: mode,
+                                        userLocation: userLocation,
+                                        heading: heading)
 
-        let osmItems = fetchOSMPOIs(category: category,
-                                    mode: mode,
-                                    userLocation: userLocation,
-                                    heading: heading)
+            let group = DispatchGroup()
+            var appleItems: [ExplorationPOIItem] = []
+            var overtureItems: [ExplorationPOIItem] = []
 
-        let group = DispatchGroup()
-        var appleItems: [ExplorationPOIItem] = []
-        var overtureItems: [ExplorationPOIItem] = []
+            group.enter()
+            fetchApplePOIs(category: category, userLocation: userLocation) { results in
+                appleItems = results
+                group.leave()
+            }
 
-        group.enter()
-        fetchApplePOIs(category: category, userLocation: userLocation) { results in
-            appleItems = results
-            group.leave()
-        }
+            group.enter()
+            fetchOverturePOIs(category: category, userLocation: userLocation) { results in
+                overtureItems = results
+                group.leave()
+            }
 
-        group.enter()
-        fetchOverturePOIs(category: category, userLocation: userLocation) { results in
-            overtureItems = results
-            group.leave()
-        }
-
-        group.notify(queue: .main) {
-            let merged = self.mergeAndDeduplicate(osmItems + appleItems + overtureItems,
-                                                  mode: mode,
-                                                  userLocation: userLocation,
-                                                  heading: heading)
-            completion(merged)
+            group.notify(queue: .main) {
+                let merged = self.mergeAndDeduplicate(osmItems + appleItems + overtureItems,
+                                                      mode: mode,
+                                                      userLocation: userLocation,
+                                                      heading: heading)
+                completion(merged)
+            }
         }
     }
 

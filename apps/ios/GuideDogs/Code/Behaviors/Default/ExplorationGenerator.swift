@@ -7,6 +7,7 @@
 //
 
 import CoreLocation
+import Foundation
 
 extension Notification.Name {
     static let explorationNoCalloutsDebug = Notification.Name("GDAExplorationNoCalloutsDebug")
@@ -176,6 +177,10 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
         case .aroundMe:
             let heading = geo.collectionHeading.value ?? Heading.defaultValue
             callouts = findCalloutsFor(location: loc, heading: heading, origin: event.mode.origin)
+
+            if callouts.isEmpty {
+                callouts = fallbackNearestCallouts(location: loc, origin: event.mode.origin, maxItems: 4)
+            }
             
             if event.sender is UserActivityManager {
                 NSUserActivity(userAction: .aroundMe).becomeCurrent()
@@ -185,6 +190,13 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
             let heading = geo.heading(orderedBy: [.user, .device, .course]).value ?? Heading.defaultValue
             let direction = SpatialDataView.getHeadingDirection(heading: heading)
             callouts = findCalloutsFor(direction, maxItems: maxAheadOfMeCallouts, location: loc, heading: heading, origin: event.mode.origin)
+
+            if callouts.isEmpty {
+                callouts = fallbackAheadCallouts(location: loc,
+                                                 heading: heading,
+                                                 origin: event.mode.origin,
+                                                 maxItems: 3)
+            }
             
             if event.sender is UserActivityManager {
                 NSUserActivity(userAction: .aheadOfMe).becomeCurrent()
@@ -207,8 +219,8 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
             callouts.append(RelativeStringCallout(event.mode.origin, event.mode.noCalloutsMessage, position: 0.0))
         }
 
-        if SettingsContext.shared.announceFacingAndAccuracyAfterCallouts,
-           let statusText = facingAndAccuracyText() {
+          if SettingsContext.shared.announceFacingAndAccuracyAfterCallouts,
+              let statusText = gpsStatusText(forAnnouncement: true) {
             callouts.append(RelativeStringCallout(event.mode.origin, statusText, position: 0.0))
         }
         
@@ -405,16 +417,76 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
         ]
     }
 
-    private func facingAndAccuracyText() -> String? {
+    private func gpsStatusText(forAnnouncement: Bool) -> String? {
         guard let location = geo.location else {
             return nil
         }
 
-        let heading = geo.heading(orderedBy: [.user, .device, .course]).value ?? Heading.defaultValue
-        let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
-        let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
+        var components: [String] = []
 
-        return GDLocalizedString("status.facing_accuracy.announcement", facing, accuracy)
+        let heading = geo.heading(orderedBy: [.user, .device, .course]).value ?? Heading.defaultValue
+        if SettingsContext.shared.gpsFacingEnabled {
+            let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
+            components.append(GDLocalizedString("status.gps.facing.component", facing))
+        }
+
+        if SettingsContext.shared.gpsAccuracyEnabled {
+            let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
+            components.append(GDLocalizedString("status.gps.accuracy.component", accuracy))
+        }
+
+        if SettingsContext.shared.gpsSpeedEnabled,
+           let speed = formattedSpeed(from: location) {
+            components.append(GDLocalizedString("status.gps.speed.component", speed))
+        }
+
+        guard !components.isEmpty else {
+            return nil
+        }
+
+        let separator = forAnnouncement ? ", " : " | "
+        return components.joined(separator: separator)
+    }
+
+    private func formattedSpeed(from location: CLLocation) -> String? {
+        guard location.speed >= 0 else {
+            return nil
+        }
+
+        let preferredUnit: UnitSpeed = SettingsContext.shared.metricUnits ? .kilometersPerHour : .milesPerHour
+        let converted = Measurement(value: location.speed, unit: UnitSpeed.metersPerSecond).converted(to: preferredUnit)
+        let formatter = MeasurementFormatter()
+        formatter.unitOptions = .providedUnit
+        formatter.unitStyle = .short
+
+        let numberFormatter = NumberFormatter()
+        numberFormatter.maximumFractionDigits = 1
+        numberFormatter.minimumFractionDigits = 0
+        formatter.numberFormatter = numberFormatter
+
+        return formatter.string(from: converted)
+    }
+
+    private func fallbackNearestCallouts(location: CLLocation, origin: CalloutOrigin, maxItems: Int) -> [CalloutProtocol] {
+        let categories = [SuperCategory.places, SuperCategory.landmarks, SuperCategory.authoredActivity]
+        guard let dataView = data.getDataView(for: location, searchDistance: spatialDataType.cacheDistance) else {
+            return []
+        }
+
+        return dataView.pois
+            .sorted(by: Sort.distance(origin: location), filteredBy: Filter.superCategories(orExpected: categories), maxLength: maxItems)
+            .map { POICallout(origin, key: $0.key, includeDistance: true) }
+    }
+
+    private func fallbackAheadCallouts(location: CLLocation,
+                                       heading: CLLocationDirection,
+                                       origin: CalloutOrigin,
+                                       maxItems: Int) -> [CalloutProtocol] {
+        // When directional search yields no results, fall back to nearest items
+        // This aligns with the original Microsoft SoundScape implementation
+        // which uses a simpler approach: forward direction with radius expansion,
+        // then falls back to nearest-any if still nothing found.
+        return fallbackNearestCallouts(location: location, origin: origin, maxItems: maxItems)
     }
     
     func cancelCalloutsForEntity(id: String) {
