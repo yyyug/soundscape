@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 // This class adds support for localizing UI elements in Storyboard and XIB files.
 // For supported objects, this adds an additional UI property called `localization`.

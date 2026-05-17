@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// A UIViewController that can store a configuration callback block that
 /// is called in viewWillAppear. This can be used to configure the content

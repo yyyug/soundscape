@@ -76,7 +76,7 @@ class LocationPermissionViewController: UIViewController {
     
     @IBAction func onEnableButtonTouchUp(_ sender: UIButton) {
         guard geolocationManager.coreLocationServicesEnabled else {
-            let alert = ErrorAlerts.buildLocationServicesAlert(dismissHandler: nil)
+            let alert = ErrorAlerts.buildLocationServicesAlert(dismissHandler: nil as ((UIAlertAction) -> Void)?)
             self.present(alert, animated: true, completion: nil)
             return
         }
@@ -99,7 +99,7 @@ class LocationPermissionViewController: UIViewController {
     
     @objc func applicationDidBecomeActive() {
         guard geolocationManager.coreLocationServicesEnabled else {
-            let alert = ErrorAlerts.buildLocationServicesAlert(dismissHandler: nil)
+            let alert = ErrorAlerts.buildLocationServicesAlert(dismissHandler: nil as ((UIAlertAction) -> Void)?)
             self.present(alert, animated: true, completion: nil)
             return
         }

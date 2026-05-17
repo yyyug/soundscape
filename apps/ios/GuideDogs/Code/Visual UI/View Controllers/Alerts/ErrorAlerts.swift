@@ -6,6 +6,8 @@
 //  Licensed under the MIT License.
 //
 
+import UIKit
+
 class ErrorAlerts {
     
     class func buildFitnessTrackingAlert(dismissHandler: ((UIAlertAction) -> Void)?) -> UIAlertController {

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 ///
 /// The `BannerContainerView` is an abstraction of `LargeBannerContainerView` and `SmallBannerContainerView`

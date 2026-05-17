@@ -236,7 +236,9 @@ extension AuthoredActivityContent {
                 return nil
             }
             
-            let pois = gpx.waypoints.map { ActivityPOI(coordinate: $0.coordinate, name: $0.name, description: $0.desc) }
+            let pois = gpx.waypoints.map { (waypoint: GPXWaypoint) in
+                ActivityPOI(coordinate: waypoint.coordinate, name: waypoint.name, description: waypoint.desc)
+            }
             
             return AuthoredActivityContent(id: ext.identifier,
                                            type: actType,
@@ -264,7 +266,7 @@ extension AuthoredActivityContent {
         let audioMimeTypes = Set(["audio/mpeg", "audio/x-m4a"])
         
         return waypoints.map { wpt in
-            let links = wpt.extensions?.soundscapeLinkExtensions?.links
+            let links = (wpt.links as? [GPXLink]) ?? []
             
             let parsedImages = links?.filter({ imageMimeTypes.contains($0.mimetype) })
                 .compactMap { (link) -> ActivityWaypointImage? in

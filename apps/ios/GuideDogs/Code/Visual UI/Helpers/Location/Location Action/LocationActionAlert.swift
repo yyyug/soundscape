@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 struct LocationActionAlert {
     
@@ -41,7 +42,7 @@ struct LocationActionAlert {
         alert.addAction(previewAction)
         alert.preferredAction = previewAction
         
-        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel, handler: nil as ((UIAlertAction) -> Void)?))
         
         return alert
     }

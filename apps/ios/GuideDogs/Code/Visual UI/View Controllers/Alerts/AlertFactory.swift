@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol AlertFactory {
     typealias ActionHandler = (UIAlertAction) -> Void
