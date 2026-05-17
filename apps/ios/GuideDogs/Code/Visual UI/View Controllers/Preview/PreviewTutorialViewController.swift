@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol PreviewTutorialDelegate: AnyObject {
     func previewTutorialDidComplete()

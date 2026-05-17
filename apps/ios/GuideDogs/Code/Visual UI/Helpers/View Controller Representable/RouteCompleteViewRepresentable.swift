@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import SwiftUI
 
 struct RouteCompleteViewRepresentable: ViewControllerRepresentable {

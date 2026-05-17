@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 import DZNEmptyDataSet
 import CoreLocation
 import Combine
