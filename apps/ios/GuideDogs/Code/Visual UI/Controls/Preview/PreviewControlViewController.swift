@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol PreviewControlDelegate: AnyObject {
     func previewControl(_ viewController: PreviewControlViewController, didSelect edge: RoadAdjacentDataView?)
