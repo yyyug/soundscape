@@ -66,6 +66,7 @@ jobs:
           rm -rf ~/Library/Caches/clang/ModuleCache
           rm -rf ~/Library/Caches/com.apple.dt.Xcode/ModuleCache*
           rm -rf ~/Library/Developer/Xcode/DerivedData/*/ModuleCache*
+          rm -rf apps/ios/build/SourcePackages
 
 
       - name: Build Unsigned iPhone App
@@ -109,3 +110,5 @@ jobs:
         with:
           name: Soundscape-unsigned-ipa
           path: apps/ios/Soundscape-unsigned.ipa
+
+
