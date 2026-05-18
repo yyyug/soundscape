@@ -4460,3 +4460,8 @@
 "status.facing_accuracy.label" = "Facing %1$@ | GPS accuracy %2$@";
 "status.facing_accuracy.announcement" = "Facing %1$@, GPS accuracy %2$@";
 "first_launch.permissions.motion" = "Motion & Fitness";
+
+
+/* Live View - ARCore Geospatial */
+"ui.action_button.live_view" = "Live View";
+"ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";

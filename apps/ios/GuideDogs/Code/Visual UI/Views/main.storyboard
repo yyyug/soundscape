@@ -752,6 +752,7 @@ Markers</string>
                         <outlet property="markedPointImageView" destination="Fpf-he-sxQ" id="IBq-pN-CWz"/>
                         <outlet property="markedPointsAnimation" destination="sLx-Ze-jHo" id="cHa-Kr-smH"/>
                         <outlet property="markedPointsContainer" destination="Gaq-jA-En0" id="SVA-ZG-dZR"/>
+                        <outlet property="modeLabel" destination="2ZV-33-75O" id="OlQ-sH-Xry"/>
                         <outlet property="orientContainer" destination="UKd-Ki-dcf" id="jMM-cN-qc3"/>
                         <outlet property="orientateAnimation" destination="6YQ-kO-BLz" id="RzD-Ac-Eix"/>
                         <outlet property="orientateImageView" destination="uiw-WT-Go0" id="un7-bx-Lif"/>

@@ -4463,3 +4463,8 @@
 "settings.announce_facing_accuracy.subtitle" = "When enabled, Soundscape adds your facing direction and GPS accuracy after each manual callout.";
 "status.facing_accuracy.label" = "Facing %1$@ | GPS accuracy %2$@";
 "status.facing_accuracy.announcement" = "Facing %1$@, GPS accuracy %2$@";
+
+
+/* Live View - ARCore Geospatial */
+"ui.action_button.live_view" = "ライブビュー";
+"ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";

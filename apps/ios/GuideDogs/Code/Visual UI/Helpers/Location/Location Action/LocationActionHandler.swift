@@ -138,4 +138,17 @@ struct LocationActionHandler {
         return url
     }
     
+    static func openInAppleMaps(locationDetail: LocationDetail) throws {
+        let coordinate = locationDetail.location.coordinate
+        let name = locationDetail.displayName
+        
+        let placemark = MKPlacemark(coordinate: coordinate)
+        let mapItem = MKMapItem(placemark: placemark)
+        mapItem.name = name
+        mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
+        
+        // Save selection
+        locationDetail.updateLastSelectedDate()
+    }
+    
 }

@@ -13,7 +13,7 @@ import AppCenterAnalytics
 class SettingsViewController: BaseTableViewController {
     private enum GeneralRow {
         static let checkAudio = 5
-        static let announceFacingAndAccuracy = 6
+        static let gpsInformation = 6
     }
     
     private enum Section: Int, CaseIterable {
@@ -107,16 +107,17 @@ class SettingsViewController: BaseTableViewController {
             cell.textLabel?.adjustsFontForContentSizeCategory = true
             cell.accessoryType = .none
             cell.selectionStyle = .default
+            cell.accessibilityTraits = [.button]
             return cell
 
-        case .general where indexPath.row == GeneralRow.announceFacingAndAccuracy:
+        case .general where indexPath.row == GeneralRow.gpsInformation:
             let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
             cell.backgroundColor = Colors.Background.primary
-            cell.textLabel?.text = GDLocalizedString("settings.announce_facing_accuracy.title")
+            cell.textLabel?.text = GDLocalizedString("settings.gps_information.menu")
             cell.textLabel?.textColor = Colors.Foreground.primary
             cell.textLabel?.numberOfLines = 0
             cell.textLabel?.adjustsFontForContentSizeCategory = true
-            cell.accessoryType = SettingsContext.shared.announceFacingAndAccuracyAfterCallouts ? .checkmark : .none
+            cell.accessoryType = .disclosureIndicator
             cell.selectionStyle = .default
             return cell
 
@@ -172,7 +173,7 @@ class SettingsViewController: BaseTableViewController {
 
         switch sectionType {
         case .audio: return GDLocalizedString("settings.audio.mix_with_others.description")
-        case .general: return GDLocalizedString("settings.announce_facing_accuracy.subtitle")
+        case .general: return nil
         case .streetPreview: return GDLocalizedString("preview.include_unnamed_roads.subtitle")
         case .telemetry: return GDLocalizedString("settings.section.telemetry.footer")
         default: return nil
@@ -191,9 +192,9 @@ class SettingsViewController: BaseTableViewController {
         switch indexPath.row {
         case GeneralRow.checkAudio:
             AppContext.process(CheckAudioEvent())
-        case GeneralRow.announceFacingAndAccuracy:
-            SettingsContext.shared.announceFacingAndAccuracyAfterCallouts.toggle()
-            tableView.reloadRows(at: [indexPath], with: .none)
+        case GeneralRow.gpsInformation:
+            let vc = GPSInformationSettingsViewController(style: .insetGrouped)
+            navigationController?.pushViewController(vc, animated: true)
         default:
             return
         }
@@ -280,4 +281,118 @@ extension SettingsViewController: LargeBannerContainerView {
         tableView.reloadData()
     }
     
+}
+
+private final class GPSInformationSettingsViewController: UITableViewController {
+    private enum Row: Int, CaseIterable {
+        case announceAfterCallouts
+        case showFacing
+        case showAccuracy
+        case showSpeed
+
+        var title: String {
+            switch self {
+            case .announceAfterCallouts:
+                return GDLocalizedString("settings.gps_information.announce_after_callouts")
+            case .showFacing:
+                return GDLocalizedString("settings.gps_information.show_facing")
+            case .showAccuracy:
+                return GDLocalizedString("settings.gps_information.show_accuracy")
+            case .showSpeed:
+                return GDLocalizedString("settings.gps_information.show_speed")
+            }
+        }
+
+        var telemetryName: String {
+            switch self {
+            case .announceAfterCallouts:
+                return "announce_after_callouts"
+            case .showFacing:
+                return "show_facing"
+            case .showAccuracy:
+                return "show_accuracy"
+            case .showSpeed:
+                return "show_speed"
+            }
+        }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = GDLocalizedString("settings.gps_information.title")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "GPSInformationCell")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return Row.allCases.count
+    }
+
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return GDLocalizedString("settings.gps_information.footer")
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "GPSInformationCell", for: indexPath)
+        guard let row = Row(rawValue: indexPath.row) else {
+            return cell
+        }
+
+        let settingSwitch = UISwitch()
+        settingSwitch.tag = row.rawValue
+        settingSwitch.isOn = isEnabled(row)
+        settingSwitch.addTarget(self, action: #selector(onSwitchValueChanged(_:)), for: .valueChanged)
+
+        cell.backgroundColor = Colors.Background.primary
+        cell.textLabel?.text = row.title
+        cell.textLabel?.textColor = Colors.Foreground.primary
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.selectionStyle = .none
+        cell.accessoryView = settingSwitch
+
+        return cell
+    }
+
+    @objc private func onSwitchValueChanged(_ sender: UISwitch) {
+        guard let row = Row(rawValue: sender.tag) else {
+            return
+        }
+
+        setEnabled(sender.isOn, for: row)
+        GDATelemetry.track("settings.gps_information", with: [
+            "setting": row.telemetryName,
+            "value": String(sender.isOn)
+        ])
+    }
+
+    private func isEnabled(_ row: Row) -> Bool {
+        switch row {
+        case .announceAfterCallouts:
+            return SettingsContext.shared.announceFacingAndAccuracyAfterCallouts
+        case .showFacing:
+            return SettingsContext.shared.gpsFacingEnabled
+        case .showAccuracy:
+            return SettingsContext.shared.gpsAccuracyEnabled
+        case .showSpeed:
+            return SettingsContext.shared.gpsSpeedEnabled
+        }
+    }
+
+    private func setEnabled(_ value: Bool, for row: Row) {
+        switch row {
+        case .announceAfterCallouts:
+            SettingsContext.shared.announceFacingAndAccuracyAfterCallouts = value
+        case .showFacing:
+            SettingsContext.shared.gpsFacingEnabled = value
+        case .showAccuracy:
+            SettingsContext.shared.gpsAccuracyEnabled = value
+        case .showSpeed:
+            SettingsContext.shared.gpsSpeedEnabled = value
+        }
+    }
 }

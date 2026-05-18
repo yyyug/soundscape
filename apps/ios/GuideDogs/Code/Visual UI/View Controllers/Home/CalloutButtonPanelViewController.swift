@@ -170,6 +170,10 @@ class CalloutButtonPanelViewController: UIViewController {
     }
 
     private func updateModeLabel() {
+        guard let modeLabel = modeLabel else {
+            GDLogAppError("modeLabel is not initialized")
+            return
+        }
         modeLabel.text = SettingsContext.shared.calloutRangeMode.localizedName
     }
 

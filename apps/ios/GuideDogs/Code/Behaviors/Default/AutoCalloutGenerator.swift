@@ -144,7 +144,12 @@ class AutoCalloutGenerator: AutomaticGenerator, ManualGenerator {
     // MARK: - Helper Properties
     
     private var calloutRangeContext: CalloutRangeContext {
-        return spatialData.motionActivityContext.isInVehicle ? .automotive : .standard
+        switch SettingsContext.shared.calloutRangeMode {
+        case .walking:
+            return .standard
+        case .automotive:
+            return .automotive
+        }
     }
     
     /// Returns a filter predicate that appropriately filters POIs based on whether the user
