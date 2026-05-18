@@ -75,6 +75,7 @@ class CalloutButtonPanelViewController: UIViewController {
         headerLabel.isHidden = true
                 
         configureButtonLabels()
+        modeLabel?.isHidden = true
         updateModeLabel()
         configureStatusFooter()
         subscribeStatusUpdates()
@@ -127,10 +128,10 @@ class CalloutButtonPanelViewController: UIViewController {
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: markedPointsContainer,
-                                                             label: SettingsContext.shared.calloutRangeMode.localizedName,
-                                                             hint: GDLocalizedString("ui.action_button.callout_mode.acc_hint"),
+                                                             label: GDLocalizedString("callouts.nearby_markers"),
+                                                             hint: GDLocalizedString("ui.action_button.nearby_markers.acc_hint"),
                                                              traits: [.button]) {
-            element.accessibilityIdentifier = "btn.calloutmode"
+            element.accessibilityIdentifier = "btn.nearbymarkers"
         }
     }
     
@@ -298,11 +299,6 @@ class CalloutButtonPanelViewController: UIViewController {
     }
     
     @IBAction private func onMarkedPointsTouchUpInside(_ sender: AnyObject?) {
-        if sender is UIButton {
-            presentCalloutModeSelector()
-            return
-        }
-
         playNearbyMarkers(sender)
     }
 
@@ -339,29 +335,6 @@ class CalloutButtonPanelViewController: UIViewController {
         }
     }
 
-    private func presentCalloutModeSelector() {
-        let alert = UIAlertController(title: GDLocalizedString("callout_mode.selector.title"),
-                                      message: nil,
-                                      preferredStyle: .actionSheet)
-
-        for mode in [SettingsContext.CalloutRangeMode.walking, SettingsContext.CalloutRangeMode.automotive] {
-            let title = mode == SettingsContext.shared.calloutRangeMode ? "✓ \(mode.localizedName)" : mode.localizedName
-            alert.addAction(UIAlertAction(title: title, style: .default, handler: { [weak self] _ in
-                SettingsContext.shared.calloutRangeMode = mode
-                self?.updateModeLabel()
-                self?.updateGPSStatus()
-            }))
-        }
-
-        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
-
-        if let popover = alert.popoverPresentationController {
-            popover.sourceView = markedPointsContainer
-            popover.sourceRect = markedPointsContainer.bounds
-        }
-
-        present(alert, animated: true)
-    }
     
     // MARK: Notifications
     

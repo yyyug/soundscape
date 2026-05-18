@@ -288,7 +288,15 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
                                  location loc: CLLocation,
                                  heading: CLLocationDirection,
                                  origin: CalloutOrigin) -> [CalloutProtocol] {
-        let poiCategories = [SuperCategory.places, SuperCategory.landmarks, SuperCategory.authoredActivity]
+        let poiCategories = [
+            SuperCategory.places,
+            SuperCategory.landmarks,
+            SuperCategory.mobility,
+            SuperCategory.information,
+            SuperCategory.roads,
+            SuperCategory.paths,
+            SuperCategory.authoredActivity
+        ]
         var poisByQuad: [CompassDirection: [POI]] = [:]
         var range = spatialDataType.initialPOISearchDistance
         

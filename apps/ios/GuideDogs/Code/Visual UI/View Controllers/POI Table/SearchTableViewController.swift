@@ -374,8 +374,8 @@ extension SearchTableViewController: LocationActionDelegate {
                         self.present(firstUseAlert, animated: true, completion: nil)
                     }
                 case .openInAppleMaps:
-                    // Open location in Apple Maps
-                    try LocationActionHandler.openInAppleMaps(locationDetail: detail)
+                    // Open location in Google Maps
+                    try LocationActionHandler.openInGoogleMaps(locationDetail: detail)
                 }
             } catch let error as LocationActionError {
                 let alert = LocationActionAlert.alert(for: error)

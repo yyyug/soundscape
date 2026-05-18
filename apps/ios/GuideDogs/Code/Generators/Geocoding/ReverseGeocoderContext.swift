@@ -213,8 +213,8 @@ class ReverseGeocoderContext: ReverseGeocoder {
             return nil
         }
         
-        let namedRoads = dataView.roads.filter({ !$0.name.isEmpty })
-        let result = ReverseGeocoderContext.findNearestRoads(namedRoads.isEmpty ? dataView.roads : namedRoads, location: detail.location, stickyRoadKey: nil)
+        // Use all roads for preview bootstrapping so unnamed/service roads can still produce valid edges.
+        let result = ReverseGeocoderContext.findNearestRoads(dataView.roads, location: detail.location, stickyRoadKey: nil)
         
         guard let closestRoad = result.closest, let closestLocation = result.closestExistingLocation else {
             return nil

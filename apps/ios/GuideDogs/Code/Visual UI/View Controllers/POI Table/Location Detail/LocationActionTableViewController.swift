@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import MapKit
 
 class LocationActionTableViewController: UITableViewController {
     
@@ -16,6 +17,10 @@ class LocationActionTableViewController: UITableViewController {
     private static let prototypeCellIdentifier = "ActionCell"
     
     private let defaultCell = UITableViewCell(style: .default, reuseIdentifier: "DefaultCell")
+    private let previewMapView = MKMapView(frame: .zero)
+    private let previewContainerView = UIView(frame: .zero)
+    private let previewTitleLabel = UILabel(frame: .zero)
+
     weak var delegate: LocationActionDelegate?
     
     var locationDetail: LocationDetail? {
@@ -25,6 +30,7 @@ class LocationActionTableViewController: UITableViewController {
             }
             
             tableView.reloadData()
+            updateMapPreview()
         }
     }
     
@@ -37,11 +43,85 @@ class LocationActionTableViewController: UITableViewController {
     }
     
     // MARK: View Life Cycle
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        configureMapPreviewFooter()
+        updateMapPreview()
+    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
+
+        updateMapPreviewFooterFrame()
         preferredContentSize.height = UIView.preferredContentHeight(for: tableView)
+    }
+
+    private func configureMapPreviewFooter() {
+        previewContainerView.backgroundColor = Colors.Background.primary
+
+        previewTitleLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
+        previewTitleLabel.textColor = Colors.Foreground.secondary
+        previewTitleLabel.text = GDLocalizedString("location_detail.map.view.title")
+
+        previewMapView.showsCompass = false
+        previewMapView.showsScale = false
+        previewMapView.isRotateEnabled = false
+        previewMapView.isPitchEnabled = false
+        previewMapView.isScrollEnabled = false
+        previewMapView.isZoomEnabled = false
+        previewMapView.layer.cornerRadius = 8.0
+        previewMapView.clipsToBounds = true
+
+        previewContainerView.addSubview(previewTitleLabel)
+        previewContainerView.addSubview(previewMapView)
+        tableView.tableFooterView = previewContainerView
+    }
+
+    private func updateMapPreviewFooterFrame() {
+        let width = tableView.bounds.width
+        guard width > 0 else {
+            return
+        }
+
+        let horizontalPadding: CGFloat = 16.0
+        let titleTop: CGFloat = 10.0
+        let titleHeight: CGFloat = 18.0
+        let mapTop: CGFloat = 34.0
+        let mapHeight: CGFloat = 168.0
+        let totalHeight: CGFloat = 212.0
+
+        previewContainerView.frame = CGRect(x: 0.0, y: 0.0, width: width, height: totalHeight)
+        previewTitleLabel.frame = CGRect(x: horizontalPadding,
+                                         y: titleTop,
+                                         width: width - horizontalPadding * 2.0,
+                                         height: titleHeight)
+        previewMapView.frame = CGRect(x: horizontalPadding,
+                                      y: mapTop,
+                                      width: width - horizontalPadding * 2.0,
+                                      height: mapHeight)
+
+        tableView.tableFooterView = previewContainerView
+    }
+
+    private func updateMapPreview() {
+        guard let detail = locationDetail else {
+            previewContainerView.isHidden = true
+            return
+        }
+
+        previewContainerView.isHidden = false
+        previewMapView.removeAnnotations(previewMapView.annotations)
+
+        let annotation = MKPointAnnotation()
+        annotation.coordinate = detail.location.coordinate
+        annotation.title = detail.displayName
+        previewMapView.addAnnotation(annotation)
+
+        let region = MKCoordinateRegion(center: detail.location.coordinate,
+                                        latitudinalMeters: 320.0,
+                                        longitudinalMeters: 320.0)
+        previewMapView.setRegion(region, animated: false)
     }
     
     // MARK: `UITableViewDataSource`

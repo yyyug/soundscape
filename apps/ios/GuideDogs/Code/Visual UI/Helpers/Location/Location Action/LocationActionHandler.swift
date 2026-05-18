@@ -8,7 +8,7 @@
 
 import Foundation
 import CoreLocation
-import MapKit
+import UIKit
 
 struct LocationActionHandler {
     
@@ -138,15 +138,26 @@ struct LocationActionHandler {
         return url
     }
     
-    static func openInAppleMaps(locationDetail: LocationDetail) throws {
+    static func openInGoogleMaps(locationDetail: LocationDetail) throws {
         let coordinate = locationDetail.location.coordinate
-        let name = locationDetail.displayName
-        
-        let placemark = MKPlacemark(coordinate: coordinate)
-        let mapItem = MKMapItem(placemark: placemark)
-        mapItem.name = name
-        mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
-        
+        let name = locationDetail.displayName.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? locationDetail.displayName
+        let lat = coordinate.latitude
+        let lon = coordinate.longitude
+
+        // Prefer Google Maps app URL scheme; fallback to browser-based Google Maps URL.
+        let appURL = URL(string: "comgooglemaps://?q=\(lat),\(lon)&center=\(lat),\(lon)&zoom=16")
+        let webURL = URL(string: "https://www.google.com/maps/search/?api=1&query=\(lat),\(lon)&query_place_id=\(name)")
+
+        if let appURL = appURL {
+            UIApplication.shared.open(appURL, options: [:]) { opened in
+                if !opened, let webURL = webURL {
+                    UIApplication.shared.open(webURL, options: [:], completionHandler: nil)
+                }
+            }
+        } else if let webURL = webURL {
+            UIApplication.shared.open(webURL, options: [:], completionHandler: nil)
+        }
+
         // Save selection
         locationDetail.updateLastSelectedDate()
     }

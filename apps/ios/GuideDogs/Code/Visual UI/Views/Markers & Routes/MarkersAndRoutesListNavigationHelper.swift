@@ -88,7 +88,7 @@ class MarkersAndRoutesListNavigationHelper: ViewNavigationHelper, LocationAccess
                     }
                     
                 case .openInAppleMaps:
-                    try LocationActionHandler.openInAppleMaps(locationDetail: detail)
+                    try LocationActionHandler.openInGoogleMaps(locationDetail: detail)
                 }
             } catch let error as LocationActionError {
                 let alert = LocationActionAlert.alert(for: error)

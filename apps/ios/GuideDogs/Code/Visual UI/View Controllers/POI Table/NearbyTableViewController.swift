@@ -378,7 +378,7 @@ extension NearbyTableViewController: LocationAccessibilityActionDelegate {
                     }
                     
                 case .openInAppleMaps:
-                    try LocationActionHandler.openInAppleMaps(locationDetail: detail)
+                    try LocationActionHandler.openInGoogleMaps(locationDetail: detail)
                 }
                 
             } catch let error as LocationActionError {

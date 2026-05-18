@@ -144,7 +144,7 @@
 "general.mute" = "Mute";
 
 /* Title for a slider that controls the volume level */
-"general.volume" = "Volume";
+"general.volume" = "音量";
 
 /* This is a voiceover label for a custom tab view control (tabs at the bottom of the screen that allow the user to switch between views - for an example of this, see iOS's Phone app). "Tab" should be translated in the same way that it is translated when using VoiceOver on the tabs in the iOS Phone app. %1$@ is the name of the tab (for instance, on the Markers and Routes screen, this will be either "Markers" or "Routes"). %2$@ is the index of the tab and %3$@ is the total number of the tabs (an example of this final part would be "1 of 2" or "2 of 2". {NumberedPlaceholder="%1$@","%2$@","%3$@"} */
 "general.tabs" = "%1$@, tab, %2$@ of %3$@";
@@ -344,7 +344,7 @@
 "settings.feedback.no_mail_client_error" = "No mail app installed";
 
 /* Setting title, Voice */
-"settings.general.voice" = "Voice";
+"settings.general.voice" = "語音";
 
 /* Settings title unit of measurement, Imperial (Feet) */
 "settings.units.imperial" = "Imperial (Feet)";
@@ -374,16 +374,16 @@
 "settings.section.telemetry" = "使用資料";
 
 /* Settings title, Share Usage Data */
-"settings.section.share_usage_data" = "Share Usage Data";
+"settings.section.share_usage_data" = "分享使用資料";
 
 /* Footer to Telemetry settings selection, help app improve by automatically sending diagnostics and data usage from the user. Personal data not collected {NumberedPlaceholder="Soundscape"} */
-"settings.section.telemetry.footer" = "Help AppName improve by automatically sending diagnostics, error reporting, and usage data. No personal data is collected.";
+"settings.section.telemetry.footer" = "協助 AppName 改進：自動傳送診斷、錯誤回報與使用資料，不會收集個人資料。";
 
 /* Settings title, Language */
 "settings.language.screen_title" = "Language";
 
 /* Settings title, Language and Region */
-"settings.language.screen_title.2" = "Language & Region";
+"settings.language.screen_title.2" = "語言與地區";
 
 /* Language selection validation message, %@ is a language name. "Would you like to change the app language to English?" {NumberedPlaceholder="%@"} */
 "settings.language.change_alert" = "Would you like to change the app language to %@?";
@@ -534,7 +534,7 @@
 "troubleshooting.gps_status.feet" = "±%@ feet";
 
 /* Label for a button that allows user to check if the app's audio is playing through their headset correctly. */
-"troubleshooting.check_audio" = "Check Audio";
+"troubleshooting.check_audio" = "檢查音訊";
 
 /* Voiceover hint that explains the action of the "Check Audio" button. */
 "troubleshooting.check_audio.hint" = "Double tap to check the status of the headphones you are using with Soundscape.";
@@ -636,7 +636,7 @@
 "beacon.styles.haptic.pulse" = "Haptic Pulse";
 
 /* Title, Audio Beacon */
-"beacon.audio_beacon" = "Audio Beacon";
+"beacon.audio_beacon" = "音訊信標";
 
 /* Notification, %@ is a location, "Beacon on <Some Place>" {NumberedPlaceholder="%@"} */
 "beacon.beacon_on" = "Beacon on %@";
@@ -760,25 +760,25 @@
 "preview.callout.continue.along" = "Continuing Street Preview along %@";
 
 /* Callout that occurs the first time the user gets to the "road finder" experience during their first use of the Street Preview experience. This is telling them to physically turn their phone so the app can tell them about the roads they are pointing the phone towards. */
-"preview.callout.road_finder.instructions" = "Turn your phone to preview available roads";
+"preview.callout.road_finder.instructions" = "轉動手機以預覽可前進道路";
 
 /* This callout occurs the first time the user tries to tap the "Go" button when they are not pointed down a valid road. This explains that they need to point their phone down a valid road before hitting the Go button. */
-"preview.callout.road_finder.error_instructions" = "Turn to select a road and then press Go";
+"preview.callout.road_finder.error_instructions" = "請先轉向要走的道路，再按「前往」";
 
 /* Callout that occurs when a user is pointing their phone down an available road, %1$@ is the name of the road, %2$@ is the cardinal direction it moves away in, "9th Ave North, heading south" {NumberedPlaceholder="%1$@", "%2$@"} */
-"preview.callout.road_finder.road" = "%1$@, heading %2$@";
+"preview.callout.road_finder.road" = "%1$@，朝向%2$@";
 
 /* Callout that occurs when a user is pointing their phone down an available road looking for the next intersection, %@ is the name of the next intersection in that direction, "Next intersection: 9th Avenue North and Harrison Street" {NumberedPlaceholder="%@"} */
-"preview.callout.road_finder.intersection" = "Next intersection: %@";
+"preview.callout.road_finder.intersection" = "下一個路口：%@";
 
 /* Callout that occurs when a user is pointing their phone down an available road looking for the next intersection but the road loops around and returns to the current intersection (e.g. a roundabout or a "close" in the UK) */
-"preview.callout.road_finder.intersection.same" = "Next intersection: Circles back to current intersection";
+"preview.callout.road_finder.intersection.same" = "下一個路口：回到目前路口";
 
 /* Callout that occurs when a user is pointing their phone down an available road looking for the next intersection but the road terminates in a dead end rather than another intersection */
-"preview.callout.road_finder.intersection.end" = "Next intersection: End of road";
+"preview.callout.road_finder.intersection.end" = "下一個路口：道路終點";
 
 /* Callout that occurs when the user travels down a road (in preview mode) that ends without connecting to any other streets (a road with no exit) */
-"preview.callout.approach.end" = "Approaching end of road";
+"preview.callout.approach.end" = "即將到達道路終點";
 
 /* Callout that occurs when the user selects a road that requires a left hand turn, %@ is the name of the street that the user is turning on {NumberedPlaceholder="%@"} */
 "preview.callout.turn.left" = "Turned left. Now along %@";
@@ -793,22 +793,22 @@
 "preview.callout.turn.roundabout" = "Departed roundabout. Now along %@";
 
 /* Title for a setting to include unnamed roads */
-"preview.include_unnamed_roads.title" = "Unnamed Roads";
+"preview.include_unnamed_roads.title" = "未命名道路";
 
 /* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
-"preview.include_unnamed_roads.subtitle" = "Include unnamed roads during Street Preview";
+"preview.include_unnamed_roads.subtitle" = "在街景預覽中包含未命名道路";
 
 /* Voiceover label for a button to turn on a setting to include unnamed roads */
-"preview.include_unnamed_roads.label.off" = "Enable Unnamed Roads";
+"preview.include_unnamed_roads.label.off" = "啟用未命名道路";
 
 /* Voiceover label for a button to turn off a setting to include unnamed roads */
-"preview.include_unnamed_roads.label.on" = "Disable Unnamed Roads";
+"preview.include_unnamed_roads.label.on" = "停用未命名道路";
 
 /* Voiceover hint for a button to turn on a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
-"preview.include_unnamed_roads.hint.off" = "Double tap to include unnamed roads during Street Preview";
+"preview.include_unnamed_roads.hint.off" = "點兩下以在街景預覽中包含未命名道路";
 
 /* Voiceover hint for a button to turn off a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
-"preview.include_unnamed_roads.hint.on" = "Double tap to exclude unnamed roads during Street Preview";
+"preview.include_unnamed_roads.hint.on" = "點兩下以在街景預覽中排除未命名道路";
 
 /* Accessibility hint for the button to end the preview tutorial */
 "preview.tutorial.done.hint" = "Double tap to exit the tutorial";
@@ -839,13 +839,13 @@
 //------------------------------------------------------------------------------
 
 /* Location Details, View title */
-"location_detail.title.default" = "Location Details";
+"location_detail.title.default" = "位置詳細資訊";
 
 /* Marker Details, View title */
-"location_detail.title.marker" = "Marker Details";
+"location_detail.title.marker" = "標記詳細資訊";
 
 /* Waypoint Details, View title */
-"location_detail.title.waypoint" = "Waypoint Details";
+"location_detail.title.waypoint" = "路點詳細資訊";
 
 /* Title for the action to set a beacon */
 "location_detail.action.beacon" = "開始音訊信標";
@@ -872,7 +872,7 @@
 "location_detail.action.preview.hint.disabled" = "路線導引啟用時，Street Preview 無法使用";
 
 /* Voiceover hint for the action to get directions */
-"location_detail.action.directions.hint" = "點兩下以在 Apple 地圖開啟此位置";
+"location_detail.action.directions.hint" = "點兩下以在 Google 地圖開啟此位置";
 
 /* Default address for a location */
 "location_detail.default.address" = "地址未知";
@@ -947,7 +947,7 @@
 "location_detail.map.edit.accessibility.beacon.callout" = "開始音訊信標以追蹤標記位置。正在調整，距隢原始位置 %@。";
 
 /* Accessibility label for the icon which displays the number of the waypoint. %@ is the index of the waypoint. (e.g., "Waypoint 1") {NumberedPlaceholder="%@"} */
-"location_detail.waypoint" = "Waypoint %@";
+"location_detail.waypoint" = "路點 %@";
 
 /* Accessibility hint for markers in a list which has already been added to a route */
 "location_detail.add_waypoint.existing.hint" = "點兩下以從路線中移除此標記。";
@@ -1210,7 +1210,7 @@
 "universal_links.alert.share_error.message" = "This content could not be shared.";
 
 /* Alert action to save as marker */
-"universal_links.alert.action.marker" = "Save as Marker";
+"universal_links.alert.action.marker" = "儲存為標記";
 
 /* Alert action to set a beacon */
 "universal_links.alert.action.beacon" = "Set a Beacon";
@@ -1235,7 +1235,7 @@
 //------------------------------------------------------------------------------
 
 /* Referes to the Apple iOS Siri Shortcuts feature. {NumberedPlaceholder="Siri"} */
-"siri_shortcuts.title" = "Siri Shortcuts";
+"siri_shortcuts.title" = "Siri 捷徑";
 
 /* Settings item title. Controls whether facing and GPS accuracy are spoken after manual callouts. */
 "settings.announce_facing_accuracy.title" = "在提示後播報面向與 GPS 精度";
@@ -1349,7 +1349,7 @@
 //------------------------------------------------------------------------------
 
 /* Title of the option for displaying a the user's list of saved routes */
-"routes.title" = "Routes";
+"routes.title" = "路線";
 
 /* Button, Route deleted */
 "routes.action.deleted" = "Route deleted";
@@ -1358,13 +1358,13 @@
 "routes.action.deleted_error" = "We are unable to delete this route currently. Try again later.";
 
 /* Title of the view that is shown when the user navigates to the routes list, but they have not yet created any routes */
-"routes.no_routes.title" = "Getting Started with Route Waypoints";
+"routes.no_routes.title" = "開始使用路線路點";
 
 /* This text is displayed to the user when they navigate to the routes list but have not yet created any routes. It explains how a route is a set of ordered markers. */
-"routes.no_routes.hint.1" = "Create a route for yourself or for someone else by organizing a set of markers as waypoints on a route.";
+"routes.no_routes.hint.1" = "為自己或他人建立路線，將一組標記整理成路線中的路點。";
 
 /* This text is displayed to the user when they navigate to the routes list but have not yet created any routes. It explains that the beacon will automatically shift between the route waypoints as they walk the route. */
-"routes.no_routes.hint.2" = "While out on your route with Soundscape, you will be informed on arrival to each waypoint, and the Audio Beacon will automatically advance to the next waypoint.";
+"routes.no_routes.hint.2" = "在路線中使用 Soundscape 時，每到達一個路點都會收到提示，音訊信標也會自動前進到下一個路點。";
 
 /* Text for the first paragraph displayed when the waypoints list is empty for a route */
 "route.no_waypoints.hint.1" = "Name your route and add an optional description. You can then add waypoints as you go or pick them from your list of markers.";
@@ -1404,7 +1404,7 @@
 //------------------------------------------------------------------------------
 
 /* Title, Markers See Terms defintion of Marker(s) */
-"markers.title" = "Markers";
+"markers.title" = "標記";
 
 /* Button, Delete Marker */
 "markers.action.delete" = "Delete Marker";
@@ -1434,7 +1434,7 @@
 "markers.sort_button.sort_by_distance.voiceover" = "Sorted by distance";
 
 /* Title, No Markers Yet! */
-"markers.no_markers.title" = "Getting Started with Markers";
+"markers.no_markers.title" = "開始使用標記";
 
 /* Text that explains to the user what "markers" are and how they can be used. Ensure "Save as Marker" is translated to be the same as "universal_links.alert.action.marker". Quotes written as \" */
 "markers.no_markers.hint.1" = "Create markers for your favorite destinations, waypoints on a route, or any locations you want called out. Simply choose a location, or even your current location, from the home screen and select \"Save as Marker\".";
@@ -1580,13 +1580,13 @@
 "callouts.turn_on_off" = "開啟或關閉所有提示";
 
 /* Button, Callouts On */
-"callouts.callouts_on" = "Callouts On";
+"callouts.callouts_on" = "提示開啟";
 
 /* Button, Callouts Off */
-"callouts.callouts_off" = "Callouts Off";
+"callouts.callouts_off" = "提示關閉";
 
 /* Button, Allow Callouts */
-"callouts.allow_callouts" = "Allow Callouts";
+"callouts.allow_callouts" = "允許提示";
 
 /* Callouts Title, Places and Landmarks */
 "callouts.places_and_landmarks" = "地點與地標";
@@ -1607,25 +1607,25 @@
 "callouts.audio_beacon.info" = "設定音訊信標時距離更新";
 
 /* Callouts Title, Automatic Callouts */
-"callouts.automatic_callouts" = "Automatic Callouts";
+"callouts.automatic_callouts" = "自動提示";
 
 /* Callout Title, Intersection Callout */
-"callouts.intersection_callout" = "Intersection Callout";
+"callouts.intersection_callout" = "路口提示";
 
 /* Callouts Title, Ahead of You */
-"callouts.ahead_of_you" = "Ahead of You";
+"callouts.ahead_of_you" = "你前方";
 
 /* Callouts Title, Around you */
-"callouts.around_you" = "Around You";
+"callouts.around_you" = "你周圍";
 
 /* Callouts Title, Marked Points */
-"callouts.marked_points" = "Marked Points";
+"callouts.marked_points" = "已標記地點";
 
 /* Callouts notification, There is nothing to call out right now */
 "callouts.nothing_to_call_out_now" = "There is nothing to call out right now";
 
 /* Callouts Title, Nearby Markers */
-"callouts.nearby_markers" = "Nearby Markers";
+"callouts.nearby_markers" = "附近標記";
 
 /* Callouts notification, There are no nearby markers to call out right now. Use "nearby markers" from `callouts.nearby_markers`. */
 "callouts.no_nearby_markers_to_call_out_now" = "There are no nearby markers to call out right now.";
@@ -1659,22 +1659,22 @@
 "sleep.sleeping" = "睡眠中";
 
 /* Sleep Notification, the app is currently in snoozing mode. When you leave your current location, the app will automatically wake up. "Location Services" refers to the feature of the same name in iOS. It should be translated in the same manner that it is in the Settings app under Settings > Privacy > Location Services. {NumberedPlaceholder="Soundscape"} */
-"sleep.snoozing.message" = "Soundscape is currently snoozing. When you leave your current location, Soundscape will automatically wake up. This uses Location Services in a low power mode to conserve your phone's battery. Tap the button below to wake up now.";
+"sleep.snoozing.message" = "Soundscape 目前為暫停模式。當你離開目前位置時，Soundscape 會自動喚醒。此模式會以低耗電方式使用定位服務以節省電力。點選下方按鈕可立即喚醒。";
 
 /* Sleep Notification, the app is currently in sleep mode. This prevents Soundscape from using your location information or downloading data. This conserves battery when you are not using the app. Tap the button below to wake the app. "Location Services" refers to the feature of the same name in iOS. It should be translated in the same manner that it is in the Settings app under Settings > Privacy > Location Services. {NumberedPlaceholder="Soundscape"} */
-"sleep.sleeping.message" = "Soundscape is currently sleeping. This prevents Soundscape from using Location Services or downloading data. This conserves battery when you are not using Soundscape. Tap the button below to wake up Soundscape.";
+"sleep.sleeping.message" = "Soundscape 目前為睡眠模式。此模式會停止使用定位服務與下載資料，以節省你未使用 Soundscape 時的電量。點選下方按鈕可喚醒 Soundscape。";
 
 /* Sleep Notification, Double tap to put Soundscape to sleep. Putting the app in an idle state for a period of time. {NumberedPlaceholder="Soundscape"} */
 "sleep.sleep.acc_hint" = "Double tap to put Soundscape to sleep";
 
 /* Sleep Button, restore the app from a sleep (idle) state when a user leaves his location. */
-"sleep.wake_up_when_i_leave" = "Wake Up When I Leave";
+"sleep.wake_up_when_i_leave" = "離開此處時喚醒";
 
 /* Sleep Button, restore the app from a sleep (idle) state. */
-"sleep.wake_up_now" = "Wake Up Now";
+"sleep.wake_up_now" = "立即喚醒";
 
 /* Sleep Button, similar to `sleep.wake_up_when_i_leave`. Text that is shown in a small round button. It should be constrained to two lines with up to 12 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
-"sleep.ui.wake_on_leave" = "Wake On\nLeave";
+"sleep.ui.wake_on_leave" = "離開時\n喚醒";
 
 /* Accessibility custom action title for opening category-based POI lists from Around/Ahead buttons. */
 "exploration.poi.list.action" = "瀏覽附近地點";
@@ -1722,7 +1722,7 @@
 "exploration.poi.list.empty" = "此分類找不到地點。";
 
 /* Sleep Button,  similar to `sleep.wake_up_now`. Text that is shown in a small round button. It should be constrained to two lines with up to 12 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
-"sleep.ui.wake_up_now" = "Wake Up\nNow";
+"sleep.ui.wake_up_now" = "立即\n喚醒";
 
 //------------------------------------------------------------------------------
 // MARK: - Intersections
@@ -1757,7 +1757,7 @@
 "directions.at_poi" = "At %@";
 
 /* Notification, %@ road name, "Along Pike Street." {NumberedPlaceholder="%@"} */
-"directions.along_road" = "Along %@.";
+"directions.along_road" = "沿著%@。";
 
 /* Button, My location */
 "directions.my_location" = "我的位置";
@@ -1775,7 +1775,7 @@
 "directions.unknown_address" = "Address is unknown";
 
 /* Notification, Unknown Road */
-"directions.unknown_road" = "Unknown Road";
+"directions.unknown_road" = "未知道路";
 
 /* Button, Previous location */
 "directions.previous_location" = "Previous Location";
@@ -1787,13 +1787,13 @@
 "directions.amenity.entrance_list" = "Entrance List";
 
 /* Notification, %1$@ is a road name, %2$@ is the distance with units and %3$@ is the orientation, "Nearest road, <Pike Street>, is <5 meters> <ahead to the left>" {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
-"directions.nearest_road_name_is_distance_direction" = "Nearest road, %1$@, is %2$@ %3$@";
+"directions.nearest_road_name_is_distance_direction" = "最近道路 %1$@，距離 %2$@，位於%3$@";
 
 /* Notification, %1$@ is a road name, %2$@ is the distance with units, "Nearest road, <Pike Street>, is <5 meters> away" {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.nearest_road_name_is_distance" = "Nearest road, %1$@, is %2$@ away";
+"directions.nearest_road_name_is_distance" = "最近道路 %1$@，距離 %2$@";
 
 /* Notification past tense, %1$@ is a road name, %2$@ is the distance with units and %3$@ is the orientation, "Nearest road, <Pike Street>, was <5 meters> <to the left>" {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
-"directions.nearest_road_name_was_distance_direction" = "Nearest road, %1$@, was %2$@ %3$@";
+"directions.nearest_road_name_was_distance_direction" = "最近道路 %1$@，距離 %2$@，位於%3$@";
 
 /* Notification, %1$@ is the point of interest, %2$@ is the distance with units, %3$@ is the orientation, "<Starbucks> is <5 meters> <ahead to the left> {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
 "directions.poi_name_is_distance_direction" = "%1$@ is %2$@ %3$@";
@@ -2161,13 +2161,13 @@
 "ui.action_button.my_location" = "我的\n位置";
 
 /* Accessibility Notification, Double tap to hear about your current location. */
-"ui.action_button.my_location.acc_hint" = "Double tap to hear about your current location";
+"ui.action_button.my_location.acc_hint" = "點兩下以聆聽目前位置資訊";
 
 /* Similar to `callouts.nearby_markers`. Text that is shown in a small square button. It should be constrained to two lines with up to 8 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
-"ui.action_button.nearby_markers" = "出行\n模式";
+"ui.action_button.nearby_markers" = "附近\n標記";
 
 /* Accessibility Notification, Double tap to hear about nearby places that you have marked */
-"ui.action_button.nearby_markers.acc_hint" = "Double tap to hear about nearby places that you have marked";
+"ui.action_button.nearby_markers.acc_hint" = "點兩下以聆聽附近已標記地點";
 
 /* Accessibility hint for the callout mode button on Home. */
 "ui.action_button.callout_mode.acc_hint" = "點兩下以切換提示模式";
@@ -2179,13 +2179,13 @@
 "ui.action_button.around_me" = "我\n周圍";
 
 /* Accessibility Notification, Double tap to hear about places in the four quadrants around you */
-"ui.action_button.around_me.acc_hint" = "Double tap to hear about places in the four quadrants around you";
+"ui.action_button.around_me.acc_hint" = "點兩下以聆聽你周圍四個象限的地點資訊";
 
 /* Similar to `help.explore.page_title`. Text that is shown in a small square button. It should be constrained to two lines with up to 8 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
 "ui.action_button.ahead_of_me" = "我\n前方";
 
 /* Accessibility Notification, Double tap to hear about places in front of you */
-"ui.action_button.ahead_of_me.acc_hint" = "Double tap to hear about places in front of you";
+"ui.action_button.ahead_of_me.acc_hint" = "點兩下以聆聽你前方的地點資訊";
 
 /* Title, Menu */
 "ui.menu" = "選單";
@@ -2272,13 +2272,13 @@
 "location_callout_cell.marked_location" = "Marked Location";
 
 /* Location Callout Cell for the nearest road, %@ road name, "Nearest road, <27th Avenue West>" {NumberedPlaceholder="%@"} */
-"location_callout_cell.nearest_road" = "Nearest road, %@.";
+"location_callout_cell.nearest_road" = "最近道路：%@。";
 
 /* Location Callout Cell, Nearest road and beacon set on, %1$@ road name %2$@ location, "Nearest road, <27th Avenue West>. Beacon was set on <Woodland Park Zoo>." {NumberedPlaceholder="%1$@", "%2$@"} */
-"location_callout_cell.nearest_road.beacon_set_on" = "Nearest road, %1$@. Beacon was set on %2$@.";
+"location_callout_cell.nearest_road.beacon_set_on" = "最近道路：%1$@。信標設於 %2$@。";
 
 /* Location Callout Cell, Nearest road and nearest point of interest, %1$@ road name %2$@ point of interest, "Nearest road, <Broad Street>. Nearest POI, <Space Needle>." {NumberedPlaceholder="%1$@", "%2$@"} */
-"location_callout_cell.nearest_road.nearest_poi" = "Nearest road, %1$@. Nearest point of interest, %2$@.";
+"location_callout_cell.nearest_road.nearest_poi" = "最近道路：%1$@。最近興趣點：%2$@。";
 
 //------------------------------------------------------------------------------
 // MARK: UI (AR Headset)
@@ -2354,16 +2354,16 @@
 "devices.connect_headset.completed.test.hint" = "Double tap to check your %@";
 
 /* Title of the Check Headset screen */
-"devices.test_headset.title" = "Headphones Check";
+"devices.test_headset.title" = "耳機檢查";
 
 /* Label explaining to the user that how the headset test works and what they should do */
-"devices.test_headset.explanation" = "We've placed an audio beacon to your right. Listen where it is, and turn your head towards it. Notice how you can do this even when your phone is in your pocket. When you are done, Tap the button below to return to Soundscape, and enjoy your next walk with your new head tracking headphones.";
+"devices.test_headset.explanation" = "我們已在你的右側放置音訊信標。請聆聽聲音位置並將頭轉向它。你會發現即使手機放在口袋裡也能辨識方向。完成後，點選下方按鈕返回 Soundscape，享受你的頭部追蹤耳機體驗。";
 
 /* Button title for a button that ends the headset testing process and returns the user to Soundscape */
-"devices.test_headset.continue" = "Return to Soundscape";
+"devices.test_headset.continue" = "返回 Soundscape";
 
 /* Announcement that occurs when the user presses the "Check Your Headphones" button */
-"devices.test_headset.callout" = "We've placed an audio beacon to your right. Listen where it is, and turn your head towards it... Notice how you can do this even when your phone is in your pocket.";
+"devices.test_headset.callout" = "我們已在你的右側放置音訊信標。請聆聽它的位置並轉頭跟隨聲音…即使手機放在口袋裡也能做到。";
 
 /* Title of a prompt that is presented to users when they tap the "Forget This Device" button to disconnect and forget a head tracking headset */
 "devices.forget_headset.prompt.forget" = "Are you sure you wish to forget these headphones?";
@@ -2375,10 +2375,10 @@
 "devices.callouts.connected" = "%@ 已連接。";
 
 /* Callout for when an AR headset needs to be calibrated */
-"devices.callouts.needs_calibration" = "您的耳機需要校正。將其從您的遐部移除並輕輕在各個方向搖晃。";
+"devices.callouts.needs_calibration" = "你的耳機需要校正。請將耳機從頭上取下，並輕輕往各方向搖晃。";
 
 /* Callout for when an AR headset needs to be calibrated */
-"devices.callouts.needs_calibration.in_ear" = "您的耳機需要校正。輕輕在各個方向搖晃您的遐。";
+"devices.callouts.needs_calibration.in_ear" = "你的耳機需要校正。請輕輕左右與上下轉動頭部以完成校正。";
 
 /* Callout for when an AR headset has successfully calibrated, %@ device name, "Your AirPods Pro require calibration." */
 "devices.callouts.calibrated" = "校正完成";
@@ -2387,13 +2387,13 @@
 "devices.callouts.disconnected" = "%@ 已斷開連接。";
 
 /* Status announcement when Soundscape is not connected to a head tracking headset */
-"devices.callouts.check_audio.default" = "頶部追蹤耳機未連接。";
+"devices.callouts.check_audio.default" = "頭部追蹤耳機未連接。";
 
 /* Status announcement when Soundscape is connected to a Apple AirPods {NumberedPlaceholder="Apple AirPods"} */
 "devices.callouts.check_audio.airpods" = "Apple AirPods 已連接。";
 
 /* Status announcement when Soundscape is trying to listen to heading updates from AirPods but they are not currently connected. {NumberedPlaceholder="AirPods", "Soundscape"} */
-"devices.callouts.check_audio.airpods.disconnected" = "Soundscape 正在掐尋您的 AirPods。確保它們已連接到您的手機。";
+"devices.callouts.check_audio.airpods.disconnected" = "Soundscape 正在尋找你的 AirPods。請確認 AirPods 已連接到手機。";
 
 /* Label of a button that allows users to force Soundscape to reconnect to their AirPods Pro device if it isn't connecting automatically */
 "devices.troubleshoot.reconnect" = "Reconnect";
@@ -3021,10 +3021,10 @@
 "first_launch.beacon.callout.haptic" = "Placing beacon in front of you. Turn your phone left and right to experience the beacon's haptic feedback.";
 
 /* Callout that is made when starting a standard audio beacon demo during first launch */
-"first_launch.beacon.callout.headtracking.standard" = "Placing beacon to your right. Turn to follow its sound and experience the beacon's spatial audio.";
+"first_launch.beacon.callout.headtracking.standard" = "已將信標放在你的右側。請轉身跟隨聲音，體驗信標的空間音訊。";
 
 /* Callout that is made when starting a haptic audio beacon demo during first launch */
-"first_launch.beacon.callout.headtracking.haptic" = "Placing beacon in front of you. Turn left and right to experience the beacon's haptic feedback.";
+"first_launch.beacon.callout.headtracking.haptic" = "已將信標放在你的前方。請左右轉動，體驗信標的觸覺回饋。";
 
 /* Callout made during onboarding experience to tell the user that the audio beacon is currently in front of the user */
 "first_launch.beacon.callout.ahead" = "Beacon ahead";
@@ -3191,7 +3191,7 @@
 "osm.tag.townhall" = "Townhall";
 
 /* Open Street Map term. For flights of steps on footways and paths.. */
-"osm.tag.steps" = "Steps";
+"osm.tag.steps" = "台階";
 
 /* Open Street Map term. An elevator (or lift) is used to travel vertically, providing passenger and freight access between pathways at different floor levels. */
 "osm.tag.elevator" = "Elevator";
@@ -3209,10 +3209,10 @@
 "osm.tag.residential_street" = "Residential Street";
 
 /* Open Street Map term. Used in two senses: 1. As a service way for access to buildings or places 2. Frontage road parallel to a major road. */
-"osm.tag.service_road" = "Service Road";
+"osm.tag.service_road" = "服務道路";
 
 /* Open Street Map term. Any highway, route, way, or thoroughfare on land which connects one location to another and has been paved or otherwise improved to allow travel by some conveyance, including motorised vehicles, cyclists, pedestrians, horse riders, and others (but not trains). */
-"osm.tag.road" = "Road";
+"osm.tag.road" = "道路";
 
 /* Open Street Map term. Any road, route, way, or thoroughfare on land which connects one location to another and has been paved or otherwise improved to allow travel by some conveyance, including motorised vehicles, cyclists, pedestrians, horse riders, and others (but not trains). */
 "osm.tag.highway" = "Highway";
@@ -3239,7 +3239,7 @@
 "osm.tag.office_building" = "Office Building";
 
 /* Open Street Map term. Used for any generic building that is used as a school. */
-"osm.tag.school_building" = "School Building";
+"osm.tag.school_building" = "學校建築";
 
 /* Open Street Map term. Used as a display name for place or a location. */
 "osm.tag.covered_pavilion" = "Covered Pavilion";
@@ -3269,10 +3269,10 @@
 "osm.tag.restroom" = "Restroom";
 
 /* Open Street Map term. Used to describe a facility used by the public, customers, or other authorised users for parking motor vehicles, such as cars and trucks, commonly known as a car park (British English) or parking lot (American English). */
-"osm.tag.parking_lot" = "Parking Lot";
+"osm.tag.parking_lot" = "停車場";
 
 /* Open Street Map term. Used to describe the entry/exit point to a parking area. */
-"osm.tag.parking_entrance" = "Parking Entrance";
+"osm.tag.parking_entrance" = "停車場入口";
 
 /* Open Street Map term. A place for people to sit. */
 "osm.tag.bench" = "Bench";
@@ -3293,7 +3293,7 @@
 "osm.tag.shower" = "Shower";
 
 /* Open Street Map term. Refers to any parking space designed for bicycles, where one can leave a pedal cycle unattended in reasonable security. */
-"osm.tag.bike_parking" = "Bike Parking";
+"osm.tag.bike_parking" = "自行車停車區";
 
 /* Open Street Map term. An informal place with sit-down facilities selling beverages and light meals and/or snacks. */
 "osm.tag.cafe" = "Cafe";
@@ -3394,7 +3394,7 @@
 //------------------------------------------------------------------------------
 
 /* Title, Share the app with others */
-"share.title" = "Share";
+"share.title" = "分享";
 
 /* Title, Share the app with others {NumberedPlaceholder="Soundscape"} */
 "share.prompt.title" = "Enjoying Soundscape?";
@@ -3643,13 +3643,15 @@
 
 
 /* Action button text for opening Apple Maps with location. */
-"location_action.open_in_apple_maps" = "在 Apple 地圖中開啟";
+"location_action.open_in_apple_maps" = "在 Google 地圖中開啟";
 
 /* Accessibility hint for opening location in Apple Maps. */
-"location_action.open_in_apple_maps.hint" = "在 Apple 地圖 App 開啟此位置";
+"location_action.open_in_apple_maps.hint" = "在 Google 地圖開啟此位置";
 
 
 /* Live View - ARCore Geospatial */
 "ui.action_button.live_view" = "即時景觀";
 "ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";
+
+
 

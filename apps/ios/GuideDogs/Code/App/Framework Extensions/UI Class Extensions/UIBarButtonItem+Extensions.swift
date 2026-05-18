@@ -12,7 +12,9 @@ import UIKit
 extension UIBarButtonItem {
     
     static var defaultBackBarButtonItem: UIBarButtonItem {
-        return UIBarButtonItem(title: GDLocalizedString("ui.back_button.title"), style: .plain, target: nil, action: nil)
+        let item = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        item.accessibilityLabel = nil
+        return item
     }
     
 }
