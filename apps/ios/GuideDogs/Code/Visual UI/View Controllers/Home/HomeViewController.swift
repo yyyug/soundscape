@@ -1445,7 +1445,8 @@ extension HomeViewController: LocationActionDelegate {
                         self.present(firstUseAlert, animated: true, completion: nil)
                     }
                 case .openInAppleMaps:
-                    // Open location in Google Maps
+                    try LocationActionHandler.openInAppleMaps(locationDetail: detail)
+                case .openInGoogleMaps:
                     try LocationActionHandler.openInGoogleMaps(locationDetail: detail)
                 }
             } catch let error as LocationActionError {

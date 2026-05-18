@@ -17,12 +17,13 @@ enum LocationAction {
     case preview
     case share(isEnabled: Bool)
     case openInAppleMaps
+    case openInGoogleMaps
     
     var isEnabled: Bool {
         switch self {
         case .save(let isEnabled): return isEnabled
         case .share(let isEnabled): return isEnabled
-        case .beacon, .preview, .edit, .openInAppleMaps:
+        case .beacon, .preview, .edit, .openInAppleMaps, .openInGoogleMaps:
             if AppContext.shared.eventProcessor.activeBehavior is RouteGuidance {
                 return false
             } else {
@@ -33,13 +34,13 @@ enum LocationAction {
     
     static func actions(for detail: LocationDetail) -> [LocationAction] {
         if detail.isMarker {
-            return [.beacon, .edit, .preview, .share(isEnabled: true), .openInAppleMaps]
+            return [.beacon, .edit, .preview, .share(isEnabled: true), .openInAppleMaps, .openInGoogleMaps]
         } else {
             // If the location does not have a backup coordinate
             // disable the save and share actions
             let isEnabled = detail.source.isCachingEnabled
             
-            return [.beacon, .save(isEnabled: isEnabled), .preview, .share(isEnabled: isEnabled), .openInAppleMaps]
+            return [.beacon, .save(isEnabled: isEnabled), .preview, .share(isEnabled: isEnabled), .openInAppleMaps, .openInGoogleMaps]
         }
     }
     
@@ -72,6 +73,7 @@ enum LocationAction {
         case .preview: return GDLocalizedString("preview.title")
         case .share: return GDLocalizedString("share.title")
         case .openInAppleMaps: return GDLocalizedString("location_action.open_in_apple_maps")
+        case .openInGoogleMaps: return GDLocalizedString("location_action.open_in_google_maps")
         }
     }
     
@@ -83,6 +85,7 @@ enum LocationAction {
         case .preview: return isEnabled ? GDLocalizedString("location_detail.action.preview.hint") : GDLocalizedString("location_detail.action.preview.hint.disabled")
         case .share(let isEnabled): return isEnabled ? GDLocalizedString("location_detail.action.share.hint") : GDLocalizedString("location_detail.disabled.share")
         case .openInAppleMaps: return GDLocalizedString("location_action.open_in_apple_maps.hint")
+        case .openInGoogleMaps: return GDLocalizedString("location_action.open_in_google_maps.hint")
         }
     }
     
@@ -94,6 +97,7 @@ enum LocationAction {
         case .preview: return GDLocalizationUnnecessary("action.preview")
         case .share: return GDLocalizationUnnecessary("action.share")
         case .openInAppleMaps: return GDLocalizationUnnecessary("action.open_in_apple_maps")
+        case .openInGoogleMaps: return GDLocalizationUnnecessary("action.open_in_google_maps")
         }
     }
     
@@ -104,7 +108,8 @@ enum LocationAction {
         case .beacon: return UIImage(named: "Location_iconW")
         case .preview: return UIImage(named: "Preview_locationW")
         case .share: return UIImage(named: "Share_iconW")
-        case .openInAppleMaps: return UIImage(systemName: "map.fill")
+        case .openInAppleMaps: return UIImage(systemName: "apple.logo")
+        case .openInGoogleMaps: return UIImage(systemName: "map.fill")
         }
     }
     
@@ -118,6 +123,7 @@ enum LocationAction {
         case .preview: return "location_action.preview"
         case .share: return "location_action.share"
         case .openInAppleMaps: return "location_action.open_in_apple_maps"
+        case .openInGoogleMaps: return "location_action.open_in_google_maps"
         }
     }
 }

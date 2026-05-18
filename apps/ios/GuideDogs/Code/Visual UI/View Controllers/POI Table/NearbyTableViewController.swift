@@ -378,6 +378,8 @@ extension NearbyTableViewController: LocationAccessibilityActionDelegate {
                     }
                     
                 case .openInAppleMaps:
+                    try LocationActionHandler.openInAppleMaps(locationDetail: detail)
+                case .openInGoogleMaps:
                     try LocationActionHandler.openInGoogleMaps(locationDetail: detail)
                 }
                 

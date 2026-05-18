@@ -160,15 +160,31 @@ struct POICallout: POICalloutProtocol {
             sounds.append(GlyphSound(category.glyph, at: soundLocation))
         }
         
+        let heading = AppContext.shared.geolocationManager.heading(orderedBy: [.user, .device, .course]).value
+        let directionText = heading.map {
+            LanguageFormatter.expandCodedDirection(
+                for: LanguageFormatter.encodedDirection(fromLocation: location, toLocation: soundLocation, heading: $0),
+                coordinate: location.coordinate,
+                heading: $0
+            )
+        }
+        let formattedDistance = LanguageFormatter.string(from: distance, rounded: true)
+
         if !includeDistance && !isRepeat { // Auto-Callouts
             if poi.contains(location: location.coordinate) {
                 sounds.append(TTSSound(GDLocalizedString("directions.at_poi", name), at: soundLocation))
+            } else if let directionText = directionText {
+                sounds.append(TTSSound(GDLocalizedString("directions.poi_name_is_distance_direction", name, formattedDistance, directionText), at: soundLocation))
             } else {
-                sounds.append(TTSSound(name, at: soundLocation))
+                sounds.append(TTSSound(GDLocalizedString("directions.poi_name_is_distance", name, formattedDistance), at: soundLocation))
             }
         } else { // Explore and Orient
-            let formattedName = LanguageFormatter.string(from: distance, accuracy: location.horizontalAccuracy, name: name)
-            sounds.append(TTSSound(formattedName, at: soundLocation))
+            if let directionText = directionText {
+                sounds.append(TTSSound(GDLocalizedString("directions.poi_name_is_distance_direction", name, formattedDistance, directionText), at: soundLocation))
+            } else {
+                let formattedName = LanguageFormatter.string(from: distance, accuracy: location.horizontalAccuracy, name: name)
+                sounds.append(TTSSound(formattedName, at: soundLocation))
+            }
         }
         
         if let annotation = marker?.annotation, annotation.isEmpty == false {

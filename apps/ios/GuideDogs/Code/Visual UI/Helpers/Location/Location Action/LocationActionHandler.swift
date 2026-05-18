@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreLocation
+import MapKit
 import UIKit
 
 struct LocationActionHandler {
@@ -99,18 +100,52 @@ struct LocationActionHandler {
         try manager.setDestination(location: gLocation, address: address, enableAudio: true, userLocation: userLocation, logContext: "location_action")
     }
     
+    private static func makePreviewRootIntersection(on road: Road, near location: CLLocation) -> Intersection {
+        let rootLocation = road.closestLocation(from: location, useEntranceIfAvailable: false)
+        
+        if let intersection = SpatialDataCache.intersection(forRoadKey: road.key, atCoordinate: rootLocation.coordinate) {
+            return intersection
+        }
+        
+        let synthesized = Intersection()
+        synthesized.key = UUID().uuidString
+        synthesized.latitude = rootLocation.coordinate.latitude
+        synthesized.longitude = rootLocation.coordinate.longitude
+        synthesized.roadIds.append(IntersectionRoadId(withId: road.key))
+        
+        return synthesized
+    }
+    
+    private static func previewDecisionPoint(for locationDetail: LocationDetail) -> IntersectionDecisionPoint? {
+        guard let dataView = AppContext.shared.spatialDataContext.getDataView(for: locationDetail.location) else {
+            return nil
+        }
+        
+        let sortedRoads = dataView.roads.sorted {
+            $0.distanceToClosestLocation(from: locationDetail.location, useEntranceIfAvailable: false)
+                < $1.distanceToClosestLocation(from: locationDetail.location, useEntranceIfAvailable: false)
+        }
+        
+        for road in sortedRoads {
+            let decisionPoint = IntersectionDecisionPoint(node: makePreviewRootIntersection(on: road, near: locationDetail.location))
+            if !decisionPoint.edges.isEmpty {
+                return decisionPoint
+            }
+        }
+        
+        return ReverseGeocoderContext.closestIntersection(for: locationDetail).map { IntersectionDecisionPoint(node: $0) }
+    }
+    
     static func preview(locationDetail: LocationDetail, completion: @escaping PreviewCompletion) -> Progress? {
         // Save selection
         locationDetail.updateLastSelectedDate()
         
         return AppContext.shared.spatialDataContext.updateSpatialData(at: locationDetail.location) {
-            guard let intersection = ReverseGeocoderContext.closestIntersection(for: locationDetail) else {
+            guard let decisionPoint = previewDecisionPoint(for: locationDetail) else {
                 GDATelemetry.track("preview.error.closest_intersection_not_found")
                 completion(.failure(.failedToStartPreviewWithReason("closest_intersection_not_found")))
                 return
             }
-            
-            let decisionPoint = IntersectionDecisionPoint(node: intersection)
             
             guard decisionPoint.edges.count > 0 else {
                 GDATelemetry.track("preview.error.edges_not_found")
@@ -136,6 +171,20 @@ struct LocationActionHandler {
         locationDetail.updateLastSelectedDate()
         
         return url
+    }
+    
+    static func openInAppleMaps(locationDetail: LocationDetail) throws {
+        let coordinate = locationDetail.location.coordinate
+        let placemark = MKPlacemark(coordinate: coordinate)
+        let item = MKMapItem(placemark: placemark)
+        item.name = locationDetail.displayName
+        
+        item.openInMaps(launchOptions: [
+            MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coordinate),
+            MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
+        ])
+        
+        locationDetail.updateLastSelectedDate()
     }
     
     static func openInGoogleMaps(locationDetail: LocationDetail) throws {

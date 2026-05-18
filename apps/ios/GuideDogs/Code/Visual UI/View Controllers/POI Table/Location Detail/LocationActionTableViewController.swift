@@ -55,6 +55,7 @@ class LocationActionTableViewController: UITableViewController {
         super.viewDidLayoutSubviews()
 
         updateMapPreviewFooterFrame()
+        updateAccessibilityOrder()
         preferredContentSize.height = UIView.preferredContentHeight(for: tableView)
     }
 
@@ -64,6 +65,8 @@ class LocationActionTableViewController: UITableViewController {
         previewTitleLabel.font = UIFont.preferredFont(forTextStyle: .footnote)
         previewTitleLabel.textColor = Colors.Foreground.secondary
         previewTitleLabel.text = GDLocalizedString("location_detail.map.view.title")
+        previewTitleLabel.isAccessibilityElement = false
+        previewTitleLabel.translatesAutoresizingMaskIntoConstraints = false
 
         previewMapView.showsCompass = false
         previewMapView.showsScale = false
@@ -74,10 +77,36 @@ class LocationActionTableViewController: UITableViewController {
         previewMapView.layer.cornerRadius = 8.0
         previewMapView.clipsToBounds = true
         previewMapView.backgroundColor = Colors.Background.secondary
+        previewMapView.accessibilityLabel = GDLocalizedString("location_detail.map.view.title")
+        previewMapView.translatesAutoresizingMaskIntoConstraints = false
 
         previewContainerView.addSubview(previewTitleLabel)
         previewContainerView.addSubview(previewMapView)
+
+        NSLayoutConstraint.activate([
+            previewTitleLabel.topAnchor.constraint(equalTo: previewContainerView.topAnchor, constant: 10.0),
+            previewTitleLabel.leadingAnchor.constraint(equalTo: previewContainerView.leadingAnchor, constant: 16.0),
+            previewTitleLabel.trailingAnchor.constraint(equalTo: previewContainerView.trailingAnchor, constant: -16.0),
+            previewTitleLabel.heightAnchor.constraint(equalToConstant: 18.0),
+            previewMapView.topAnchor.constraint(equalTo: previewTitleLabel.bottomAnchor, constant: 6.0),
+            previewMapView.leadingAnchor.constraint(equalTo: previewContainerView.leadingAnchor, constant: 16.0),
+            previewMapView.trailingAnchor.constraint(equalTo: previewContainerView.trailingAnchor, constant: -16.0),
+            previewMapView.heightAnchor.constraint(equalToConstant: 168.0)
+        ])
+
         tableView.tableFooterView = previewContainerView
+    }
+
+    private func updateAccessibilityOrder() {
+        let orderedCells = (0..<actions.count).compactMap { index in
+            tableView.cellForRow(at: IndexPath(row: index, section: 0))
+        }
+
+        guard !orderedCells.isEmpty, !previewContainerView.isHidden else {
+            return
+        }
+
+        tableView.accessibilityElements = orderedCells + [previewMapView]
     }
 
     private func updateMapPreviewFooterFrame() {
@@ -91,23 +120,8 @@ class LocationActionTableViewController: UITableViewController {
         }
         previewFooterWidth = width
 
-        let horizontalPadding: CGFloat = 16.0
-        let titleTop: CGFloat = 10.0
-        let titleHeight: CGFloat = 18.0
-        let mapTop: CGFloat = 34.0
-        let mapHeight: CGFloat = 168.0
         let totalHeight: CGFloat = 212.0
-
         previewContainerView.frame = CGRect(x: 0.0, y: 0.0, width: width, height: totalHeight)
-        previewTitleLabel.frame = CGRect(x: horizontalPadding,
-                                         y: titleTop,
-                                         width: width - horizontalPadding * 2.0,
-                                         height: titleHeight)
-        previewMapView.frame = CGRect(x: horizontalPadding,
-                          y: mapTop,
-                          width: width - horizontalPadding * 2.0,
-                          height: mapHeight)
-
         tableView.tableFooterView = previewContainerView
     }
 

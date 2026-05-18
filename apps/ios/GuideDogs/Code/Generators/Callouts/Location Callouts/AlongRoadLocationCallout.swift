@@ -59,22 +59,22 @@ struct AlongRoadLocationCallout: LocationCalloutProtocol {
         guard let estimatedAddress = geocoderResult.estimatedAddress else {
             return nil
         }
+
+        let fallbackAddress = estimatedAddress.addressLine.isEmpty ? estimatedAddress.subThoroughfare : estimatedAddress.addressLine
         
         guard let roadName = road?.localizedName else {
             DDLogDebug("Address in Locate - Road name is `nil`")
-            return nil
+            return fallbackAddress
         }
         
         // If address does not match the road that the user is on,
         // do not return an address
         guard Address.addressContainsStreet(address: estimatedAddress.streetName, streetName: roadName) else {
             DDLogDebug("Address in Locate - Address and nearest road do not match - address: \"\(estimatedAddress)\", nearest road: \"\(roadName)\"")
-            return nil
+            return estimatedAddress.streetName.isEmpty ? fallbackAddress : nil
         }
         
-        // If we cannot parse the street number, do not return
-        // an address
-        return estimatedAddress.subThoroughfare
+        return fallbackAddress
     }
     
     // Inside Building
@@ -127,8 +127,9 @@ struct AlongRoadLocationCallout: LocationCalloutProtocol {
                 sounds.append(TTSSound(string, direction: .ahead))
             }
             
-            // We only append more information (such as intersections or roundabouts) to the callout if a user initiated it
-            guard origin == .locate else {
+            // Include the detailed address and next intersection both for manual locate
+            // and for automatic location callouts so the spoken output matches the detail view.
+            guard origin == .locate || origin == .auto else {
                 return Sounds(sounds)
             }
             

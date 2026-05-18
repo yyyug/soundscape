@@ -1723,6 +1723,12 @@
 /* Accessibility hint for opening location in Apple Maps. */
 "location_action.open_in_apple_maps.hint" = "Opens this location in Apple Maps app";
 
+/* Action button text for opening Google Maps with location. */
+"location_action.open_in_google_maps" = "Open in Google Maps";
+
+/* Accessibility hint for opening location in Google Maps. */
+"location_action.open_in_google_maps.hint" = "Opens this location in Google Maps app";
+
 /* Sleep Button,  similar to `sleep.wake_up_now`. Text that is shown in a small round button. It should be constrained to two lines with up to 12 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
 "sleep.ui.wake_up_now" = "Wake Up\nNow";
 

@@ -691,7 +691,7 @@
 //------------------------------------------------------------------------------
 
 /* Street Preview, View title, Street Preview is functionality that allows the user to select any location in the world to preview the area at street level in order to familiarise and build a mental map of the space. {NumberedPlaceholder="Street Preview"} */
-"preview.title" = "街景預覽";
+"preview.title" = "街道御覽";
 
 /* Text displayed when the current location is not known while previewing */
 "preview.current_intersection_unknown.label" = "Current Location Unknown";
@@ -730,34 +730,34 @@
 "preview.search.accessibility_hint" = "Double tap to search or browse nearby places";
 
 /* Title for the alert displayed when ther user tries to restart the preview experience at a new location */
-"preview.alert.restart.title" = "Preview Already in Progress";
+"preview.alert.restart.title" = "街道御覽正在進行中";
 
 /* Message for the alert displayed when ther user tries to restart the preview experience at a new location. {NumberedPlaceholder="Street Preview"} */
-"preview.alert.restart.message" = "Do you want to restart Street Preview at this location?";
+"preview.alert.restart.message" = "要在這個位置重新開始街道御覽嗎？";
 
 /* Button for the alert displayed when ther user tries to restart the preview experience at a new location */
-"preview.alert.restart.button" = "Restart";
+"preview.alert.restart.button" = "重新開始";
 
 /* Callout that occurs when the preview experience pauses, The translation for "Street preview" should match the translation for "preview.title". {NumberedPlaceholder="Street Preview"} */
-"preview.callout.paused" = "Street Preview paused";
+"preview.callout.paused" = "街道御覽已暫停";
 
 /* Callout that occurs when the user exits the preview experience. {NumberedPlaceholder="Street Preview"} */
-"preview.callout.end" = "Ending Street Preview";
+"preview.callout.end" = "結束街道御覽";
 
 /* Callout that occurs when users tap the button to return to the previous intersection they were at in the preview */
-"preview.callout.previous" = "Returning to previous intersection";
+"preview.callout.previous" = "返回上一個路口";
 
 /* Callout that occurs when the user starts preview mode at an intersection, %@ is the name of the intersection, "Starting preview at 9th Avenue North and Harrison Street" {NumberedPlaceholder="%@","Street Preview"} */
-"preview.callout.start.at" = "Starting Street Preview at %@";
+"preview.callout.start.at" = "從 %@ 開始街道御覽";
 
 /* Callout that occurs when the user starts preview mode along a road, %@ is the name of the road, "Starting preview along 9th Avenue North" {NumberedPlaceholder="%@","Street Preview"} */
-"preview.callout.start.along" = "Starting Street Preview along %@";
+"preview.callout.start.along" = "從 %@ 開始街道御覽";
 
 /* Callout that occurs when the user resumes a paused preview at an intersection, %@ is the name of the intersection, "Continuing preview at 9th Avenue North and Harrison Street" {NumberedPlaceholder="%@","Street Preview"} */
-"preview.callout.continue.at" = "Continuing Street Preview at %@";
+"preview.callout.continue.at" = "在 %@ 繼續街道御覽";
 
 /* Callout that occurs when the user resumes a paused preview mode along a road, %@ is the name of the road, "Continuing preview along 9th Avenue North" {NumberedPlaceholder="%@","Street Preview"} */
-"preview.callout.continue.along" = "Continuing Street Preview along %@";
+"preview.callout.continue.along" = "沿著 %@ 繼續街道御覽";
 
 /* Callout that occurs the first time the user gets to the "road finder" experience during their first use of the Street Preview experience. This is telling them to physically turn their phone so the app can tell them about the roads they are pointing the phone towards. */
 "preview.callout.road_finder.instructions" = "轉動手機以預覽可前進道路";
@@ -781,16 +781,16 @@
 "preview.callout.approach.end" = "即將到達道路終點";
 
 /* Callout that occurs when the user selects a road that requires a left hand turn, %@ is the name of the street that the user is turning on {NumberedPlaceholder="%@"} */
-"preview.callout.turn.left" = "Turned left. Now along %@";
+"preview.callout.turn.left" = "左轉，現在沿著 %@";
 
 /* Callout that occurs when the user selects a road that requires a right hand turn, %@ is the name of the street that the user is turning on {NumberedPlaceholder="%@"} */
-"preview.callout.turn.right" = "Turned right. Now along %@";
+"preview.callout.turn.right" = "右轉，現在沿著 %@";
 
 /* Callout that occurs when the user selects to continue down the same road, %@ is the name of the street that the user is continuing along {NumberedPlaceholder="%@"} */
-"preview.callout.turn.continue" = "Continuing along %@";
+"preview.callout.turn.continue" = "繼續沿著 %@";
 
 /* Callout that occurs when the user is currently in a roundabout and selects a road that leaves the roundabout, %@ is the name of the street that the user is turning on {NumberedPlaceholder="%@"} */
-"preview.callout.turn.roundabout" = "Departed roundabout. Now along %@";
+"preview.callout.turn.roundabout" = "離開環形路口，現在沿著 %@";
 
 /* Title for a setting to include unnamed roads */
 "preview.include_unnamed_roads.title" = "未命名道路";
@@ -866,13 +866,13 @@
 "location_detail.action.share.hint" = "點兩下以分享此位置";
 
 /* Voiceover hint for the action to preview */
-"location_detail.action.preview.hint" = "點兩下以在此位置開始預覽";
+"location_detail.action.preview.hint" = "點兩下以在此位置開始街道御覽";
 
 /* Text displayed when street preview is disabled */
-"location_detail.action.preview.hint.disabled" = "路線導引啟用時，Street Preview 無法使用";
+"location_detail.action.preview.hint.disabled" = "路線導引啟用時，街道御覽無法使用";
 
 /* Voiceover hint for the action to get directions */
-"location_detail.action.directions.hint" = "點兩下以在 Google 地圖開啟此位置";
+"location_detail.action.directions.hint" = "點兩下以在外部地圖 App 開啟此位置";
 
 /* Default address for a location */
 "location_detail.default.address" = "地址未知";
@@ -1729,32 +1729,32 @@
 //------------------------------------------------------------------------------
 
 /* Notification, Approaching Intersection */
-"intersection.approaching_intersection" = "Approaching intersection";
+"intersection.approaching_intersection" = "即將到達路口";
 
 /* Notification, %1$@ is a road name, %2$@ is the distance with units and %3$@ is the orientation, "Intersection with <Pike Street> <5 meters> <to the left>" {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
-"directions.intersection_with_name_distance_direction" = "Intersection with %1$@ %2$@ %3$@";
+"directions.intersection_with_name_distance_direction" = "與 %1$@ 的路口，距離 %2$@，位於%3$@";
 
 /* Notification, %1$@ is a road name, %2$@ is the distance with units, "Intersection with <Pike Street> <5 meters> away" {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.intersection_with_name_distance" = "Intersection with %1$@ %2$@ away";
+"directions.intersection_with_name_distance" = "與 %1$@ 的路口，距離 %2$@";
 
 /* Notification, %1$@ is a road name, %2$@ is the orientation, "Intersection with <Pike Street> ahead" {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.intersection_with_name_direction" = "Intersection with %1$@ %2$@";
+"directions.intersection_with_name_direction" = "與 %1$@ 的路口，位於%2$@";
 
 /* Notification, %@ is a road name, "Intersection with <Pike Street> nearby" {NumberedPlaceholder="%@"} */
-"directions.intersection_with_name" = "Intersection with %@ nearby";
+"directions.intersection_with_name" = "附近是與 %@ 的路口";
 
 /* Notification past tense, %1$@ is a road name, %2$@ is the distance with units and %3$@ is the orientation, "Intersection with <Pike Street> was <5 meters> <to the left>" {NumberedPlaceholder="%1$@", "%2$@", "%3$@"} */
-"directions.intersection_with_name_was_distance_direction" = "Intersection with %1$@ was %2$@ %3$@";
+"directions.intersection_with_name_was_distance_direction" = "與 %1$@ 的路口剛才距離 %2$@，位於%3$@";
 
 /* Notification, %@ will be a localized string with two or more roads, "<Alfred Street and High Street> Intersection" or "<Alfred Street, High Street and Pike Street> Intersection" {NumberedPlaceholder="%@"} */
-"intersection.named_intersection" = "%@ Intersection";
+"intersection.named_intersection" = "%@ 路口";
 
 //------------------------------------------------------------------------------
 // MARK: - Directions
 //------------------------------------------------------------------------------
 
 /* Notification, %@ is a point of interest, "At Starbucks" {NumberedPlaceholder="%@"} */
-"directions.at_poi" = "At %@";
+"directions.at_poi" = "在%@";
 
 /* Notification, %@ road name, "Along Pike Street." {NumberedPlaceholder="%@"} */
 "directions.along_road" = "沿著%@。";
@@ -1763,25 +1763,25 @@
 "directions.my_location" = "我的位置";
 
 /* Notification, %@ physical address, "Near address <1600 Pennsylvania Avenue>" {NumberedPlaceholder="%@"} */
-"directions.near_address" = "Near address %@";
+"directions.near_address" = "附近地址 %@";
 
 /* Notification, %1$@ is a road name, %2$@ is the distance with units, "Intersects with <Pike Street> in <200 feet>" {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.intersects_with_in" = "Intersects with %1$@ in %2$@";
+"directions.intersects_with_in" = "與 %1$@ 交會，距離 %2$@";
 
 /* Notification announced to the user that they are near a location, %@ is a physical address or the name of a place, examples: "Near 123 Columbia Street", "Near Starbucks", {NumberedPlaceholder="%@"} */
-"directions.near_name" = "Near %@";
+"directions.near_name" = "靠近 %@";
 
 /* Notification, Address is unknown */
-"directions.unknown_address" = "Address is unknown";
+"directions.unknown_address" = "地址未知";
 
 /* Notification, Unknown Road */
 "directions.unknown_road" = "未知道路";
 
 /* Button, Previous location */
-"directions.previous_location" = "Previous Location";
+"directions.previous_location" = "上一個位置";
 
 /* Notification, %@ road name, "Previous Location, Along <Pike Street>" {NumberedPlaceholder="%@"} */
-"directions.previous_location_along" = "Previous Location, Along %@";
+"directions.previous_location_along" = "上一個位置，沿著 %@";
 
 /* Notification, Entrance List */
 "directions.amenity.entrance_list" = "Entrance List";
@@ -1796,16 +1796,16 @@
 "directions.nearest_road_name_was_distance_direction" = "最近道路 %1$@，距離 %2$@，位於%3$@";
 
 /* Notification, %1$@ is the point of interest, %2$@ is the distance with units, %3$@ is the orientation, "<Starbucks> is <5 meters> <ahead to the left> {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
-"directions.poi_name_is_distance_direction" = "%1$@ is %2$@ %3$@";
+"directions.poi_name_is_distance_direction" = "%1$@，距離 %2$@，位於%3$@";
 
 /* Notification, %1$@ is the point of interest, %2$@ is the distance with units, "<Starbucks> is <5 meters> away {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.poi_name_is_distance" = "%1$@ is %2$@ away";
+"directions.poi_name_is_distance" = "%1$@，距離 %2$@";
 
 /* Notification past tense, %1$@ is the point of interest, %2$@ is the distance with units and %3$@ is the orientation, "<Starbucks> was <5 meters> <to the left> {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
-"directions.poi_name_was_distance_direction" = "%1$@ was %2$@ %3$@";
+"directions.poi_name_was_distance_direction" = "%1$@ 剛才距離 %2$@，位於%3$@";
 
 /* Notification, %1$@ is a number, %2$@ is the distance with units and %3$@ is the orientation, "Roundabout with <3> exits <5 meters> <to the left>" {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
-"directions.roundabout_with_exits_distance_direction" = "Roundabout with %1$@ exits %2$@ %3$@";
+"directions.roundabout_with_exits_distance_direction" = "有 %1$@ 個出口的環形路口，距離 %2$@，位於%3$@";
 
 /* Notification, %1$@ is a number, and %2$@ is the distance with units, "Roundabout with <3> exits <5 meters> away" {NumberedPlaceholder="%1$@", "%2$@"} */
 "directions.roundabout_with_exits_distance" = "Roundabout with %1$@ exits %2$@ away";
@@ -1862,49 +1862,49 @@
 "directions.name_continues_ahead.roundabout" = "%@, continues ahead in roundabout";
 
 /* Notification orientation, ahead. Used as the direction name in sentances such as "<Pike Street>, <ahead>". */
-"directions.direction.ahead" = "ahead";
+"directions.direction.ahead" = "前方";
 
 /* Notification orientation, ahead to the right. Used as the direction name in sentances such as "<Pike Street>, <ahead to the right>". */
-"directions.direction.ahead_to_the_right" = "ahead to the right";
+"directions.direction.ahead_to_the_right" = "右前方";
 
 /* Notification orientation, to the right. Used as the direction name in sentances such as "<Pike Street>, <to the right>". */
-"directions.direction.to_the_right" = "to the right";
+"directions.direction.to_the_right" = "右側";
 
 /* Notification orientation, behind to the right. Used as the direction name in sentances such as "<Pike Street>, <behind to the right>". */
-"directions.direction.behind_to_the_right" = "behind to the right";
+"directions.direction.behind_to_the_right" = "右後方";
 
 /* Notification orientation. Used as the direction name in sentances such as "<Pike Street>, <behind>". */
-"directions.direction.behind" = "behind";
+"directions.direction.behind" = "後方";
 
 /* Notification orientation, behind to the left. Used as the direction name in sentances such as "<Pike Street>, <behind to the left>". */
-"directions.direction.behind_to_the_left" = "behind to the left";
+"directions.direction.behind_to_the_left" = "左後方";
 
 /* Notification orientation, to the left. Used as the direction name in sentances such as "<Pike Street>, <to the left>". */
-"directions.direction.to_the_left" = "to the left";
+"directions.direction.to_the_left" = "左側";
 
 /* Notification orientation, ahead to the left. Used as the direction name in sentances such as "<Pike Street>, <ahead to the left>". */
-"directions.direction.ahead_to_the_left" = "ahead to the left";
+"directions.direction.ahead_to_the_left" = "左前方";
 
 /* Notification, away, such as 'a location is away' */
-"directions.direction.away" = "away";
+"directions.direction.away" = "附近";
 
 /* Notification, %@ is the point of interest, "Starbucks close by" {NumberedPlaceholder="%@"} */
-"directions.name_close_by" = "%@ close by";
+"directions.name_close_by" = "%@，就在附近";
 
 /* Notification, %1$@ is a point of interest and %2$@ is distance with units, "<Starbucks> about <5 meters>" {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.name_about_distance" = "%1$@ about %2$@";
+"directions.name_about_distance" = "%1$@，約 %2$@";
 
 /* Notification, %1$@ is a point of interest and %2$@ is the distance with units, "<Starbucks> around <5 meters>" {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.name_around_distance" = "%1$@ around %2$@";
+"directions.name_around_distance" = "%1$@，大約 %2$@";
 
 /* Notification, %1$@ is a point of interest and %2$@ is a physical address,"<Some Place> is nearby. Street address is <Some Address>" {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.name_is_nearby_street_address" = "%1$@ is nearby. Street address is %2$@.";
+"directions.name_is_nearby_street_address" = "%1$@ 就在附近，地址是 %2$@。";
 
 /* Notification, %1$@ is a point of interest, %2$@ is distance with units and %3$@ is a physical address, "<Some Place> is currently <5 meters>. Street address is <Some Address>" {NumberedPlaceholder="%1$@", "%2$@","%3$@"} */
-"directions.name_is_currently_street_address" = "%1$@ is currently %2$@. Street address is %3$@.";
+"directions.name_is_currently_street_address" = "%1$@ 目前距離 %2$@，地址是 %3$@。";
 
 /* Notification, %1$@ is a point of interest and %2$@ is a physical address, "<Some Place>. Street address is <Some Address>. Distance unknown." {NumberedPlaceholder="%1$@", "%2$@"} */
-"directions.name_street_address" = "%1$@. Street address is %2$@. Distance unknown.";
+"directions.name_street_address" = "%1$@，地址是 %2$@，距離未知。";
 
 //------------------------------------------------------------------------------
 // MARK: Directions (Traveling with Cardinal Directions)
@@ -2121,19 +2121,19 @@
 "distance.format.m" = "%@ m";
 
 /* Preserve meter unit - Do not convert but can translate. Distance string, singular. %@ is a singular number, "1 meter" {NumberedPlaceholder="%@"} */
-"distance.format.meter" = "%@ meter";
+"distance.format.meter" = "%@ 公尺";
 
 /* Preserve meters unit - Do not convert but can translate. Distance string, plural. %@ is a plural number, "15 meters" {NumberedPlaceholder="%@"} */
-"distance.format.meters" = "%@ meters";
+"distance.format.meters" = "%@ 公尺";
 
 /* Preserve km unit - Do not convert but can translate abbreviation of kilometer. Distance string. %@ is a number, "15 km" {NumberedPlaceholder="%@"} */
-"distance.format.km" = "%@ km";
+"distance.format.km" = "%@ 公里";
 
 /* Preserve kilometer unit - Do not convert but can translate. Distance string, singular. %@ is a singular number, "1 kilometer" {NumberedPlaceholder="%@"} */
-"distance.format.kilometer" = "%@ kilometer";
+"distance.format.kilometer" = "%@ 公里";
 
 /* Preserve kilometers unit - Do not convert but can translate. Distance string, plural. %@ is a plural number, "15 kilometers" {NumberedPlaceholder="%@"} */
-"distance.format.kilometers" = "%@ kilometers";
+"distance.format.kilometers" = "%@ 公里";
 
 /* Preserve ft (Feet Abbreviation) unit - Do not convert but can translate. Distance string. %@ is a number, "15 ft" {NumberedPlaceholder="%@"} */
 "distance.format.ft" = "%@ ft";
@@ -2552,7 +2552,7 @@
 //------------------------------------------------------------------------------
 
 /* An title shown to user when he wants to open a location in a third party maps app */
-"third_party_apps.general.maps" = "Open in external maps app";
+"third_party_apps.general.maps" = "在外部地圖 App 中開啟";
 
 //------------------------------------------------------------------------------
 // MARK: - iCloud
@@ -3179,7 +3179,7 @@
 //------------------------------------------------------------------------------
 
 /* Open Street Map term. Pedestrians can cross a street here; e.g., zebra crossing. Known as crosswalks in American English, and crossings in British English. */
-"osm.tag.crossing" = "Crosswalk";
+"osm.tag.crossing" = "行人穿越道";
 
 /* Open Street Map term. Used to describe the type of the feature which is currently under construction. */
 "osm.tag.construction" = "Construction";
@@ -3643,10 +3643,16 @@
 
 
 /* Action button text for opening Apple Maps with location. */
-"location_action.open_in_apple_maps" = "在 Google 地圖中開啟";
+"location_action.open_in_apple_maps" = "在 Apple 地圖中開啟";
 
 /* Accessibility hint for opening location in Apple Maps. */
-"location_action.open_in_apple_maps.hint" = "在 Google 地圖開啟此位置";
+"location_action.open_in_apple_maps.hint" = "在 Apple 地圖開啟此位置";
+
+/* Action button text for opening Google Maps with location. */
+"location_action.open_in_google_maps" = "在 Google 地圖中開啟";
+
+/* Accessibility hint for opening location in Google Maps. */
+"location_action.open_in_google_maps.hint" = "在 Google 地圖開啟此位置";
 
 
 /* Live View - ARCore Geospatial */
