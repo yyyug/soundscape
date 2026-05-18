@@ -72,6 +72,7 @@ class CalloutButtonPanelViewController: UIViewController {
         
         // Configure header
         headerLabel.text = GDLocalizedString("callouts.panel.title").uppercasedWithAppLocale()
+        headerLabel.isHidden = true
                 
         configureButtonLabels()
         updateModeLabel()

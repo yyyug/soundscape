@@ -15,7 +15,7 @@
 "general.alert.skip" = "Skip";
 
 /* Title for button to cancel alert */
-"general.alert.cancel" = "Cancel";
+"general.alert.cancel" = "取消";
 
 /* Title for button to dismiss alert */
 "general.alert.not_now" = "Not Now";
@@ -1283,7 +1283,7 @@
 "callout_mode.walking" = "步行";
 
 /* Label for callout range mode when using automotive distances and trigger ranges. */
-"callout_mode.automotive" = "車行";
+"callout_mode.automotive" = "駕駛";
 
 /* Action-sheet title for selecting callout range mode. */
 "callout_mode.selector.title" = "選擇提示模式";
@@ -1488,16 +1488,16 @@
 //------------------------------------------------------------------------------
 
 /* Search results, No results found. Edit text or press Search for more. */
-"search.no_results_found_with_action" = "No results found. Edit text or press Search for more.";
+"search.no_results_found_with_action" = "未找到結果。請編輯文字或按搜尋以獲取更多結果。";
 
 /* Search results, No results Found. Try editing your search term. */
-"search.no_results_found_with_hint" = "No results found. Try editing your search term.";
+"search.no_results_found_with_hint" = "未找到結果。請嘗試修改您的搜尋詞。";
 
 /* Search results, No results found. */
-"searching.no_results_found_title" = "Oops! No results found";
+"searching.no_results_found_title" = "找不到結果";
 
 /* Search results, No results found. */
-"searching.no_results_found_message" = "If you're looking for a specific place, you can try searching by name or address.";
+"searching.no_results_found_message" = "如果您在尋找特定地點，可以嘗試按名稱或地址搜尋。";
 
 /* Search results, No results found when offline. */
 "searching.offline" = "Search is disabled while offline";
@@ -1515,10 +1515,10 @@
 "search.choose_destination" = "Choose destination";
 
 /* Search result, %@ results found. First result: %@ */
-"search.results_found_first_result" = "%@ results found. First result: %@";
+"search.results_found_first_result" = "找到 %@ 個結果。第一個結果：%@";
 
 /* Error Message, e there are any places nearby. If you're looking for a specific place, you can try searching by name or address */
-"search.no_results_found_error" = "It doesn't look like there are any places nearby. If you're looking for a specific place, you can try searching by name or address.";
+"search.no_results_found_error" = "附近似乎沒有任何地點。如果您在尋找特定地點，可以嘗試按名稱或地址搜尋。";
 
 /* Search using current location */
 "search.use_current_location" = "Current Location";
@@ -1570,7 +1570,7 @@
 //------------------------------------------------------------------------------
 
 /* Title for the button panel at the bottom of the home view */
-"callouts.panel.title" = "Hear My Surroundings";
+"callouts.panel.title" = "聆聽周圍";
 
 /* Button, Turn all callouts on or off */
 "callouts.turn_on_off" = "Turn all callouts on or off";
@@ -1649,10 +1649,10 @@
 "sleep.snoozing" = "Snoozing";
 
 /* Sleep Title, Sleep. Putting the app in an idle state for a period of time. */
-"sleep.sleep" = "Sleep";
+"sleep.sleep" = "睡眠";
 
 /* App is currently Sleeping. Putting the app in an idle state for a period of time. */
-"sleep.sleeping" = "Sleeping";
+"sleep.sleeping" = "睡眠中";
 
 /* Sleep Notification, the app is currently in snoozing mode. When you leave your current location, the app will automatically wake up. "Location Services" refers to the feature of the same name in iOS. It should be translated in the same manner that it is in the Settings app under Settings > Privacy > Location Services. {NumberedPlaceholder="Soundscape"} */
 "sleep.snoozing.message" = "Soundscape is currently snoozing. When you leave your current location, Soundscape will automatically wake up. This uses Location Services in a low power mode to conserve your phone's battery. Tap the button below to wake up now.";
@@ -1756,7 +1756,7 @@
 "directions.along_road" = "Along %@.";
 
 /* Button, My location */
-"directions.my_location" = "My Location";
+"directions.my_location" = "我的位置";
 
 /* Notification, %@ physical address, "Near address <1600 Pennsylvania Avenue>" {NumberedPlaceholder="%@"} */
 "directions.near_address" = "Near address %@";
@@ -1907,180 +1907,180 @@
 //------------------------------------------------------------------------------
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.n" = "Traveling north";
+"directions.traveling.n" = "往北行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.ne" = "Traveling northeast";
+"directions.traveling.ne" = "往東北行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.e" = "Traveling east";
+"directions.traveling.e" = "往東行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.se" = "Traveling southeast";
+"directions.traveling.se" = "往東南行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.s" = "Traveling south";
+"directions.traveling.s" = "往南行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.sw" = "Traveling southwest";
+"directions.traveling.sw" = "往西南行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.w" = "Traveling west";
+"directions.traveling.w" = "往西行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street */
-"directions.traveling.nw" = "Traveling northwest";
+"directions.traveling.nw" = "往西北行駛";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.n" = "Facing north";
+"directions.facing.n" = "面向北";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.ne" = "Facing northeast";
+"directions.facing.ne" = "面向東北";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.e" = "Facing east";
+"directions.facing.e" = "面向東";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.se" = "Facing southeast";
+"directions.facing.se" = "面向東南";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.s" = "Facing south";
+"directions.facing.s" = "面向南";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.sw" = "Facing southwest";
+"directions.facing.sw" = "面向西南";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.w" = "Facing west";
+"directions.facing.w" = "面向西";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street */
-"directions.facing.nw" = "Facing northwest";
+"directions.facing.nw" = "面向西北";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.n" = "Heading north";
+"directions.heading.n" = "往北行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.ne" = "Heading northeast";
+"directions.heading.ne" = "往東北行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.e" = "Heading east";
+"directions.heading.e" = "往東行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.se" = "Heading southeast";
+"directions.heading.se" = "往東南行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.s" = "Heading south";
+"directions.heading.s" = "往南行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.sw" = "Heading southwest";
+"directions.heading.sw" = "往西南行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.w" = "Heading west";
+"directions.heading.w" = "往西行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle. */
-"directions.heading.nw" = "Heading northwest";
+"directions.heading.nw" = "往西北行走";
 
 //------------------------------------------------------------------------------
 // MARK: Directions (Traveling Along with Cardinal Directions)
 //------------------------------------------------------------------------------
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.n" = "Traveling north along %@";
+"directions.along.traveling.n" = "往北沿 %@ 行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.ne" = "Traveling northeast along %@";
+"directions.along.traveling.ne" = "往東北沿 %@ 行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.e" = "Traveling east along %@";
+"directions.along.traveling.e" = "往東沿 %@ 行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.se" = "Traveling southeast along %@";
+"directions.along.traveling.se" = "往東南沿 %@ 行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.s" = "Traveling south along %@";
+"directions.along.traveling.s" = "往南沿 %@ 行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.sw" = "Traveling southwest along %@";
+"directions.along.traveling.sw" = "往西南沿 %@ 行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.w" = "Traveling west along %@";
+"directions.along.traveling.w" = "往西沿 %@ 行駛";
 
 /* Traveling in a vehicle such as a train, bus, car with a cardinal direction, %@ is a road name. Whenever the vehicle changes roads, the app will announce a location update by saying the direction the vehicle is travelling in and the name of the road e.g. Travelling east along High Street {NumberedPlaceholder="%@"} */
-"directions.along.traveling.nw" = "Traveling northwest along %@";
+"directions.along.traveling.nw" = "往西北沿 %@ 行駛";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.n" = "Facing north along %@";
+"directions.along.facing.n" = "面向北，沿 %@";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.ne" = "Facing northeast along %@";
+"directions.along.facing.ne" = "面向東北，沿 %@";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.e" = "Facing east along %@";
+"directions.along.facing.e" = "面向東，沿 %@";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.se" = "Facing southeast along %@";
+"directions.along.facing.se" = "面向東南，沿 %@";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.s" = "Facing south along %@";
+"directions.along.facing.s" = "面向南，沿 %@";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.sw" = "Facing southwest along %@";
+"directions.along.facing.sw" = "面向西南，沿 %@";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.w" = "Facing west along %@";
+"directions.along.facing.w" = "面向西，沿 %@";
 
 /* Facing a cardinal direction. If the user is not travelling in a vehicle, or not moving (e.g. on foot) but is stationary along a road somewhere, the application will know which way the user is facing e.g. Facing east along High Street, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.facing.nw" = "Facing northwest along %@";
+"directions.along.facing.nw" = "面向西北，沿 %@";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.n" = "Heading north along %@";
+"directions.along.heading.n" = "往北沿 %@ 行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.ne" = "Heading northeast along %@";
+"directions.along.heading.ne" = "往東北沿 %@ 行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.e" = "Heading east along %@";
+"directions.along.heading.e" = "往東沿 %@ 行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.se" = "Heading southeast along %@";
+"directions.along.heading.se" = "往東南沿 %@ 行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.s" = "Heading south along %@";
+"directions.along.heading.s" = "往南沿 %@ 行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.sw" = "Heading southwest along %@";
+"directions.along.heading.sw" = "往西南沿 %@ 行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle, %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.w" = "Heading west along %@";
+"directions.along.heading.w" = "往西沿 %@ 行走";
 
 /* Walking with a cardinal direction. If the user is walking and heading along a road in a specific direction then the app will know the direction of travel of the user along that road e.g. Heading east along High Street. This is different to when a user is moving in a vehicle., %@ is a road name {NumberedPlaceholder="%@"} */
-"directions.along.heading.nw" = "Heading northwest along %@";
+"directions.along.heading.nw" = "往西北沿 %@ 行走";
 
 //------------------------------------------------------------------------------
 // MARK: Directions (Cardinal Directions)
 //------------------------------------------------------------------------------
 
 /* Direction, North */
-"directions.cardinal.north" = "North";
+"directions.cardinal.north" = "北";
 
 /* Direction, North East */
-"directions.cardinal.north_east" = "North East";
+"directions.cardinal.north_east" = "東北";
 
 /* Direction, East */
-"directions.cardinal.east" = "East";
+"directions.cardinal.east" = "東";
 
 /* Direction, South East */
-"directions.cardinal.south_east" = "South East";
+"directions.cardinal.south_east" = "東南";
 
 /* Direction, South */
-"directions.cardinal.south" = "South";
+"directions.cardinal.south" = "南";
 
 /* Direction, South West */
-"directions.cardinal.south_west" = "South West";
+"directions.cardinal.south_west" = "西南";
 
 /* Direction, West */
-"directions.cardinal.west" = "West";
+"directions.cardinal.west" = "西";
 
 /* Direction, North West */
-"directions.cardinal.north_west" = "North West";
+"directions.cardinal.north_west" = "西北";
 
 /* Direction, Abbreviation for North */
 "directions.cardinal.north.abb" = "N";
@@ -2154,13 +2154,13 @@
 //------------------------------------------------------------------------------
 
 /* Similar to `directions.my_location`. Text that is shown in a small square button. It should be constrained to two lines with up to 8 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
-"ui.action_button.my_location" = "My\nLocation";
+"ui.action_button.my_location" = "我的\n位置";
 
 /* Accessibility Notification, Double tap to hear about your current location. */
 "ui.action_button.my_location.acc_hint" = "Double tap to hear about your current location";
 
 /* Similar to `callouts.nearby_markers`. Text that is shown in a small square button. It should be constrained to two lines with up to 8 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
-"ui.action_button.nearby_markers" = "Nearby\nMarkers";
+"ui.action_button.nearby_markers" = "出行\n模式";
 
 /* Accessibility Notification, Double tap to hear about nearby places that you have marked */
 "ui.action_button.nearby_markers.acc_hint" = "Double tap to hear about nearby places that you have marked";
@@ -2172,13 +2172,13 @@
 "ui.action_button.my_location.action.start_audio_beacon" = "開始音訊信標";
 
 /* Similar to `help.orient.page_title`. Text that is shown in a small square button. It should be constrained to two lines with up to 8 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
-"ui.action_button.around_me" = "Around\nMe";
+"ui.action_button.around_me" = "我\n周圍";
 
 /* Accessibility Notification, Double tap to hear about places in the four quadrants around you */
 "ui.action_button.around_me.acc_hint" = "Double tap to hear about places in the four quadrants around you";
 
 /* Similar to `help.explore.page_title`. Text that is shown in a small square button. It should be constrained to two lines with up to 8 characters each. Use "\n" to represent a new line character. {NumberedPlaceholder="\n"} */
-"ui.action_button.ahead_of_me" = "Ahead\nof Me";
+"ui.action_button.ahead_of_me" = "我\n前方";
 
 /* Accessibility Notification, Double tap to hear about places in front of you */
 "ui.action_button.ahead_of_me.acc_hint" = "Double tap to hear about places in front of you";
@@ -2799,10 +2799,10 @@
 "help.offline.troubleshooting_description" = "Soundscape will try to resume normal operation when your phone is connected to Wi-Fi or cellular data is enabled and you are in an area with good signal. If your phone does have a good internet connection, but Soundscape does not resume normal operation, then there may be an outage in the Soundscape services.";
 
 /* Help Title, Around Me */
-"help.orient.page_title" = "Around Me";
+"help.orient.page_title" = "我周圍";
 
 /* Help Title, Ahead of Me */
-"help.explore.page_title" = "Ahead of Me";
+"help.explore.page_title" = "我前方";
 
 /* Help Title, Creating Markers */
 "help.creating_markers.page_title" = "Creating Markers";
