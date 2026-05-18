@@ -30,7 +30,7 @@ struct LocationActionAlert {
             return alert(for: error, dismissHandler: dismissHandler)
         }
         
-        return ErrorAlerts.buildGeneric(title: title, message: nil, dismissHandler: dismissHandler)
+        return ErrorAlerts.buildGeneric(title: title, message: error.localizedDescription, dismissHandler: dismissHandler)
     }
     
     static func restartPreview(previewHandler: ActionHandler?) -> UIAlertController {

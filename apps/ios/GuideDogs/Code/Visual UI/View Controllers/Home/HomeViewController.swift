@@ -97,6 +97,7 @@ class HomeViewController: UIViewController {
     // Callout Button Panel
     
     private weak var calloutButtonViewController: CalloutButtonPanelViewController?
+    private var didAutoAnnounceInitialMyLocation = false
     
     // MARK: View Life Cycle
     
@@ -134,7 +135,6 @@ class HomeViewController: UIViewController {
         
         // Subscribe to notifications
         NotificationCenter.default.addObserver(self, selector: #selector(self.handleLocationUpdatedNotification), name: Notification.Name.locationUpdated, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleExplorationNoCalloutsDebugNotification), name: .explorationNoCalloutsDebug, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.continueUserAction), name: Notification.Name.continueUserAction, object: nil)
         
         AppContext.shared.remoteCommandManager.delegate = self
@@ -220,6 +220,9 @@ class HomeViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        focusAccessibilityOnFirstItemIfNeeded()
+        attemptInitialMyLocationAnnouncementIfNeeded()
         
         if shouldFocusOnBeacon, UIAccessibility.isVoiceOverRunning, let vc = cardViewController?.currentVC as? BeaconViewHostingController {
             GDLogAppInfo("Focusing VoiceOver on the beacon UI")
@@ -521,23 +524,7 @@ extension HomeViewController {
         }
         
         lastLocation = location
-    }
-
-    @objc private func handleExplorationNoCalloutsDebugNotification(_ notification: Notification) {
-        guard presentedViewController == nil else {
-            return
-        }
-
-        let mode = (notification.userInfo?["mode"] as? String) ?? "unknown"
-        let headingText = (notification.userInfo?["headingText"] as? String) ?? "unknown"
-        let accuracyText = (notification.userInfo?["accuracyText"] as? String) ?? "unknown"
-        let latitude = (notification.userInfo?["latitude"] as? Double) ?? AppContext.shared.geolocationManager.location?.coordinate.latitude ?? 0.0
-        let longitude = (notification.userInfo?["longitude"] as? Double) ?? AppContext.shared.geolocationManager.location?.coordinate.longitude ?? 0.0
-
-        let message = String(format: "Mode: %@\nFacing: %@\nGPS accuracy: %@\nLat/Lon: %.6f, %.6f", mode, headingText, accuracyText, latitude, longitude)
-        let alert = UIAlertController(title: "Debug: no callouts", message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.dismiss"), style: .default))
-        present(alert, animated: true)
+        attemptInitialMyLocationAnnouncementIfNeeded()
     }
     
     @objc private func continueUserAction(_ notification: Notification) {
@@ -567,6 +554,40 @@ extension HomeViewController {
 }
 
 private extension HomeViewController {
+    func focusAccessibilityOnFirstItemIfNeeded() {
+        guard UIAccessibility.isVoiceOverRunning else {
+            return
+        }
+
+        guard presentedViewController == nil else {
+            return
+        }
+
+        let firstItem = searchController?.searchBar.searchTextField
+        UIAccessibility.post(notification: .screenChanged, argument: firstItem)
+    }
+
+    func attemptInitialMyLocationAnnouncementIfNeeded() {
+        guard !didAutoAnnounceInitialMyLocation else {
+            return
+        }
+
+        guard isViewLoaded, view.window != nil else {
+            return
+        }
+
+        guard presentedViewController == nil else {
+            return
+        }
+
+        guard AppContext.shared.geolocationManager.location != nil else {
+            return
+        }
+
+        didAutoAnnounceInitialMyLocation = true
+        AppContext.process(ExplorationModeToggled(.locate, sender: self, logContext: "auto_launch"))
+    }
+
     enum ExplorationPOIMode {
         case aroundMe
         case aheadOfMe

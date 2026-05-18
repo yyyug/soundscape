@@ -186,12 +186,6 @@ class CalloutButtonPanelViewController: UIViewController {
         }
 
         var components: [String] = []
-        let heading = headingObserver?.value ?? Heading.defaultValue
-
-        if SettingsContext.shared.gpsFacingEnabled {
-            let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
-            components.append(GDLocalizedString("status.gps.facing.component", facing))
-        }
 
         if SettingsContext.shared.gpsAccuracyEnabled {
             let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)

@@ -815,7 +815,7 @@
 
 
 /*  */
-"preview.title" = "Soundscape Street Preview";
+"preview.title" = "Street Preview";
 
 
 /*  */
@@ -871,7 +871,7 @@
 
 
 /*  */
-"preview.alert.restart.message" = "Vil du starte Soundscape Street Preview på nytt ved denne posisjonen?";
+"preview.alert.restart.message" = "Vil du starte Street Preview på nytt ved denne posisjonen?";
 
 
 /*  */
@@ -883,7 +883,7 @@
 
 
 /*  */
-"preview.callout.end" = "Avslutter Soundscape Street Preview";
+"preview.callout.end" = "Avslutter Street Preview";
 
 
 /*  */
@@ -955,7 +955,7 @@
 
 
 /*  */
-"preview.include_unnamed_roads.subtitle" = "Ta med veier uten navn i Soundscape Street Preview";
+"preview.include_unnamed_roads.subtitle" = "Ta med veier uten navn i Street Preview";
 
 
 /*  */
@@ -967,11 +967,11 @@
 
 
 /*  */
-"preview.include_unnamed_roads.hint.off" = "Dobbelttrykk for å ta med veier uten navn i Soundscape Street Preview";
+"preview.include_unnamed_roads.hint.off" = "Dobbelttrykk for å ta med veier uten navn i Street Preview";
 
 
 /*  */
-"preview.include_unnamed_roads.hint.on" = "Dobbelttrykk for å utelate veier uten navn i Soundscape Street Preview";
+"preview.include_unnamed_roads.hint.on" = "Dobbelttrykk for å utelate veier uten navn i Street Preview";
 
 
 /*  */
@@ -979,7 +979,7 @@
 
 
 /*  */
-"preview.tutorial.title.1" = "Velkommen til Soundscape Street Preview.";
+"preview.tutorial.title.1" = "Velkommen til Street Preview.";
 
 
 /*  */
@@ -4468,3 +4468,4 @@
 /* Live View - ARCore Geospatial */
 "ui.action_button.live_view" = "Direktevisning";
 "ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";
+

@@ -18,15 +18,17 @@ import CoreLocation
     let addressLine: String
     let streetName: String
     let subThoroughfare: String?
+    let houseNumber: String?
     
     // MARK: Initialization
     
-    init(name: String, location: CLLocation, addressLine: String, streetName: String, subThoroughfare: String?) {
+    init(name: String, location: CLLocation, addressLine: String, streetName: String, subThoroughfare: String?, houseNumber: String? = nil) {
         self.name = name
         self.location = location
         self.addressLine = addressLine
         self.streetName = streetName
         self.subThoroughfare = subThoroughfare
+        self.houseNumber = houseNumber
     }
     
 }

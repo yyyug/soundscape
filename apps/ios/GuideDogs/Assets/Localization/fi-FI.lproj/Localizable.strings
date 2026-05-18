@@ -815,7 +815,7 @@
 
 
 /*  */
-"preview.title" = "Soundscape Street Preview";
+"preview.title" = "Street Preview";
 
 
 /*  */
@@ -871,7 +871,7 @@
 
 
 /*  */
-"preview.alert.restart.message" = "Haluatko käynnistää Soundscape Street Preview -toiminnon uudelleen tässä sijainnissa?";
+"preview.alert.restart.message" = "Haluatko käynnistää Street Preview -toiminnon uudelleen tässä sijainnissa?";
 
 
 /*  */
@@ -883,7 +883,7 @@
 
 
 /*  */
-"preview.callout.end" = "Soundscape Street Preview -toiminnon päättäminen";
+"preview.callout.end" = "Street Preview -toiminnon päättäminen";
 
 
 /*  */
@@ -955,7 +955,7 @@
 
 
 /*  */
-"preview.include_unnamed_roads.subtitle" = "Sisällytä nimettömät tiet Soundscape Street Preview -toimintoon";
+"preview.include_unnamed_roads.subtitle" = "Sisällytä nimettömät tiet Street Preview -toimintoon";
 
 
 /*  */
@@ -967,11 +967,11 @@
 
 
 /*  */
-"preview.include_unnamed_roads.hint.off" = "Kaksoisnapauta sisällyttääksesi nimettömät tiet Soundscape Street Preview -toimintoon";
+"preview.include_unnamed_roads.hint.off" = "Kaksoisnapauta sisällyttääksesi nimettömät tiet Street Preview -toimintoon";
 
 
 /*  */
-"preview.include_unnamed_roads.hint.on" = "Kaksoisnapauta jättääksesi pois nimettömät tiet Soundscape Street Preview -toiminnosta";
+"preview.include_unnamed_roads.hint.on" = "Kaksoisnapauta jättääksesi pois nimettömät tiet Street Preview -toiminnosta";
 
 
 /*  */
@@ -979,7 +979,7 @@
 
 
 /*  */
-"preview.tutorial.title.1" = "Tervetuloa Soundscape Street Preview -toimintoon!";
+"preview.tutorial.title.1" = "Tervetuloa Street Preview -toimintoon!";
 
 
 /*  */
@@ -4468,3 +4468,4 @@
 /* Live View - ARCore Geospatial */
 "ui.action_button.live_view" = "Reaaliaikainen näkymä";
 "ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";
+

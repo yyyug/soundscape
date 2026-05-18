@@ -25,13 +25,6 @@ class SettingsViewController: BaseTableViewController {
         case telemetry = 5
     }
     
-    private enum CalloutsRow: Int, CaseIterable {
-        case all = 0
-        case poi = 1
-        case mobility = 2
-        case beacon = 3
-    }
-    
     private static let cellIdentifiers: [IndexPath: String] = [
         IndexPath(row: 0, section: Section.general.rawValue): "languageAndRegion",
         IndexPath(row: 1, section: Section.general.rawValue): "voice",
@@ -39,23 +32,9 @@ class SettingsViewController: BaseTableViewController {
         IndexPath(row: 3, section: Section.general.rawValue): "volumeSettings",
         IndexPath(row: 4, section: Section.general.rawValue): "manageDevices",
         IndexPath(row: 7, section: Section.general.rawValue): "siriShortcuts",
-        
-        IndexPath(row: 0, section: Section.audio.rawValue): "mixAudio",
 
-        IndexPath(row: CalloutsRow.all.rawValue, section: Section.callouts.rawValue): "allCallouts",
-        IndexPath(row: CalloutsRow.poi.rawValue, section: Section.callouts.rawValue): "poiCallouts",
-        IndexPath(row: CalloutsRow.mobility.rawValue, section: Section.callouts.rawValue): "mobilityCallouts",
-        IndexPath(row: CalloutsRow.beacon.rawValue, section: Section.callouts.rawValue): "beaconCallouts",
-        
-        IndexPath(row: 0, section: Section.streetPreview.rawValue): "streetPreview",
         IndexPath(row: 0, section: Section.troubleshooting.rawValue): "troubleshooting",
         IndexPath(row: 0, section: Section.telemetry.rawValue): "telemetry"
-    ]
-    
-    private static let collapsibleCalloutIndexPaths: [IndexPath] = [
-        IndexPath(row: CalloutsRow.poi.rawValue, section: Section.callouts.rawValue),
-        IndexPath(row: CalloutsRow.mobility.rawValue, section: Section.callouts.rawValue),
-        IndexPath(row: CalloutsRow.beacon.rawValue, section: Section.callouts.rawValue)
     ]
     
     // MARK: Properties
@@ -84,7 +63,7 @@ class SettingsViewController: BaseTableViewController {
         switch sectionType {
         case .general: return 8
         case .audio: return 1
-        case .callouts: return SettingsContext.shared.automaticCalloutsEnabled ? 4 : 1
+        case .callouts: return 1
         case .streetPreview: return 1
         case .troubleshooting: return 1
         case .telemetry: return 1
@@ -121,30 +100,19 @@ class SettingsViewController: BaseTableViewController {
             cell.selectionStyle = .default
             return cell
 
-        case .callouts:
-            let cell = tableView.dequeueReusableCell(withIdentifier: identifier ?? "default", for: indexPath) as! CalloutSettingsCellView
-            cell.delegate = self
+        case .audio:
+            return makeEntryCell(title: GDLocalizedString("settings.audio.media_controls"))
 
-            if let rowType = CalloutsRow(rawValue: indexPath.row) {
-                switch rowType {
-                case .all: cell.type = .all
-                case .poi: cell.type = .poi
-                case .mobility: cell.type = .mobility
-                case .beacon: cell.type = .beacon
-                }
-            }
-            
-            return cell
-            
+        case .callouts:
+            return makeEntryCell(title: GDLocalizedString("menu.manage_callouts"))
+
+        case .streetPreview:
+            return makeEntryCell(title: GDLocalizedString("preview.title"))
+
         case .telemetry:
             let cell = tableView.dequeueReusableCell(withIdentifier: identifier ?? "default", for: indexPath) as! TelemetrySettingsTableViewCell
             cell.parent = self
             
-            return cell
-            
-        case .audio:
-            let cell = tableView.dequeueReusableCell(withIdentifier: identifier ?? "default", for: indexPath) as! MixAudioSettingCell
-            cell.delegate = self
             return cell
             
         default:
@@ -160,9 +128,7 @@ class SettingsViewController: BaseTableViewController {
 
         switch sectionType {
         case .general: return GDLocalizedString("settings.section.general")
-        case .audio: return GDLocalizedString("settings.audio.media_controls")
-        case .callouts: return GDLocalizedString("menu.manage_callouts")
-        case .streetPreview: return GDLocalizedString("preview.title")
+        case .audio, .callouts, .streetPreview: return nil
         case .troubleshooting: return GDLocalizedString("settings.section.troubleshooting")
         case .telemetry: return GDLocalizedString("settings.section.telemetry")
         }
@@ -172,9 +138,7 @@ class SettingsViewController: BaseTableViewController {
         guard let sectionType = Section(rawValue: section) else { return nil }
 
         switch sectionType {
-        case .audio: return GDLocalizedString("settings.audio.mix_with_others.description")
-        case .general: return nil
-        case .streetPreview: return GDLocalizedString("preview.include_unnamed_roads.subtitle")
+        case .general, .audio, .callouts, .streetPreview: return nil
         case .telemetry: return GDLocalizedString("settings.section.telemetry.footer")
         default: return nil
         }
@@ -185,92 +149,42 @@ class SettingsViewController: BaseTableViewController {
             tableView.deselectRow(at: indexPath, animated: true)
         }
 
-        guard indexPath.section == Section.general.rawValue else {
+        guard let section = Section(rawValue: indexPath.section) else {
             return
         }
 
-        switch indexPath.row {
-        case GeneralRow.checkAudio:
-            AppContext.process(CheckAudioEvent())
-        case GeneralRow.gpsInformation:
-            let vc = GPSInformationSettingsViewController(style: .insetGrouped)
-            navigationController?.pushViewController(vc, animated: true)
-        default:
+        switch section {
+        case .general:
+            switch indexPath.row {
+            case GeneralRow.checkAudio:
+                AppContext.process(CheckAudioEvent())
+            case GeneralRow.gpsInformation:
+                let vc = GPSInformationSettingsViewController(style: .insetGrouped)
+                navigationController?.pushViewController(vc, animated: true)
+            default:
+                return
+            }
+        case .audio:
+            navigationController?.pushViewController(MediaControlsSettingsViewController(style: .insetGrouped), animated: true)
+        case .callouts:
+            navigationController?.pushViewController(ManageCalloutsSettingsViewController(style: .insetGrouped), animated: true)
+        case .streetPreview:
+            navigationController?.pushViewController(StreetPreviewSettingsViewController(style: .insetGrouped), animated: true)
+        case .troubleshooting, .telemetry:
             return
         }
     }
-}
 
-extension SettingsViewController: MixAudioSettingCellDelegate {
-    func onSettingValueChanged(_ cell: MixAudioSettingCell, settingSwitch: UISwitch) {
-        // Note: The UI for this setting is "Enable Media Controls" but the setting is stored as
-        //       "Mixes with Others" (the inverse of "Enable Media Controls")
-        
-        guard settingSwitch.isOn else {
-            // If the setting switch is now off, the user disabled media controls. This doesn't
-            // require a warning alert, so just set mixesWithOthers to true and return.
-            updateSetting(true)
-            return
-        }
-        
-        // Otherwise, the user is turning on media controls, so we need to show a warning to make sure
-        // they understand what this change means in terms of how other audio apps will stop Soundscape
-        // from playing. This warning was added based on bug bash feedback on 12/3/20.
-        // Show an alert indicating that the user can download an enhanced version of the voice in Settings
-        let alert = UIAlertController(title: GDLocalizedString("general.alert.confirmation_title"),
-                                      message: GDLocalizedString("setting.audio.mix_with_others.confirmation"),
-                                      preferredStyle: .alert)
-        
-        let mixAction = UIAlertAction(title: GDLocalizedString("settings.audio.mix_with_others.title"), style: .default) { [weak self] (_) in
-            // Make the setting switch - turn off mixesWithOthers
-            self?.updateSetting(false)
-            self?.focusOnCell(cell)
-        }
-        alert.addAction(mixAction)
-        alert.preferredAction = mixAction
-        
-        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel, handler: { [weak self] (_) in
-            // Toggle the setting back off
-            settingSwitch.isOn = false
-            
-            // Track that the user decided not to enable media controls
-            GDATelemetry.track("settings.mix_audio.cancel", with: ["context": "app_settings"])
-            
-            self?.focusOnCell(cell)
-        }))
-        
-        present(alert, animated: true)
-    }
-
-    private func updateSetting(_ newValue: Bool) {
-        SettingsContext.shared.audioSessionMixesWithOthers = newValue
-        AppContext.shared.audioEngine.mixWithOthers = newValue
-        
-        GDATelemetry.track("settings.mix_audio",
-                           with: ["value": "\(SettingsContext.shared.audioSessionMixesWithOthers)",
-                                  "context": "app_settings"])
-    }
-    
-    private func focusOnCell(_ cell: MixAudioSettingCell) {
-        DispatchQueue.main.async {
-            UIAccessibility.post(notification: .layoutChanged, argument: cell)
-        }
-    }
-}
-
-extension SettingsViewController: CalloutSettingsCellViewDelegate {
-    func onCalloutSettingChanged(_ type: CalloutSettingCellType) {
-        guard type == .all else {
-            return
-        }
-        
-        let indexPaths = SettingsViewController.collapsibleCalloutIndexPaths
-        
-        if SettingsContext.shared.automaticCalloutsEnabled && !tableView.contains(indexPaths: indexPaths) {
-            tableView.insertRows(at: indexPaths, with: .automatic)
-        } else if !SettingsContext.shared.automaticCalloutsEnabled && tableView.contains(indexPaths: indexPaths) {
-            tableView.deleteRows(at: indexPaths, with: .automatic)
-        }
+    private func makeEntryCell(title: String) -> UITableViewCell {
+        let cell = UITableViewCell(style: .default, reuseIdentifier: nil)
+        cell.backgroundColor = Colors.Background.primary
+        cell.textLabel?.text = title
+        cell.textLabel?.textColor = Colors.Foreground.primary
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.accessoryType = .disclosureIndicator
+        cell.selectionStyle = .default
+        return cell
     }
 }
 
@@ -285,17 +199,17 @@ extension SettingsViewController: LargeBannerContainerView {
 
 private final class GPSInformationSettingsViewController: UITableViewController {
     private enum Row: Int, CaseIterable {
-        case announceAfterCallouts
-        case showFacing
+        case announceGPSInformation
+        case announcementInterval
         case showAccuracy
         case showSpeed
 
         var title: String {
             switch self {
-            case .announceAfterCallouts:
+            case .announceGPSInformation:
                 return GDLocalizedString("settings.gps_information.announce_after_callouts")
-            case .showFacing:
-                return GDLocalizedString("settings.gps_information.show_facing")
+            case .announcementInterval:
+                return GDLocalizedString("settings.gps_information.interval")
             case .showAccuracy:
                 return GDLocalizedString("settings.gps_information.show_accuracy")
             case .showSpeed:
@@ -305,10 +219,10 @@ private final class GPSInformationSettingsViewController: UITableViewController 
 
         var telemetryName: String {
             switch self {
-            case .announceAfterCallouts:
-                return "announce_after_callouts"
-            case .showFacing:
-                return "show_facing"
+            case .announceGPSInformation:
+                return "announce_gps_information"
+            case .announcementInterval:
+                return "announcement_interval"
             case .showAccuracy:
                 return "show_accuracy"
             case .showSpeed:
@@ -321,6 +235,7 @@ private final class GPSInformationSettingsViewController: UITableViewController 
         super.viewDidLoad()
         title = GDLocalizedString("settings.gps_information.title")
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "GPSInformationCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "GPSInformationValueCell")
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -332,15 +247,27 @@ private final class GPSInformationSettingsViewController: UITableViewController 
         return Row.allCases.count
     }
 
-    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return GDLocalizedString("settings.gps_information.footer")
-    }
-
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "GPSInformationCell", for: indexPath)
         guard let row = Row(rawValue: indexPath.row) else {
+            return tableView.dequeueReusableCell(withIdentifier: "GPSInformationCell", for: indexPath)
+        }
+
+        if row == .announcementInterval {
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: "GPSInformationValueCell")
+            cell.backgroundColor = Colors.Background.primary
+            cell.textLabel?.text = row.title
+            cell.textLabel?.textColor = Colors.Foreground.primary
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.adjustsFontForContentSizeCategory = true
+            cell.detailTextLabel?.text = intervalLabel(SettingsContext.shared.gpsInformationAnnouncementIntervalMeters)
+            cell.detailTextLabel?.textColor = Colors.Foreground.secondary
+            cell.detailTextLabel?.adjustsFontForContentSizeCategory = true
+            cell.accessoryType = .disclosureIndicator
+            cell.selectionStyle = .default
             return cell
         }
+
+        let cell = tableView.dequeueReusableCell(withIdentifier: "GPSInformationCell", for: indexPath)
 
         let settingSwitch = UISwitch()
         settingSwitch.tag = row.rawValue
@@ -370,12 +297,24 @@ private final class GPSInformationSettingsViewController: UITableViewController 
         ])
     }
 
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+
+        guard let row = Row(rawValue: indexPath.row), row == .announcementInterval else {
+            return
+        }
+
+        presentIntervalSelector()
+    }
+
     private func isEnabled(_ row: Row) -> Bool {
         switch row {
-        case .announceAfterCallouts:
-            return SettingsContext.shared.announceFacingAndAccuracyAfterCallouts
-        case .showFacing:
-            return SettingsContext.shared.gpsFacingEnabled
+        case .announceGPSInformation:
+            return SettingsContext.shared.announceGPSInformation
+        case .announcementInterval:
+            return true
         case .showAccuracy:
             return SettingsContext.shared.gpsAccuracyEnabled
         case .showSpeed:
@@ -385,14 +324,235 @@ private final class GPSInformationSettingsViewController: UITableViewController 
 
     private func setEnabled(_ value: Bool, for row: Row) {
         switch row {
-        case .announceAfterCallouts:
-            SettingsContext.shared.announceFacingAndAccuracyAfterCallouts = value
-        case .showFacing:
-            SettingsContext.shared.gpsFacingEnabled = value
+        case .announceGPSInformation:
+            SettingsContext.shared.announceGPSInformation = value
+        case .announcementInterval:
+            return
         case .showAccuracy:
             SettingsContext.shared.gpsAccuracyEnabled = value
         case .showSpeed:
             SettingsContext.shared.gpsSpeedEnabled = value
         }
+    }
+
+    private func presentIntervalSelector() {
+        let alert = UIAlertController(title: GDLocalizedString("settings.gps_information.interval"),
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
+
+        [50, 100, 300, 500, 1000].forEach { interval in
+            let current = SettingsContext.shared.gpsInformationAnnouncementIntervalMeters
+            let title = interval == current ? "✓ \(intervalLabel(interval))" : intervalLabel(interval)
+
+            alert.addAction(UIAlertAction(title: title, style: .default, handler: { [weak self] _ in
+                SettingsContext.shared.gpsInformationAnnouncementIntervalMeters = interval
+                GDATelemetry.track("settings.gps_information", with: [
+                    "setting": Row.announcementInterval.telemetryName,
+                    "value": String(interval)
+                ])
+                self?.tableView.reloadData()
+            }))
+        }
+
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
+
+        if let popover = alert.popoverPresentationController,
+           let cell = tableView.cellForRow(at: IndexPath(row: Row.announcementInterval.rawValue, section: 0)) {
+            popover.sourceView = cell
+            popover.sourceRect = cell.bounds
+        }
+
+        present(alert, animated: true)
+    }
+
+    private func intervalLabel(_ meters: Int) -> String {
+        return GDLocalizedString("settings.gps_information.interval.value", String(meters))
+    }
+}
+
+private final class MediaControlsSettingsViewController: UITableViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = GDLocalizedString("settings.audio.media_controls")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "MediaControlsCell")
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return GDLocalizedString("settings.audio.mix_with_others.description")
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "MediaControlsCell", for: indexPath)
+        let settingSwitch = UISwitch()
+        settingSwitch.isOn = !SettingsContext.shared.audioSessionMixesWithOthers
+        settingSwitch.addTarget(self, action: #selector(onSwitchValueChanged(_:)), for: .valueChanged)
+
+        cell.backgroundColor = Colors.Background.primary
+        cell.textLabel?.text = GDLocalizedString("settings.audio.mix_with_others.title")
+        cell.textLabel?.textColor = Colors.Foreground.primary
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.selectionStyle = .none
+        cell.accessoryView = settingSwitch
+
+        return cell
+    }
+
+    @objc private func onSwitchValueChanged(_ sender: UISwitch) {
+        guard sender.isOn else {
+            updateSetting(true)
+            return
+        }
+
+        let alert = UIAlertController(title: GDLocalizedString("general.alert.confirmation_title"),
+                                      message: GDLocalizedString("setting.audio.mix_with_others.confirmation"),
+                                      preferredStyle: .alert)
+
+        alert.addAction(UIAlertAction(title: GDLocalizedString("settings.audio.mix_with_others.title"), style: .default, handler: { _ in
+            self.updateSetting(false)
+            self.tableView.reloadData()
+        }))
+
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel, handler: { _ in
+            sender.isOn = false
+            GDATelemetry.track("settings.mix_audio.cancel", with: ["context": "app_settings"])
+        }))
+
+        present(alert, animated: true)
+    }
+
+    private func updateSetting(_ newValue: Bool) {
+        SettingsContext.shared.audioSessionMixesWithOthers = newValue
+        AppContext.shared.audioEngine.mixWithOthers = newValue
+
+        GDATelemetry.track("settings.mix_audio",
+                           with: ["value": "\(SettingsContext.shared.audioSessionMixesWithOthers)",
+                                  "context": "app_settings"])
+    }
+}
+
+private final class ManageCalloutsSettingsViewController: UITableViewController {
+    private enum Row: Int, CaseIterable {
+        case all
+        case poi
+        case mobility
+        case beacon
+
+        var title: String {
+            switch self {
+            case .all: return GDLocalizedString("callouts.turn_on_off")
+            case .poi: return GDLocalizedString("callouts.places_and_landmarks")
+            case .mobility: return GDLocalizedString("callouts.mobility")
+            case .beacon: return GDLocalizedString("callouts.audio_beacon")
+            }
+        }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = GDLocalizedString("menu.manage_callouts")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "ManageCalloutsCell")
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return Row.allCases.count
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ManageCalloutsCell", for: indexPath)
+        guard let row = Row(rawValue: indexPath.row) else {
+            return cell
+        }
+
+        let settingSwitch = UISwitch()
+        settingSwitch.tag = row.rawValue
+        settingSwitch.isOn = isEnabled(row)
+        settingSwitch.isEnabled = row == .all || SettingsContext.shared.automaticCalloutsEnabled
+        settingSwitch.addTarget(self, action: #selector(onSwitchValueChanged(_:)), for: .valueChanged)
+
+        cell.backgroundColor = Colors.Background.primary
+        cell.textLabel?.text = row.title
+        cell.textLabel?.textColor = Colors.Foreground.primary
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.selectionStyle = .none
+        cell.accessoryView = settingSwitch
+        return cell
+    }
+
+    @objc private func onSwitchValueChanged(_ sender: UISwitch) {
+        guard let row = Row(rawValue: sender.tag) else {
+            return
+        }
+
+        let isOn = sender.isOn
+
+        switch row {
+        case .all:
+            SettingsContext.shared.automaticCalloutsEnabled = isOn
+            GDATelemetry.track("settings.allow_callouts", value: isOn.description)
+        case .poi:
+            SettingsContext.shared.placeSenseEnabled = isOn
+            SettingsContext.shared.landmarkSenseEnabled = isOn
+            SettingsContext.shared.informationSenseEnabled = isOn
+        case .mobility:
+            SettingsContext.shared.mobilitySenseEnabled = isOn
+            SettingsContext.shared.safetySenseEnabled = isOn
+            SettingsContext.shared.intersectionSenseEnabled = isOn
+        case .beacon:
+            SettingsContext.shared.destinationSenseEnabled = isOn
+        }
+
+        tableView.reloadData()
+    }
+
+    private func isEnabled(_ row: Row) -> Bool {
+        switch row {
+        case .all: return SettingsContext.shared.automaticCalloutsEnabled
+        case .poi: return SettingsContext.shared.placeSenseEnabled
+        case .mobility: return SettingsContext.shared.mobilitySenseEnabled
+        case .beacon: return SettingsContext.shared.destinationSenseEnabled
+        }
+    }
+}
+
+private final class StreetPreviewSettingsViewController: UITableViewController {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = GDLocalizedString("preview.title")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "StreetPreviewCell")
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 1
+    }
+
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return GDLocalizedString("preview.include_unnamed_roads.subtitle")
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "StreetPreviewCell", for: indexPath)
+        let settingSwitch = UISwitch()
+        settingSwitch.isOn = SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads
+        settingSwitch.addTarget(self, action: #selector(onSwitchValueChanged(_:)), for: .valueChanged)
+
+        cell.backgroundColor = Colors.Background.primary
+        cell.textLabel?.text = GDLocalizedString("preview.include_unnamed_roads.title")
+        cell.textLabel?.textColor = Colors.Foreground.primary
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.selectionStyle = .none
+        cell.accessoryView = settingSwitch
+        return cell
+    }
+
+    @objc private func onSwitchValueChanged(_ sender: UISwitch) {
+        SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads = sender.isOn
+        GDATelemetry.track("preview.include_unnamed_roads", with: ["value": "\(sender.isOn)", "context": "app_settings"])
     }
 }

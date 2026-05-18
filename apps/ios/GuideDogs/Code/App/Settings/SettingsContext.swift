@@ -70,6 +70,7 @@ class SettingsContext {
         fileprivate static let gpsFacingEnabled          = "GDAGPSFacingEnabled"
         fileprivate static let gpsAccuracyEnabled        = "GDAGPSAccuracyEnabled"
         fileprivate static let gpsSpeedEnabled           = "GDAGPSSpeedEnabled"
+        fileprivate static let gpsInformationAnnouncementIntervalMeters = "GDAGPSInformationAnnouncementIntervalMeters"
         fileprivate static let calloutRangeMode          = "GDACalloutRangeMode"
         
         fileprivate static let ttsGain = "GDATTSAudioGain"
@@ -125,6 +126,7 @@ class SettingsContext {
             Keys.gpsFacingEnabled: true,
             Keys.gpsAccuracyEnabled: true,
             Keys.gpsSpeedEnabled: false,
+            Keys.gpsInformationAnnouncementIntervalMeters: 100,
             Keys.calloutRangeMode: CalloutRangeMode.walking.rawValue
         ])
         
@@ -314,6 +316,28 @@ class SettingsContext {
         }
         set {
             userDefaults.set(newValue, forKey: Keys.announceFacingAndAccuracyAfterCallouts)
+        }
+    }
+
+    var announceGPSInformation: Bool {
+        get {
+            return announceFacingAndAccuracyAfterCallouts
+        }
+        set {
+            announceFacingAndAccuracyAfterCallouts = newValue
+        }
+    }
+
+    var gpsInformationAnnouncementIntervalMeters: Int {
+        get {
+            let stored = userDefaults.integer(forKey: Keys.gpsInformationAnnouncementIntervalMeters)
+            let allowed = [50, 100, 300, 500, 1000]
+            return allowed.contains(stored) ? stored : 100
+        }
+        set {
+            let allowed = [50, 100, 300, 500, 1000]
+            let value = allowed.contains(newValue) ? newValue : 100
+            userDefaults.set(value, forKey: Keys.gpsInformationAnnouncementIntervalMeters)
         }
     }
 

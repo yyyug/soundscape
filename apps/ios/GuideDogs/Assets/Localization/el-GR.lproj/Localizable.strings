@@ -815,7 +815,7 @@
 
 
 /*  */
-"preview.title" = "Soundscape Street Preview";
+"preview.title" = "Street Preview";
 
 
 /*  */
@@ -871,7 +871,7 @@
 
 
 /*  */
-"preview.alert.restart.message" = "Θέλετε να επανεκκινήσετε το Soundscape Street Preview σε αυτήν την τοποθεσία;";
+"preview.alert.restart.message" = "Θέλετε να επανεκκινήσετε το Street Preview σε αυτήν την τοποθεσία;";
 
 
 /*  */
@@ -883,7 +883,7 @@
 
 
 /*  */
-"preview.callout.end" = "Τερματισμός Soundscape Street Preview";
+"preview.callout.end" = "Τερματισμός Street Preview";
 
 
 /*  */
@@ -955,7 +955,7 @@
 
 
 /*  */
-"preview.include_unnamed_roads.subtitle" = "Συμπερίληψη ανώνυμων δρόμων κατά τη διάρκεια του Soundscape Street Preview";
+"preview.include_unnamed_roads.subtitle" = "Συμπερίληψη ανώνυμων δρόμων κατά τη διάρκεια του Street Preview";
 
 
 /*  */
@@ -967,11 +967,11 @@
 
 
 /*  */
-"preview.include_unnamed_roads.hint.off" = "Πατήστε δύο φορές για να συμπεριλάβετε ανώνυμους δρόμους κατά τη διάρκεια του Soundscape Street Preview";
+"preview.include_unnamed_roads.hint.off" = "Πατήστε δύο φορές για να συμπεριλάβετε ανώνυμους δρόμους κατά τη διάρκεια του Street Preview";
 
 
 /*  */
-"preview.include_unnamed_roads.hint.on" = "Πατήστε δύο φορές για να εξαιρέσετε ανώνυμους δρόμους κατά τη διάρκεια του Soundscape Street Preview";
+"preview.include_unnamed_roads.hint.on" = "Πατήστε δύο φορές για να εξαιρέσετε ανώνυμους δρόμους κατά τη διάρκεια του Street Preview";
 
 
 /*  */
@@ -979,7 +979,7 @@
 
 
 /*  */
-"preview.tutorial.title.1" = "Καλώς ήλθατε στο Soundscape Street Preview!";
+"preview.tutorial.title.1" = "Καλώς ήλθατε στο Street Preview!";
 
 
 /*  */
@@ -4468,3 +4468,4 @@
 /* Live View - ARCore Geospatial */
 "ui.action_button.live_view" = "Ζωντανή Προβολή";
 "ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";
+

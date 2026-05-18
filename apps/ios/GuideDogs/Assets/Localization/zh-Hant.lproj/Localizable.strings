@@ -299,7 +299,7 @@
 //------------------------------------------------------------------------------
 
 /* Title, Settings */
-"settings.screen_title" = "Settings";
+"settings.screen_title" = "設定";
 
 /* Alert, would you like to delete stored data? */
 "settings.clear_cache.alert_title" = "Delete Stored Data?";
@@ -350,7 +350,7 @@
 "settings.units.imperial" = "Imperial (Feet)";
 
 /* Settings title unit of measurement, Metric (Meters) */
-"settings.units.metric" = "Metric (Meters)";
+"settings.units.metric" = "公制（公尺）";
 
 /* Settings title, Clear stored map data */
 "settings.clear_data" = "Clear Stored Map Data";
@@ -359,19 +359,19 @@
 "settings.about_app" = "About AppName";
 
 /* Settings title,General Settings */
-"settings.section.general" = "General Settings";
+"settings.section.general" = "一般設定";
 
 /* Settings title,Units of Measure */
 "settings.section.units" = "Units of Measure";
 
 /* Settings title, Troubleshooting */
-"settings.section.troubleshooting" = "Troubleshooting";
+"settings.section.troubleshooting" = "疑難排解";
 
 /* Settings title, About */
 "settings.section.about" = "About";
 
 /* Settings title, Telemetry */
-"settings.section.telemetry" = "Telemetry";
+"settings.section.telemetry" = "使用資料";
 
 /* Settings title, Share Usage Data */
 "settings.section.share_usage_data" = "Share Usage Data";
@@ -399,13 +399,13 @@
 //------------------------------------------------------------------------------
 
 /* The title for the screen which configures media controls (play/pause/next/etc) related settings */
-"settings.audio.media_controls" = "Media Controls";
+"settings.audio.media_controls" = "媒體控制";
 
 /* A title for a toggle for an audio setting which determines if the current app's audio will be mixed with others. If ON, this app will output audio which could be played at the same time as other apps that play audio, such as another music player app. */
-"settings.audio.mix_with_others.title" = "Enable Media Controls";
+"settings.audio.mix_with_others.title" = "啟用媒體控制";
 
 /* The detailed description for the toggle setting "settings.audio.mix_with_others.title". The "Media Controls" refer to the iOS music controls (play, pause, next, etc.) {NumberedPlaceholder="Soundscape"} */
-"settings.audio.mix_with_others.description" = "Use this to enable control of Soundscape with the buttons on your headphones and the media playback buttons on the lock screen. Note that when turned on, Soundscape can’t be used while other media such as podcasts or music is playing.";
+"settings.audio.mix_with_others.description" = "啟用後可使用耳機按鈕與鎖定畫面媒體按鈕控制 Soundscape。啟用時，若其他媒體（如 Podcast 或音樂）播放中，Soundscape 會暫停。";
 
 /* The detailed description for the alert that confirms where a user wants to turn on the "Enable Media Controls" setting or not {NumberedPlaceholder="Soundscape"} */
 "setting.audio.mix_with_others.confirmation" = "Turning this setting on will cause Soundscape's callouts and other audio to pause whenever you start using a different media app. You can return to Soundscape to resume callouts.";
@@ -690,8 +690,8 @@
 // MARK: - Preview
 //------------------------------------------------------------------------------
 
-/* Street Preview, View title, Street Preview is functionality that allows the user to select any location in the world to preview the area at street level in order to familiarise and build a mental map of the space. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.title" = "Soundscape Street Preview";
+/* Street Preview, View title, Street Preview is functionality that allows the user to select any location in the world to preview the area at street level in order to familiarise and build a mental map of the space. {NumberedPlaceholder="Street Preview"} */
+"preview.title" = "街景預覽";
 
 /* Text displayed when the current location is not known while previewing */
 "preview.current_intersection_unknown.label" = "Current Location Unknown";
@@ -732,8 +732,8 @@
 /* Title for the alert displayed when ther user tries to restart the preview experience at a new location */
 "preview.alert.restart.title" = "Preview Already in Progress";
 
-/* Message for the alert displayed when ther user tries to restart the preview experience at a new location. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.alert.restart.message" = "Do you want to restart Soundscape Street Preview at this location?";
+/* Message for the alert displayed when ther user tries to restart the preview experience at a new location. {NumberedPlaceholder="Street Preview"} */
+"preview.alert.restart.message" = "Do you want to restart Street Preview at this location?";
 
 /* Button for the alert displayed when ther user tries to restart the preview experience at a new location */
 "preview.alert.restart.button" = "Restart";
@@ -741,8 +741,8 @@
 /* Callout that occurs when the preview experience pauses, The translation for "Street preview" should match the translation for "preview.title". {NumberedPlaceholder="Street Preview"} */
 "preview.callout.paused" = "Street Preview paused";
 
-/* Callout that occurs when the user exits the preview experience. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.callout.end" = "Ending Soundscape Street Preview";
+/* Callout that occurs when the user exits the preview experience. {NumberedPlaceholder="Street Preview"} */
+"preview.callout.end" = "Ending Street Preview";
 
 /* Callout that occurs when users tap the button to return to the previous intersection they were at in the preview */
 "preview.callout.previous" = "Returning to previous intersection";
@@ -795,8 +795,8 @@
 /* Title for a setting to include unnamed roads */
 "preview.include_unnamed_roads.title" = "Unnamed Roads";
 
-/* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.include_unnamed_roads.subtitle" = "Include unnamed roads during Soundscape Street Preview";
+/* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
+"preview.include_unnamed_roads.subtitle" = "Include unnamed roads during Street Preview";
 
 /* Voiceover label for a button to turn on a setting to include unnamed roads */
 "preview.include_unnamed_roads.label.off" = "Enable Unnamed Roads";
@@ -804,17 +804,17 @@
 /* Voiceover label for a button to turn off a setting to include unnamed roads */
 "preview.include_unnamed_roads.label.on" = "Disable Unnamed Roads";
 
-/* Voiceover hint for a button to turn on a setting to include unnamed roads. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.include_unnamed_roads.hint.off" = "Double tap to include unnamed roads during Soundscape Street Preview";
+/* Voiceover hint for a button to turn on a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
+"preview.include_unnamed_roads.hint.off" = "Double tap to include unnamed roads during Street Preview";
 
-/* Voiceover hint for a button to turn off a setting to include unnamed roads. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.include_unnamed_roads.hint.on" = "Double tap to exclude unnamed roads during Soundscape Street Preview";
+/* Voiceover hint for a button to turn off a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
+"preview.include_unnamed_roads.hint.on" = "Double tap to exclude unnamed roads during Street Preview";
 
 /* Accessibility hint for the button to end the preview tutorial */
 "preview.tutorial.done.hint" = "Double tap to exit the tutorial";
 
-/* Title for the first set of tutorial content. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.tutorial.title.1" = "Welcome to Soundscape Street Preview!";
+/* Title for the first set of tutorial content. {NumberedPlaceholder="Street Preview"} */
+"preview.tutorial.title.1" = "Welcome to Street Preview!";
 
 /* First set of tutorial content */
 "preview.tutorial.content.1" = "Explore and get a sense of an area anywhere in the world. For the best experience, we recommend that you stand up to turn in place and use stereo headphones.";
@@ -848,115 +848,115 @@
 "location_detail.title.waypoint" = "Waypoint Details";
 
 /* Title for the action to set a beacon */
-"location_detail.action.beacon" = "Start Audio Beacon";
+"location_detail.action.beacon" = "開始音訊信標";
 
 /* Voiceover hint for the action to set a beacon */
-"location_detail.action.beacon.hint" = "Double tap to set an audio beacon at this location";
+"location_detail.action.beacon.hint" = "點兩下以在此位置設定音訊信標";
 
 /* Text displayed when audio beacon action is disabled */
-"location_detail.action.beacon.hint.disabled" = "Setting a new audio beacon is disabled while route guidance is active";
+"location_detail.action.beacon.hint.disabled" = "路線導引啟用時，無法設定新的音訊信標";
 
 /* Voiceover hint for the action to save marker */
-"location_detail.action.save.hint" = "Double tap to save this location as a marker";
+"location_detail.action.save.hint" = "點兩下以將此位置儲存為標記";
 
 /* Voiceover hint for the action to edit marker */
-"location_detail.action.edit.hint" = "Double tap to edit marker";
+"location_detail.action.edit.hint" = "點兩下以編輯標記";
 
 /* Voiceover hint for the action to share */
-"location_detail.action.share.hint" = "Double tap to share this location";
+"location_detail.action.share.hint" = "點兩下以分享此位置";
 
 /* Voiceover hint for the action to preview */
-"location_detail.action.preview.hint" = "Double tap to start previewing at this location";
+"location_detail.action.preview.hint" = "點兩下以在此位置開始預覽";
 
 /* Text displayed when street preview is disabled */
-"location_detail.action.preview.hint.disabled" = "Street Preview is disabled while route guidance is active";
+"location_detail.action.preview.hint.disabled" = "路線導引啟用時，Street Preview 無法使用";
 
 /* Voiceover hint for the action to get directions */
-"location_detail.action.directions.hint" = "Double tap to open this location in an external maps app";
+"location_detail.action.directions.hint" = "點兩下以在 Apple 地圖開啟此位置";
 
 /* Default address for a location */
-"location_detail.default.address" = "Address unknown";
+"location_detail.default.address" = "地址未知";
 
 /* Default annotation for a location */
-"location_detail.default.annotation" = "No marker annotation";
+"location_detail.default.annotation" = "無標記註解";
 
 /* Accessibility hint to select a location */
 "location.select.hint" = "Double tap to select this location";
 
 /* Text displayed when the location cannot be saved as a marker */
-"location_detail.disabled.save" = "Saving a marker at this location is currently unavailable";
+"location_detail.disabled.save" = "目前無法在此位置儲存標記";
 
 /* Text displayed when the location cannot be shared */
-"location_detail.disabled.share" = "Sharing this location is currently unavailable";
+"location_detail.disabled.share" = "目前無法分享此位置";
 
 /* Text displayed when no actions can be taken for a loction */
-"location_detail.disabled.generic" = "This location is currently unavailable";
+"location_detail.disabled.generic" = "此位置目前無法使用";
 
 /* Title text displayed when the user is viewing the expanded map view */
-"location_detail.map.view.title" = "Selected Location";
+"location_detail.map.view.title" = "已選位置";
 
 /* Hint text displayed when the user is viewing the expanded map view */
-"location_detail.map.view.hint" = "Edit to select a new location";
+"location_detail.map.view.hint" = "編輯以選擇新位置";
 
 /* Title text displayed when the user is selecting a location via the expanded map view */
-"location_detail.map.edit.title" = "Edit Location";
+"location_detail.map.edit.title" = "編輯位置";
 
 /* Hint text displayed when the user is selecting a location via the expanded map view */
-"location_detail.map.edit.hint" = "Move the map to the correct location";
+"location_detail.map.edit.hint" = "移動地圖到正確位置";
 
 /* Accessibility label used when the user is moving the marker location via custom Voiceover experience, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.accessibility_label" = "Nudge Marker";
+"location_detail.map.edit.accessibility_label" = "調整標記";
 
 /* Accessibility hint used when the user is moving the marker location via custom Voiceover experience, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.compass.accessibility_hint" = "Double tap to nudge marker in the direction your phone is pointing. Use actions to nudge in a different direction.";
+"location_detail.map.edit.compass.accessibility_hint" = "點兩下以按手機指向方向調整標記。使用操作按鈕以按其他方向調整。";
 
 /* Accessibility hint used when the user is moving the marker location via custom Voiceover experience, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.north.accessibility_hint" = "Double tap to nudge marker north. Use actions to nudge in a different direction.";
+"location_detail.map.edit.north.accessibility_hint" = "點兩下以向北調整標記。使用操作按鈕以按其他方向調整。";
 
 /* Accessibility hint used when the user is moving the marker location via custom Voiceover experience, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.south.accessibility_hint" = "Double tap to nudge marker south. Use actions to nudge in a different direction.";
+"location_detail.map.edit.south.accessibility_hint" = "點兩下以向南調整標記。使用操作按鈕以按其他方向調整。";
 
 /* Accessibility hint used when the user is moving the marker location via custom Voiceover experience, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.east.accessibility_hint" = "Double tap to nudge marker east. Use actions to nudge in a different direction.";
+"location_detail.map.edit.east.accessibility_hint" = "點兩下以向東調整標記。使用操作按鈕以按其他方向調整。";
 
 /* Accessibility hint used when the user is moving the marker location via custom Voiceover experience, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.west.accessibility_hint" = "Double tap to nudge marker west. Use actions to nudge in a different direction.";
+"location_detail.map.edit.west.accessibility_hint" = "點兩下以向西調整標記。使用操作按鈕以按其他方向調整。";
 
 /* Accessibility annoucement used to tell the user where a marker has moved to via custom Voiceover experience, %@ is a localized distance / direction string, "Nudging, 15 meters northwest of original location", Here, "nudge" means moving a small distance, {NumberedPlaceholder="%@"} */
-"location_detail.map.edit.accessibility_annoucement" = "Nudging, %@ of original location";
+"location_detail.map.edit.accessibility_annoucement" = "正在調整，距隢原始位置 %@";
 
 /* Accessibility action used when the user is moving the marker location via custom Voiceover experience and wants to move the marker in the direction that their phone is pointing, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.accessibility_action.compass" = "Nudge In Direction of Phone";
+"location_detail.map.edit.accessibility_action.compass" = "按手機指向方向調整";
 
 /* Accessibility action used when the user is moving the marker location via custom Voiceover experience and wants to move the marker north of its current location, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.accessibility_action.north" = "Nudge North";
+"location_detail.map.edit.accessibility_action.north" = "向北調整";
 
 /* Accessibility action used when the user is moving the marker location via custom Voiceover experience and wants to move the marker south of its current location, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.accessibility_action.south" = "Nudge South";
+"location_detail.map.edit.accessibility_action.south" = "向南調整";
 
 /* Accessibility action used when the user is moving the marker location via custom Voiceover experience and wants to move the marker east of its current location, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.accessibility_action.east" = "Nudge East";
+"location_detail.map.edit.accessibility_action.east" = "向東調整";
 
 /* Accessibility action used when the user is moving the marker location via custom Voiceover experience and wants to move the marker west of its current location, Here, "nudge" means moving a small distance. */
-"location_detail.map.edit.accessibility_action.west" = "Nudge West";
+"location_detail.map.edit.accessibility_action.west" = "向西調整";
 
 /* Accessibility action used when the user is moving the marker location via custom Voiceover experience and wants to move the marker to the user's current location */
-"location_detail.map.edit.accessibility_action.current_location" = "Move to current location";
+"location_detail.map.edit.accessibility_action.current_location" = "移至目前位置";
 
 /* Callout made when starting the audio beacon while the user is moving a marker via custom Voiceover experience, %@ is a localized distance / direction string, "Nudging, 15 meters northwest of original location", Here, "nudge" means moving a small distance, {NumberedPlaceholder="%@"} */
-"location_detail.map.edit.accessibility.beacon.callout" = "Starting beacon to track marker location. Nudging, %@ of original location.";
+"location_detail.map.edit.accessibility.beacon.callout" = "開始音訊信標以追蹤標記位置。正在調整，距隢原始位置 %@。";
 
 /* Accessibility label for the icon which displays the number of the waypoint. %@ is the index of the waypoint. (e.g., "Waypoint 1") {NumberedPlaceholder="%@"} */
 "location_detail.waypoint" = "Waypoint %@";
 
 /* Accessibility hint for markers in a list which has already been added to a route */
-"location_detail.add_waypoint.existing.hint" = "Double tap to remove this marker from your route.";
+"location_detail.add_waypoint.existing.hint" = "點兩下以從路線中移除此標記。";
 
 /* Accessibility hint for markers in a list that can be added to a list */
-"location_detail.add_waypoint.new.hint" = "Double tap to add this marker to your route.";
+"location_detail.add_waypoint.new.hint" = "點兩下以將此標記新增至您的路線。";
 
 /* Accessibility hint for markers in a list that can be created abd added to a list */
-"location_detail.add_waypoint.marker.hint" = "Double tap to create a marker and add it as a waypoint";
+"location_detail.add_waypoint.marker.hint" = "點兩下以建立標記並將其新增為路點";
 
 //------------------------------------------------------------------------------
 // MARK: - Route Detail
@@ -1256,10 +1256,14 @@
 "settings.gps_information.title" = "GPS 資訊";
 
 /* Footer description on the GPS Information settings page. */
-"settings.gps_information.footer" = "可選擇在首頁底部顯示哪些 GPS 資訊，並設定是否在手動提示後播報。";
+"settings.gps_information.footer" = "";
 
 /* Toggle title in GPS Information settings page. */
-"settings.gps_information.announce_after_callouts" = "在手動提示後播報 GPS 資訊";
+"settings.gps_information.announce_after_callouts" = "播報 GPS 資訊";
+
+/* Value label in GPS Information settings page. %@ is distance in meters. */
+"settings.gps_information.interval" = "播報間隔";
+"settings.gps_information.interval.value" = "%@ 公尺";
 
 /* Toggle title in GPS Information settings page. */
 "settings.gps_information.show_facing" = "包含面向方向";
@@ -1503,16 +1507,16 @@
 "searching.offline" = "Search is disabled while offline";
 
 /* Search Entry, %@ is a location or address, "Search for "Woodland Park Zoo"" Quotes written as \" {NumberedPlaceholder="%@"} */
-"search.search_for" = "Search for \"%@\"";
+"search.search_for" = "搜尋「%@」";
 
 /* Notification, Searching */
-"search.searching" = "Searching";
+"search.searching" = "搜尋中";
 
 /* Notification, Searching... */
-"search.searching_with_punctuation" = "Searching…";
+"search.searching_with_punctuation" = "搜尋中…";
 
 /* Description text for the search field, "destination" should be translated the same as it is in "first_launch.prompt.message" */
-"search.choose_destination" = "Choose destination";
+"search.choose_destination" = "選擇目的地";
 
 /* Search result, %@ results found. First result: %@ */
 "search.results_found_first_result" = "找到 %@ 個結果。第一個結果：%@";
@@ -1521,49 +1525,49 @@
 "search.no_results_found_error" = "附近似乎沒有任何地點。如果您在尋找特定地點，可以嘗試按名稱或地址搜尋。";
 
 /* Search using current location */
-"search.use_current_location" = "Current Location";
+"search.use_current_location" = "目前位置";
 
 /* Nearby Places screen title */
-"search.nearby.screen_title" = "Places Nearby";
+"search.nearby.screen_title" = "出行模式";
 
 /* Browse your markers */
-"search.view_markers" = "Markers & Routes";
+"search.view_markers" = "標記與路線";
 
 /* Accessibility hint when the user selects the markers button on the home screen */
-"search.button.markers.accessibility_hint" = "Double tap to select or edit markers you have saved";
+"search.button.markers.accessibility_hint" = "點兩下以選擇或編輯已儲存的標記";
 
 /* Accessibility hint when the user selects the nearby places button on the home screen */
-"search.button.nearby.accessibility_hint" = "Double tap to explore nearby restaurants, transit stops and more";
+"search.button.nearby.accessibility_hint" = "點兩下以切換提示模式";
 
 /* Accessibility hint when the user selects the current location button on the home screen */
-"search.button.current_location.accessibility_hint" = "Double tap to preview, mark, or share your current location with a friend";
+"search.button.current_location.accessibility_hint" = "點兩下以預覽、標記或分享目前位置";
 
 /* Search filter alert title */
-"filter.alert_title" = "Filter places by category";
+"filter.alert_title" = "按類別篩選地點";
 
 /* Set filter */
-"filter.set" = "Set Filter";
+"filter.set" = "設定篩選器";
 
 /* Clear filter */
-"filter.clear.capital" = "Clear Filter";
+"filter.clear.capital" = "清除篩選器";
 
 /* Accessibility hint for the "Clear Filter" button */
-"filter.clear.hint" = "Double tap to clear selected filter";
+"filter.clear.hint" = "點兩下以清除已選取的篩選器";
 
 /* Search filter button description */
-"filter.double_tap_places_category" = "Double tap to filter places by category.";
+"filter.double_tap_places_category" = "點兩下以按類別篩選地點。";
 
 /* Filters, All Places */
-"filter.all" = "All Places";
+"filter.all" = "所有地點";
 
 /* Filters, Transit */
-"filter.transit" = "Public Transit";
+"filter.transit" = "大眾運輸";
 
 /* Displayed next to the name of the filter to indicate that the filter is currently selected. %@ is the name of a filter */
-"filter.selected" = "%@ (selected)";
+"filter.selected" = "%@ (已選取)";
 
 /* Message displayed when category filters are not available, %@ is a placeholder for the value of the `filter.all` translated string, Quotes written as \" {NumberedPlaceholder="%@"} */
-"filter.not_available" = "Some category filters are not available. You can still browse nearby places by selecting \"%@\"";
+"filter.not_available" = "查不傳笏類別篩選器無法使用。您仍然可以選擇 \"%@\" 來瀏覽附近地點";
 
 //------------------------------------------------------------------------------
 // MARK: - Callouts
@@ -1573,7 +1577,7 @@
 "callouts.panel.title" = "聆聽周圍";
 
 /* Button, Turn all callouts on or off */
-"callouts.turn_on_off" = "Turn all callouts on or off";
+"callouts.turn_on_off" = "開啟或關閉所有提示";
 
 /* Button, Callouts On */
 "callouts.callouts_on" = "Callouts On";
@@ -1585,22 +1589,22 @@
 "callouts.allow_callouts" = "Allow Callouts";
 
 /* Callouts Title, Places and Landmarks */
-"callouts.places_and_landmarks" = "Places and Landmarks";
+"callouts.places_and_landmarks" = "地點與地標";
 
 /* Callouts Information, Nearby places like shops and restaurants */
-"callouts.places_and_landmarks.info" = "Nearby places like shops and restaurants";
+"callouts.places_and_landmarks.info" = "附近的地點，如商店和餐廳";
 
 /* Callouts Title, Mobility. Mobility: "The ability to move or be moved freely." */
-"callouts.mobility" = "Mobility";
+"callouts.mobility" = "行進資訊";
 
 /* Callouts Information, Intersection and transportation information */
-"callouts.mobility.info" = "Intersection and transportation info";
+"callouts.mobility.info" = "交叉路口和交通資訊";
 
 /* Title for a toggle under the Manage Callouts settings section. This toggle enables or disables periodic callouts that inform the user about their distance from the location of the audio beacon. */
-"callouts.audio_beacon" = "Distance to the Audio Beacon";
+"callouts.audio_beacon" = "音訊信標距離";
 
 /* Callouts Information, Updates about didtance to the audio beacon when it's set */
-"callouts.audio_beacon.info" = "Updates about distance to the audio beacon when it's set";
+"callouts.audio_beacon.info" = "設定音訊信標時距離更新";
 
 /* Callouts Title, Automatic Callouts */
 "callouts.automatic_callouts" = "Automatic Callouts";
@@ -2184,37 +2188,37 @@
 "ui.action_button.ahead_of_me.acc_hint" = "Double tap to hear about places in front of you";
 
 /* Title, Menu */
-"ui.menu" = "Menu";
+"ui.menu" = "選單";
 
 /* VoiceOver hint for the menu button */
-"ui.menu.hint" = "Double tap to open the menu";
+"ui.menu.hint" = "點兩下以開啟選單";
 
 /* Button title, Close Menu */
-"ui.menu.close" = "Close Menu";
+"ui.menu.close" = "關閉選單";
 
 /* Button, Continue */
 "ui.continue" = "Continue";
 
 /* Title, Activities, In this context, "Recreational Activity" is referring to outdoor activities like hiking, kayaking, snoeshoeing, etc. */
-"menu.events" = "Recreational Activities";
+"menu.events" = "休閒活動";
 
 /* Title, Head Tracking Headphones, "head tracking headphones" is a term that refers to headphones which include sensors that track a person's head movements */
-"menu.devices" = "Head Tracking Headphones";
+"menu.devices" = "頭部追蹤耳機";
 
 /* Title, Manage Callouts */
-"menu.manage_callouts" = "Manage Callouts";
+"menu.manage_callouts" = "管理提示";
 
 /* Title, Help and Tutorials */
-"menu.help_and_tutorials" = "Help & Tutorials";
+"menu.help_and_tutorials" = "說明與教學";
 
 /* Title, Send Feedback */
-"menu.send_feedback" = "Send Feedback";
+"menu.send_feedback" = "傳送意見回饋";
 
 /* Title, Rate the app in App Store */
-"menu.rate" = "Rate";
+"menu.rate" = "評分";
 
 /* Title, Shows a webpage with resources for learning about how to use Soundscape {NumberedPlaceholder="Soundscape"} */
-"menu.learning_resources" = "Soundscape Blog";
+"menu.learning_resources" = "Soundscape 部落格";
 
 /* Screen Back button title */
 "ui.back_button.title" = "Back";
@@ -2368,28 +2372,28 @@
 "devices.forget_headset.prompt.explanation" = "This will disconnect your headphones from Soundscape. You can connect to Soundscape again in the future from here.";
 
 /* Callout for when an AR headset has been connected, %@ device name, "AirPods Pro connected." */
-"devices.callouts.connected" = "%@ connected.";
+"devices.callouts.connected" = "%@ 已連接。";
 
 /* Callout for when an AR headset needs to be calibrated */
-"devices.callouts.needs_calibration" = "Your headphones need to be calibrated. Remove them from your head and gently shake them in all directions.";
+"devices.callouts.needs_calibration" = "您的耳機需要校正。將其從您的遐部移除並輕輕在各個方向搖晃。";
 
 /* Callout for when an AR headset needs to be calibrated */
-"devices.callouts.needs_calibration.in_ear" = "Your headphones need to be calibrated. Gently shake your head in all directions.";
+"devices.callouts.needs_calibration.in_ear" = "您的耳機需要校正。輕輕在各個方向搖晃您的遐。";
 
 /* Callout for when an AR headset has successfully calibrated, %@ device name, "Your AirPods Pro require calibration." */
-"devices.callouts.calibrated" = "Calibration complete";
+"devices.callouts.calibrated" = "校正完成";
 
 /* Callout for when an AR headset disconnects, %@ device name, "AirPods Pro disconnected." */
-"devices.callouts.disconnected" = "%@ disconnected.";
+"devices.callouts.disconnected" = "%@ 已斷開連接。";
 
 /* Status announcement when Soundscape is not connected to a head tracking headset */
-"devices.callouts.check_audio.default" = "Head tracking headphones are not connected.";
+"devices.callouts.check_audio.default" = "頶部追蹤耳機未連接。";
 
 /* Status announcement when Soundscape is connected to a Apple AirPods {NumberedPlaceholder="Apple AirPods"} */
-"devices.callouts.check_audio.airpods" = "Apple AirPods connected.";
+"devices.callouts.check_audio.airpods" = "Apple AirPods 已連接。";
 
 /* Status announcement when Soundscape is trying to listen to heading updates from AirPods but they are not currently connected. {NumberedPlaceholder="AirPods", "Soundscape"} */
-"devices.callouts.check_audio.airpods.disconnected" = "Soundscape is searching for your AirPods. Ensure they are connected to your phone.";
+"devices.callouts.check_audio.airpods.disconnected" = "Soundscape 正在掐尋您的 AirPods。確保它們已連接到您的手機。";
 
 /* Label of a button that allows users to force Soundscape to reconnect to their AirPods Pro device if it isn't connecting automatically */
 "devices.troubleshoot.reconnect" = "Reconnect";
@@ -3639,12 +3643,13 @@
 
 
 /* Action button text for opening Apple Maps with location. */
-"location_action.open_in_apple_maps" = "Open in Apple Maps";
+"location_action.open_in_apple_maps" = "在 Apple 地圖中開啟";
 
 /* Accessibility hint for opening location in Apple Maps. */
-"location_action.open_in_apple_maps.hint" = "Opens this location in Apple Maps app";
+"location_action.open_in_apple_maps.hint" = "在 Apple 地圖 App 開啟此位置";
 
 
 /* Live View - ARCore Geospatial */
 "ui.action_button.live_view" = "即時景觀";
 "ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";
+

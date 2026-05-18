@@ -106,7 +106,7 @@ struct LocationActionHandler {
         return AppContext.shared.spatialDataContext.updateSpatialData(at: locationDetail.location) {
             guard let intersection = ReverseGeocoderContext.closestIntersection(for: locationDetail) else {
                 GDATelemetry.track("preview.error.closest_intersection_not_found")
-                completion(.failure(.failedToStartPreview))
+                completion(.failure(.failedToStartPreviewWithReason("closest_intersection_not_found")))
                 return
             }
             
@@ -114,7 +114,7 @@ struct LocationActionHandler {
             
             guard decisionPoint.edges.count > 0 else {
                 GDATelemetry.track("preview.error.edges_not_found")
-                completion(.failure(.failedToStartPreview))
+                completion(.failure(.failedToStartPreviewWithReason("decision_point_edges_not_found")))
                 return
             }
             

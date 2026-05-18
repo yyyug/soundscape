@@ -88,6 +88,7 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
     private let maxNearbyMarkerCallouts = 4
     private var currentGroupId: UUID?
     private var currentMode: Mode?
+    private var lastGPSInfoAnnouncementLocation: CLLocation?
     
     var canInterrupt: Bool = true
     
@@ -219,9 +220,11 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
             callouts.append(RelativeStringCallout(event.mode.origin, event.mode.noCalloutsMessage, position: 0.0))
         }
 
-          if SettingsContext.shared.announceFacingAndAccuracyAfterCallouts,
-              let statusText = gpsStatusText(forAnnouncement: true) {
+                if SettingsContext.shared.announceGPSInformation,
+                     shouldAnnounceGPSInformation(at: loc),
+                     let statusText = gpsStatusText(forAnnouncement: true) {
             callouts.append(RelativeStringCallout(event.mode.origin, statusText, position: 0.0))
+                        lastGPSInfoAnnouncementLocation = loc
         }
         
         let group = CalloutGroup(callouts, action: .interruptAndClear, playModeSounds: true, logContext: event.logContext)
@@ -424,12 +427,6 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
 
         var components: [String] = []
 
-        let heading = geo.heading(orderedBy: [.user, .device, .course]).value ?? Heading.defaultValue
-        if SettingsContext.shared.gpsFacingEnabled {
-            let facing = CardinalDirection(direction: heading)?.localizedString ?? String(format: "%.0f°", heading)
-            components.append(GDLocalizedString("status.gps.facing.component", facing))
-        }
-
         if SettingsContext.shared.gpsAccuracyEnabled {
             let accuracy = LanguageFormatter.string(from: max(location.horizontalAccuracy, 0.0), rounded: true)
             components.append(GDLocalizedString("status.gps.accuracy.component", accuracy))
@@ -446,6 +443,15 @@ class ExplorationGenerator: ManualGenerator, AutomaticGenerator {
 
         let separator = forAnnouncement ? ", " : " | "
         return components.joined(separator: separator)
+    }
+
+    private func shouldAnnounceGPSInformation(at location: CLLocation) -> Bool {
+        guard let lastLocation = lastGPSInfoAnnouncementLocation else {
+            return true
+        }
+
+        let interval = CLLocationDistance(SettingsContext.shared.gpsInformationAnnouncementIntervalMeters)
+        return location.distance(from: lastLocation) >= interval
     }
 
     private func formattedSpeed(from location: CLLocation) -> String? {

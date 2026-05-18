@@ -13,6 +13,7 @@ enum LocationActionError: Error {
     case markerDoesNotExist
     case failedToSetBeacon
     case failedToStartPreview
+    case failedToStartPreviewWithReason(String)
     case failedToShare
     
     var localizedDescription: String {
@@ -21,6 +22,8 @@ enum LocationActionError: Error {
         case .markerDoesNotExist: return GDLocalizedString("general.error.add_marker_error")
         case .failedToSetBeacon: return GDLocalizedString("general.error.set_beacon_error")
         case .failedToStartPreview: return GDLocalizedString("general.error.preview")
+        case .failedToStartPreviewWithReason(let reason):
+            return "\(GDLocalizedString("general.error.preview"))\n\n\(reason)"
         case .failedToShare: return GDLocalizedString("universal_links.alert.share_error.message")
         }
     }

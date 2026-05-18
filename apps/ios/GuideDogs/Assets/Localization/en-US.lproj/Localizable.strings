@@ -690,8 +690,8 @@
 // MARK: - Preview
 //------------------------------------------------------------------------------
 
-/* Street Preview, View title, Street Preview is functionality that allows the user to select any location in the world to preview the area at street level in order to familiarise and build a mental map of the space. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.title" = "Soundscape Street Preview";
+/* Street Preview, View title, Street Preview is functionality that allows the user to select any location in the world to preview the area at street level in order to familiarise and build a mental map of the space. {NumberedPlaceholder="Street Preview"} */
+"preview.title" = "Street Preview";
 
 /* Text displayed when the current location is not known while previewing */
 "preview.current_intersection_unknown.label" = "Current Location Unknown";
@@ -732,8 +732,8 @@
 /* Title for the alert displayed when ther user tries to restart the preview experience at a new location */
 "preview.alert.restart.title" = "Preview Already in Progress";
 
-/* Message for the alert displayed when ther user tries to restart the preview experience at a new location. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.alert.restart.message" = "Do you want to restart Soundscape Street Preview at this location?";
+/* Message for the alert displayed when ther user tries to restart the preview experience at a new location. {NumberedPlaceholder="Street Preview"} */
+"preview.alert.restart.message" = "Do you want to restart Street Preview at this location?";
 
 /* Button for the alert displayed when ther user tries to restart the preview experience at a new location */
 "preview.alert.restart.button" = "Restart";
@@ -741,8 +741,8 @@
 /* Callout that occurs when the preview experience pauses, The translation for "Street preview" should match the translation for "preview.title". {NumberedPlaceholder="Street Preview"} */
 "preview.callout.paused" = "Street Preview paused";
 
-/* Callout that occurs when the user exits the preview experience. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.callout.end" = "Ending Soundscape Street Preview";
+/* Callout that occurs when the user exits the preview experience. {NumberedPlaceholder="Street Preview"} */
+"preview.callout.end" = "Ending Street Preview";
 
 /* Callout that occurs when users tap the button to return to the previous intersection they were at in the preview */
 "preview.callout.previous" = "Returning to previous intersection";
@@ -795,8 +795,8 @@
 /* Title for a setting to include unnamed roads */
 "preview.include_unnamed_roads.title" = "Unnamed Roads";
 
-/* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.include_unnamed_roads.subtitle" = "Include unnamed roads during Soundscape Street Preview";
+/* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
+"preview.include_unnamed_roads.subtitle" = "Include unnamed roads during Street Preview";
 
 /* Voiceover label for a button to turn on a setting to include unnamed roads */
 "preview.include_unnamed_roads.label.off" = "Enable Unnamed Roads";
@@ -804,17 +804,17 @@
 /* Voiceover label for a button to turn off a setting to include unnamed roads */
 "preview.include_unnamed_roads.label.on" = "Disable Unnamed Roads";
 
-/* Voiceover hint for a button to turn on a setting to include unnamed roads. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.include_unnamed_roads.hint.off" = "Double tap to include unnamed roads during Soundscape Street Preview";
+/* Voiceover hint for a button to turn on a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
+"preview.include_unnamed_roads.hint.off" = "Double tap to include unnamed roads during Street Preview";
 
-/* Voiceover hint for a button to turn off a setting to include unnamed roads. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.include_unnamed_roads.hint.on" = "Double tap to exclude unnamed roads during Soundscape Street Preview";
+/* Voiceover hint for a button to turn off a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
+"preview.include_unnamed_roads.hint.on" = "Double tap to exclude unnamed roads during Street Preview";
 
 /* Accessibility hint for the button to end the preview tutorial */
 "preview.tutorial.done.hint" = "Double tap to exit the tutorial";
 
-/* Title for the first set of tutorial content. {NumberedPlaceholder="Soundscape Street Preview"} */
-"preview.tutorial.title.1" = "Welcome to Soundscape Street Preview!";
+/* Title for the first set of tutorial content. {NumberedPlaceholder="Street Preview"} */
+"preview.tutorial.title.1" = "Welcome to Street Preview!";
 
 /* First set of tutorial content */
 "preview.tutorial.content.1" = "Explore and get a sense of an area anywhere in the world. For the best experience, we recommend that you stand up to turn in place and use stereo headphones.";
@@ -3654,3 +3654,4 @@
 /* Live View - ARCore Geospatial */
 "ui.action_button.live_view" = "Live View";
 "ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";
+

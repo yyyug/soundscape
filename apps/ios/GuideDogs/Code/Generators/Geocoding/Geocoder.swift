@@ -37,7 +37,8 @@ class Geocoder {
                                             location: placemarkLocation,
                                             addressLine: formattedPlacemarkAddress,
                                             streetName: placemarkStreet,
-                                            subThoroughfare: placemark.subThoroughfare)
+                                            subThoroughfare: placemark.subThoroughfare,
+                                            houseNumber: placemark.subThoroughfare)
             geocodedComponents.append(component)
         }
         

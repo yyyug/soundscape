@@ -815,7 +815,7 @@
 
 
 /*  */
-"preview.title" = "Soundscape Street Preview";
+"preview.title" = "Street Preview";
 
 
 /*  */
@@ -871,7 +871,7 @@
 
 
 /*  */
-"preview.alert.restart.message" = "Voulez-vous redémarrer Soundscape Street Preview à cet emplacement?";
+"preview.alert.restart.message" = "Voulez-vous redémarrer Street Preview à cet emplacement?";
 
 
 /*  */
@@ -883,7 +883,7 @@
 
 
 /*  */
-"preview.callout.end" = "Fin de Soundscape Street Preview";
+"preview.callout.end" = "Fin de Street Preview";
 
 
 /*  */
@@ -955,7 +955,7 @@
 
 
 /*  */
-"preview.include_unnamed_roads.subtitle" = "Inclure les routes sans nom lors de l’utilisation de Soundscape Street Preview";
+"preview.include_unnamed_roads.subtitle" = "Inclure les routes sans nom lors de l’utilisation de Street Preview";
 
 
 /*  */
@@ -967,11 +967,11 @@
 
 
 /*  */
-"preview.include_unnamed_roads.hint.off" = "Appuyez deux fois pour inclure les routes sans nom lors de l’utilisation de Soundscape Street Preview";
+"preview.include_unnamed_roads.hint.off" = "Appuyez deux fois pour inclure les routes sans nom lors de l’utilisation de Street Preview";
 
 
 /*  */
-"preview.include_unnamed_roads.hint.on" = "Appuyez deux fois pour exclure les routes sans nom lors de l’utilisation de Soundscape Street Preview";
+"preview.include_unnamed_roads.hint.on" = "Appuyez deux fois pour exclure les routes sans nom lors de l’utilisation de Street Preview";
 
 
 /*  */
@@ -979,7 +979,7 @@
 
 
 /*  */
-"preview.tutorial.title.1" = "Bienvenue dans Soundscape Street Preview!";
+"preview.tutorial.title.1" = "Bienvenue dans Street Preview!";
 
 
 /*  */
@@ -4468,3 +4468,4 @@
 /* Live View - ARCore Geospatial */
 "ui.action_button.live_view" = "Vue en Direct";
 "ui.action_button.live_view.acc_hint" = "Activate live camera-based location to improve positioning accuracy";
+
