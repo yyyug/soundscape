@@ -44,7 +44,6 @@ class SearchTableViewController: BaseTableViewController {
     fileprivate enum MoreLocations: String, StaticTableViewCell {
         case markers = "MarkersTableViewCell"
         case currentLocation = "CurrentLocationTableViewCell"
-        case calloutMode = "ExploreNearbyTableViewCell"
         
         var identifier: String {
             return self.rawValue
@@ -64,9 +63,7 @@ class SearchTableViewController: BaseTableViewController {
     var logContext: String = ""
     
     private lazy var moreLocations: [MoreLocations] = {
-        var rows: [MoreLocations] = [
-            MoreLocations.calloutMode
-        ]
+        var rows: [MoreLocations] = []
         
         if delegate?.allowMarkers ?? true {
             rows.append(MoreLocations.markers)
@@ -247,11 +244,6 @@ extension SearchTableViewController: TableViewSelectDelegate {
             guard let `self` = self else {
                 return
             }
-
-            if self.tableView.cellForRow(at: indexPath)?.reuseIdentifier == MoreLocations.calloutMode.identifier {
-                self.presentCalloutModeSelector()
-                return
-            }
             
             if self.tableView.cellForRow(at: indexPath)?.reuseIdentifier == MoreLocations.currentLocation.identifier {
                 GDATelemetry.track("poi_selected.current_location", with: ["context": self.delegate?.usageLog ?? ""])
@@ -275,30 +267,6 @@ extension SearchTableViewController: TableViewSelectDelegate {
         }
     }
     
-}
-
-private extension SearchTableViewController {
-    func presentCalloutModeSelector() {
-        let alert = UIAlertController(title: GDLocalizedString("callout_mode.selector.title"),
-                                      message: nil,
-                                      preferredStyle: .actionSheet)
-
-        for mode in [SettingsContext.CalloutRangeMode.walking, SettingsContext.CalloutRangeMode.automotive] {
-            let title = mode == SettingsContext.shared.calloutRangeMode ? "✓ \(mode.localizedName)" : mode.localizedName
-            alert.addAction(UIAlertAction(title: title, style: .default, handler: { _ in
-                SettingsContext.shared.calloutRangeMode = mode
-            }))
-        }
-
-        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
-
-        if let popover = alert.popoverPresentationController {
-            popover.sourceView = tableView
-            popover.sourceRect = tableView.bounds
-        }
-
-        present(alert, animated: true)
-    }
 }
 
 extension SearchTableViewController: LocationActionDelegate {

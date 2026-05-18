@@ -20,6 +20,7 @@ class LocationActionTableViewController: UITableViewController {
     private let previewMapView = MKMapView(frame: .zero)
     private let previewContainerView = UIView(frame: .zero)
     private let previewTitleLabel = UILabel(frame: .zero)
+    private var previewFooterWidth: CGFloat = 0.0
 
     weak var delegate: LocationActionDelegate?
     
@@ -72,6 +73,7 @@ class LocationActionTableViewController: UITableViewController {
         previewMapView.isZoomEnabled = false
         previewMapView.layer.cornerRadius = 8.0
         previewMapView.clipsToBounds = true
+        previewMapView.backgroundColor = Colors.Background.secondary
 
         previewContainerView.addSubview(previewTitleLabel)
         previewContainerView.addSubview(previewMapView)
@@ -83,6 +85,11 @@ class LocationActionTableViewController: UITableViewController {
         guard width > 0 else {
             return
         }
+
+        guard abs(width - previewFooterWidth) > 0.5 else {
+            return
+        }
+        previewFooterWidth = width
 
         let horizontalPadding: CGFloat = 16.0
         let titleTop: CGFloat = 10.0
@@ -97,9 +104,9 @@ class LocationActionTableViewController: UITableViewController {
                                          width: width - horizontalPadding * 2.0,
                                          height: titleHeight)
         previewMapView.frame = CGRect(x: horizontalPadding,
-                                      y: mapTop,
-                                      width: width - horizontalPadding * 2.0,
-                                      height: mapHeight)
+                          y: mapTop,
+                          width: width - horizontalPadding * 2.0,
+                          height: mapHeight)
 
         tableView.tableFooterView = previewContainerView
     }
@@ -107,10 +114,12 @@ class LocationActionTableViewController: UITableViewController {
     private func updateMapPreview() {
         guard let detail = locationDetail else {
             previewContainerView.isHidden = true
+            previewMapView.removeAnnotations(previewMapView.annotations)
             return
         }
 
         previewContainerView.isHidden = false
+
         previewMapView.removeAnnotations(previewMapView.annotations)
 
         let annotation = MKPointAnnotation()
