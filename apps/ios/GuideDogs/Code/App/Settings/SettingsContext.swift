@@ -64,6 +64,7 @@ class SettingsContext {
         fileprivate static let apnsDeviceToken           = "GDASettingsAPNsDeviceToken"
         fileprivate static let pushNotificationTags      = "GDASettingsPushNotificationTags"
         fileprivate static let previewIntersectionsIncludeUnnamedRoads = "GDASettingsPreviewIntersectionsIncludeUnnamedRoads"
+        fileprivate static let japaneseAddressProcessing  = "GDASettingsJapaneseAddressProcessingEnabled"
         fileprivate static let audioSessionMixesWithOthers = "GDAAudioSessionMixesWithOthers"
         fileprivate static let markerSortStyle           = "GDAMarkerSortStyle"
         fileprivate static let announceFacingAndAccuracyAfterCallouts = "GDAAnnounceFacingAndAccuracyAfterCallouts"
@@ -120,6 +121,7 @@ class SettingsContext {
             Keys.senseIntersection: true,
             Keys.senseDestination: true,
             Keys.previewIntersectionsIncludeUnnamedRoads: false,
+            Keys.japaneseAddressProcessing: false,
             Keys.audioSessionMixesWithOthers: true,
             Keys.markerSortStyle: SortStyle.distance.rawValue,
             Keys.announceFacingAndAccuracyAfterCallouts: false,
@@ -298,6 +300,15 @@ class SettingsContext {
             userDefaults.set(newValue, forKey: Keys.previewIntersectionsIncludeUnnamedRoads)
             
             NotificationCenter.default.post(name: .previewIntersectionsIncludeUnnamedRoadsDidChange, object: self, userInfo: [Keys.enabled: newValue])
+        }
+    }
+
+    var japaneseAddressProcessingEnabled: Bool {
+        get {
+            return userDefaults.bool(forKey: Keys.japaneseAddressProcessing)
+        }
+        set(newValue) {
+            userDefaults.set(newValue, forKey: Keys.japaneseAddressProcessing)
         }
     }
     

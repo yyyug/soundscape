@@ -798,6 +798,9 @@
 /* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
 "preview.include_unnamed_roads.subtitle" = "Include unnamed roads during Street Preview";
 
+"settings.japanese_address_processing" = "Japanese Address Processing";
+"settings.japanese_address_processing.info" = "Use area-based address speech when roads have no name.";
+
 /* Voiceover label for a button to turn on a setting to include unnamed roads */
 "preview.include_unnamed_roads.label.off" = "Enable Unnamed Roads";
 

@@ -798,6 +798,9 @@
 /* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
 "preview.include_unnamed_roads.subtitle" = "在街景預覽中包含未命名道路";
 
+"settings.japanese_address_processing" = "日本地址處理";
+"settings.japanese_address_processing.info" = "當道路沒有名稱時，使用區域式地址朗讀。";
+
 /* Voiceover label for a button to turn on a setting to include unnamed roads */
 "preview.include_unnamed_roads.label.off" = "啟用未命名道路";
 

@@ -441,6 +441,7 @@ private final class ManageCalloutsSettingsViewController: UITableViewController 
         case poi
         case mobility
         case beacon
+        case japaneseAddressProcessing
 
         var title: String {
             switch self {
@@ -448,6 +449,16 @@ private final class ManageCalloutsSettingsViewController: UITableViewController 
             case .poi: return GDLocalizedString("callouts.places_and_landmarks")
             case .mobility: return GDLocalizedString("callouts.mobility")
             case .beacon: return GDLocalizedString("callouts.audio_beacon")
+            case .japaneseAddressProcessing: return GDLocalizedString("settings.japanese_address_processing")
+            }
+        }
+
+        var subtitle: String? {
+            switch self {
+            case .japaneseAddressProcessing:
+                return GDLocalizedString("settings.japanese_address_processing.info")
+            default:
+                return nil
             }
         }
     }
@@ -463,15 +474,16 @@ private final class ManageCalloutsSettingsViewController: UITableViewController 
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ManageCalloutsCell", for: indexPath)
         guard let row = Row(rawValue: indexPath.row) else {
-            return cell
+            return tableView.dequeueReusableCell(withIdentifier: "ManageCalloutsCell", for: indexPath)
         }
 
+        let cellStyle: UITableViewCell.CellStyle = row == .japaneseAddressProcessing ? .subtitle : .default
+        let cell = UITableViewCell(style: cellStyle, reuseIdentifier: "ManageCalloutsCell")
         let settingSwitch = UISwitch()
         settingSwitch.tag = row.rawValue
         settingSwitch.isOn = isEnabled(row)
-        settingSwitch.isEnabled = row == .all || SettingsContext.shared.automaticCalloutsEnabled
+        settingSwitch.isEnabled = row == .all || row == .japaneseAddressProcessing || SettingsContext.shared.automaticCalloutsEnabled
         settingSwitch.addTarget(self, action: #selector(onSwitchValueChanged(_:)), for: .valueChanged)
 
         cell.backgroundColor = Colors.Background.primary
@@ -479,6 +491,10 @@ private final class ManageCalloutsSettingsViewController: UITableViewController 
         cell.textLabel?.textColor = Colors.Foreground.primary
         cell.textLabel?.numberOfLines = 0
         cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.detailTextLabel?.text = row.subtitle
+        cell.detailTextLabel?.textColor = Colors.Foreground.secondary
+        cell.detailTextLabel?.numberOfLines = 0
+        cell.detailTextLabel?.adjustsFontForContentSizeCategory = true
         cell.selectionStyle = .none
         cell.accessoryView = settingSwitch
         return cell
@@ -503,6 +519,9 @@ private final class ManageCalloutsSettingsViewController: UITableViewController 
             SettingsContext.shared.mobilitySenseEnabled = isOn
             SettingsContext.shared.safetySenseEnabled = isOn
             SettingsContext.shared.intersectionSenseEnabled = isOn
+        case .japaneseAddressProcessing:
+            SettingsContext.shared.japaneseAddressProcessingEnabled = isOn
+            GDATelemetry.track("settings.japanese_address_processing", value: isOn.description)
         case .beacon:
             SettingsContext.shared.destinationSenseEnabled = isOn
         }
@@ -516,6 +535,7 @@ private final class ManageCalloutsSettingsViewController: UITableViewController 
         case .poi: return SettingsContext.shared.placeSenseEnabled
         case .mobility: return SettingsContext.shared.mobilitySenseEnabled
         case .beacon: return SettingsContext.shared.destinationSenseEnabled
+        case .japaneseAddressProcessing: return SettingsContext.shared.japaneseAddressProcessingEnabled
         }
     }
 }

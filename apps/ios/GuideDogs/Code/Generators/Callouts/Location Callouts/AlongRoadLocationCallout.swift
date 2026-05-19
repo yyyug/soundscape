@@ -59,22 +59,28 @@ struct AlongRoadLocationCallout: LocationCalloutProtocol {
         guard let estimatedAddress = geocoderResult.estimatedAddress else {
             return nil
         }
-
-        let fallbackAddress = estimatedAddress.addressLine.isEmpty ? estimatedAddress.subThoroughfare : estimatedAddress.addressLine
         
         guard let roadName = road?.localizedName else {
             DDLogDebug("Address in Locate - Road name is `nil`")
-            return fallbackAddress
+            if SettingsContext.shared.japaneseAddressProcessingEnabled {
+                return estimatedAddress.addressLine.isEmpty ? estimatedAddress.subThoroughfare : estimatedAddress.addressLine
+            }
+
+            return nil
         }
         
         // If address does not match the road that the user is on,
         // do not return an address
         guard Address.addressContainsStreet(address: estimatedAddress.streetName, streetName: roadName) else {
             DDLogDebug("Address in Locate - Address and nearest road do not match - address: \"\(estimatedAddress)\", nearest road: \"\(roadName)\"")
-            return estimatedAddress.streetName.isEmpty ? fallbackAddress : nil
+            if SettingsContext.shared.japaneseAddressProcessingEnabled && estimatedAddress.streetName.isEmpty {
+                return estimatedAddress.addressLine.isEmpty ? estimatedAddress.subThoroughfare : estimatedAddress.addressLine
+            }
+
+            return nil
         }
         
-        return fallbackAddress
+        return estimatedAddress.addressLine.isEmpty ? estimatedAddress.subThoroughfare : estimatedAddress.addressLine
     }
     
     // Inside Building

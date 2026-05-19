@@ -957,6 +957,9 @@
 /*  */
 "preview.include_unnamed_roads.subtitle" = "Street Preview で無名道路を含める";
 
+"settings.japanese_address_processing" = "日本の住所処理";
+"settings.japanese_address_processing.info" = "道路名がない場合に区画ベースの住所読み上げを使います。";
+
 
 /*  */
 "preview.include_unnamed_roads.label.off" = "無名道路を有効化";
