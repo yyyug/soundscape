@@ -105,7 +105,7 @@ extension UIView {
 extension UIView {
     
     @discardableResult
-    static func setGroupAccessibilityElement(for container: UIView?, label: String, hint: String? = nil, traits: UIAccessibilityTraits) -> UIAccessibilityElement? {
+    static func setGroupAccessibilityElement(for container: UIView?, label: String, hint: String? = nil, traits: UIAccessibilityTraits = []) -> UIAccessibilityElement? {
         guard let container = container else {
             return nil
         }
