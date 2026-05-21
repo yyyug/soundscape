@@ -732,7 +732,16 @@ private enum ExplorationPOICategory: CaseIterable {
     var appleQueries: [String] {
         switch self {
         case .all:
-            return ["point of interest"]
+            return [
+                "point of interest",
+                "supermarket",
+                "convenience store",
+                "pharmacy",
+                "cafe",
+                "restaurant",
+                "transit stop",
+                "park"
+            ]
         case .supermarket:
             return ["supermarket", "grocery store"]
         case .convenience:
@@ -854,7 +863,23 @@ private final class ExplorationPOIListViewController: UITableViewController {
             self.loadingIndicator.stopAnimating()
             self.navigationItem.rightBarButtonItem = nil
             self.tableView.reloadData()
+            self.postAccessibilityResultsAnnouncement()
         }
+    }
+
+    private func postAccessibilityResultsAnnouncement() {
+        guard UIAccessibility.isVoiceOverRunning else {
+            return
+        }
+
+        let announcement: String
+        if let first = items.first {
+            announcement = GDLocalizedString("search.results_found_first_result", String(items.count), first.poi.localizedName)
+        } else {
+            announcement = GDLocalizedString("search.no_results_found_with_hint")
+        }
+
+        UIAccessibility.post(notification: .announcement, argument: announcement)
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -989,42 +1014,91 @@ private final class ExplorationPOIDataCoordinator {
     private func fetchApplePOIs(category: ExplorationPOICategory,
                                 userLocation: CLLocation,
                                 completion: @escaping ([ExplorationPOIItem]) -> Void) {
-        let query = category.appleQueries.first ?? "point of interest"
-        let request = MKLocalSearch.Request()
-        request.naturalLanguageQuery = query
-        request.region = MKCoordinateRegion(center: userLocation.coordinate,
-                                            latitudinalMeters: 2000,
-                                            longitudinalMeters: 2000)
+        let queries = Array(Set(category.appleQueries.filter { !$0.isEmpty }))
 
-        MKLocalSearch(request: request).start { response, _ in
-            guard let mapItems = response?.mapItems else {
-                completion([])
-                return
-            }
+        guard !queries.isEmpty else {
+            completion([])
+            return
+        }
 
-            let items: [ExplorationPOIItem] = mapItems.compactMap { mapItem in
-                let coordinate = mapItem.placemark.coordinate
-                guard CLLocationCoordinate2DIsValid(coordinate) else {
-                    return nil
+        let group = DispatchGroup()
+        let mergeQueue = DispatchQueue(label: "com.company.appname.exploration.apple.merge")
+        var mergedItems: [ExplorationPOIItem] = []
+
+        for query in queries {
+            group.enter()
+
+            let request = MKLocalSearch.Request()
+            request.naturalLanguageQuery = query
+            request.region = MKCoordinateRegion(center: userLocation.coordinate,
+                                                latitudinalMeters: 2000,
+                                                longitudinalMeters: 2000)
+
+            MKLocalSearch(request: request).start { response, _ in
+                let items: [ExplorationPOIItem] = (response?.mapItems ?? []).compactMap { mapItem in
+                    let coordinate = mapItem.placemark.coordinate
+                    guard CLLocationCoordinate2DIsValid(coordinate) else {
+                        return nil
+                    }
+
+                    let name = mapItem.name ?? mapItem.placemark.name ?? GDLocalizedString("location")
+                    let address = mapItem.placemark.title
+                    let location = GenericLocation(lat: coordinate.latitude,
+                                                   lon: coordinate.longitude,
+                                                   name: name,
+                                                   address: address)
+                    location.amenity = category.overtureCategory
+
+                    let distance = location.distanceToClosestLocation(from: userLocation)
+                    return ExplorationPOIItem(poi: location, source: .apple, distance: distance)
                 }
 
-                let name = mapItem.name ?? mapItem.placemark.name ?? GDLocalizedString("location")
-                let address = mapItem.placemark.title
-                let location = GenericLocation(lat: coordinate.latitude,
-                                               lon: coordinate.longitude,
-                                               name: name,
-                                               address: address)
-                location.amenity = category.overtureCategory
-
-                let distance = location.distanceToClosestLocation(from: userLocation)
-                return ExplorationPOIItem(poi: location, source: .apple, distance: distance)
+                mergeQueue.async {
+                    mergedItems.append(contentsOf: items)
+                    group.leave()
+                }
             }
+        }
 
-            completion(items)
+        group.notify(queue: .main) {
+            completion(Array(mergedItems.sorted(by: { $0.distance < $1.distance }).prefix(120)))
         }
     }
 
     private func fetchOverturePOIs(category: ExplorationPOICategory,
+                                   userLocation: CLLocation,
+                                   completion: @escaping ([ExplorationPOIItem]) -> Void) {
+        if category == .all {
+            let categories = ExplorationPOICategory.allCases
+                .filter { $0 != .all }
+                .map { $0.overtureCategory }
+                .filter { !$0.isEmpty }
+
+            let group = DispatchGroup()
+            let mergeQueue = DispatchQueue(label: "com.company.appname.exploration.overture.merge")
+            var mergedItems: [ExplorationPOIItem] = []
+
+            for categoryName in categories {
+                group.enter()
+                fetchOverturePOIs(categoryName: categoryName, userLocation: userLocation) { results in
+                    mergeQueue.async {
+                        mergedItems.append(contentsOf: results)
+                        group.leave()
+                    }
+                }
+            }
+
+            group.notify(queue: .main) {
+                completion(Array(mergedItems.sorted(by: { $0.distance < $1.distance }).prefix(120)))
+            }
+
+            return
+        }
+
+        fetchOverturePOIs(categoryName: category.overtureCategory, userLocation: userLocation, completion: completion)
+    }
+
+    private func fetchOverturePOIs(categoryName: String,
                                    userLocation: CLLocation,
                                    completion: @escaping ([ExplorationPOIItem]) -> Void) {
         guard let baseURL = overturePOIBaseURL() else {
@@ -1043,8 +1117,8 @@ private final class ExplorationPOIDataCoordinator {
         queryItems.append(URLQueryItem(name: "radius", value: "2000"))
         queryItems.append(URLQueryItem(name: "limit", value: "100"))
 
-        if !category.overtureCategory.isEmpty {
-            queryItems.append(URLQueryItem(name: "category", value: category.overtureCategory))
+        if !categoryName.isEmpty {
+            queryItems.append(URLQueryItem(name: "category", value: categoryName))
         }
 
         components.queryItems = queryItems

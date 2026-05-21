@@ -132,8 +132,49 @@ struct LocationActionHandler {
                 return decisionPoint
             }
         }
+
+        let nearestIntersections = dataView.intersections.sorted {
+            $0.location.distance(from: locationDetail.location) < $1.location.distance(from: locationDetail.location)
+        }
+
+        for intersection in nearestIntersections {
+            let decisionPoint = IntersectionDecisionPoint(node: intersection)
+            if !decisionPoint.edges.isEmpty {
+                return decisionPoint
+            }
+        }
         
-        return ReverseGeocoderContext.closestIntersection(for: locationDetail).map { IntersectionDecisionPoint(node: $0) }
+        if let closest = ReverseGeocoderContext.closestIntersection(for: locationDetail) {
+            let decisionPoint = IntersectionDecisionPoint(node: closest)
+            if !decisionPoint.edges.isEmpty {
+                return decisionPoint
+            }
+        }
+
+        return nil
+    }
+
+    private static func appleMapsURL(for locationDetail: LocationDetail) -> URL? {
+        let coordinate = locationDetail.location.coordinate
+
+        var components = URLComponents()
+        components.scheme = "http"
+        components.host = "maps.apple.com"
+
+        let queryText: String
+        if let address = locationDetail.estimatedAddress, !address.isEmpty {
+            queryText = "\(locationDetail.displayName), \(address)"
+        } else {
+            queryText = locationDetail.displayName
+        }
+
+        components.queryItems = [
+            URLQueryItem(name: "ll", value: "\(coordinate.latitude),\(coordinate.longitude)"),
+            URLQueryItem(name: "q", value: queryText),
+            URLQueryItem(name: "z", value: "16")
+        ]
+
+        return components.url
     }
     
     static func preview(locationDetail: LocationDetail, completion: @escaping PreviewCompletion) -> Progress? {
@@ -174,6 +215,12 @@ struct LocationActionHandler {
     }
     
     static func openInAppleMaps(locationDetail: LocationDetail) throws {
+        if let url = appleMapsURL(for: locationDetail) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+            locationDetail.updateLastSelectedDate()
+            return
+        }
+
         let coordinate = locationDetail.location.coordinate
         let placemark = MKPlacemark(coordinate: coordinate)
         let item = MKMapItem(placemark: placemark)
