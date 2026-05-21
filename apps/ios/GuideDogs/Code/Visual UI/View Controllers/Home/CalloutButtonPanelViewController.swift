@@ -101,7 +101,7 @@ class CalloutButtonPanelViewController: UIViewController {
         
         if let element = UIView.setGroupAccessibilityElement(for: locateContainer,
                                                              label: GDLocalizedString("directions.my_location"),
-                                                             hint: GDLocalizedString("ui.action_button.my_location.acc_hint")) {
+                                                             hint: nil) {
             element.accessibilityIdentifier = "btn.mylocation"
             element.accessibilityCustomActions = [
                 UIAccessibilityCustomAction(name: GDLocalizedString("ui.action_button.my_location.action.start_audio_beacon"), target: self, selector: #selector(onStartAudioBeaconAccessibilityAction)),
@@ -111,21 +111,21 @@ class CalloutButtonPanelViewController: UIViewController {
         
         if let element = UIView.setGroupAccessibilityElement(for: orientContainer,
                                                              label: GDLocalizedString("help.orient.page_title"),
-                                                             hint: GDLocalizedString("ui.action_button.around_me.acc_hint")) {
+                                                             hint: nil) {
             element.accessibilityIdentifier = "btn.aroundme"
             element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAroundPOIListAccessibilityAction))]
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: exploreContainer,
                                                              label: GDLocalizedString("help.explore.page_title"),
-                                                             hint: GDLocalizedString("ui.action_button.ahead_of_me.acc_hint")) {
+                                                             hint: nil) {
             element.accessibilityIdentifier = "btn.aheadofme"
             element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAheadPOIListAccessibilityAction))]
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: markedPointsContainer,
                                                              label: SettingsContext.shared.calloutRangeMode.localizedName,
-                                                             hint: GDLocalizedString("callout_mode.selector.title")) {
+                                                             hint: nil) {
             element.accessibilityIdentifier = "btn.nearbymarkers"
         }
     }

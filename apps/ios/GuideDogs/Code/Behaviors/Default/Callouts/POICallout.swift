@@ -143,13 +143,8 @@ struct POICallout: POICalloutProtocol {
         } else {
             soundLocation = poi.closestLocation(from: location)
             distance = soundLocation.distance(from: location)
-            
-            if poi.localizedName.isEmpty {
-                // Use a default name
-                name = GDLocalizedString("location")
-            } else {
-                name = poi.localizedName
-            }
+
+            name = poi.localizedNameWithType
             
             category = SuperCategory(rawValue: poi.superCategory) ?? .undefined
         }

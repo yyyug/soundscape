@@ -874,7 +874,7 @@ private final class ExplorationPOIListViewController: UITableViewController {
 
         let announcement: String
         if let first = items.first {
-            announcement = GDLocalizedString("search.results_found_first_result", String(items.count), first.poi.localizedName)
+            announcement = GDLocalizedString("search.results_found_first_result", String(items.count), displayName(for: first))
         } else {
             announcement = GDLocalizedString("search.no_results_found_with_hint")
         }
@@ -903,7 +903,7 @@ private final class ExplorationPOIListViewController: UITableViewController {
         let bearing = poi.bearingToClosestLocation(from: userLocation)
         let relativeDirection = Direction(from: heading, to: bearing, type: .combined).localizedString
 
-        cell.textLabel?.text = poi.localizedName
+        cell.textLabel?.text = displayName(for: item)
         cell.detailTextLabel?.text = "\(item.source.localizedName) • \(distance) • \(relativeDirection)"
         cell.accessoryType = .disclosureIndicator
 
@@ -916,6 +916,29 @@ private final class ExplorationPOIListViewController: UITableViewController {
         cell.tag = indexPath.row
 
         return cell
+    }
+
+    private func displayName(for item: ExplorationPOIItem) -> String {
+        let baseName = item.poi.localizedName.isEmpty ? GDLocalizedString("location") : item.poi.localizedName
+
+        let typeName: String?
+        if category != .all {
+            typeName = category.localizedName
+        } else if let inferred = coordinator.inferCategory(for: item.poi) {
+            typeName = inferred.localizedName
+        } else {
+            typeName = item.poi.localizedTypeName
+        }
+
+        guard let typeName, !typeName.isEmpty else {
+            return baseName
+        }
+
+        if baseName.lowercasedWithAppLocale().contains(typeName.lowercasedWithAppLocale()) {
+            return baseName
+        }
+
+        return "\(baseName), \(typeName)"
     }
 
     @objc private func onSetBeacon(_ action: UIAccessibilityCustomAction) -> Bool {
@@ -1375,6 +1398,16 @@ private final class ExplorationPOIDataCoordinator {
 
     private func superCategoryIsMobility(_ poi: POI) -> Bool {
         return SuperCategory(rawValue: poi.superCategory) == .mobility
+    }
+
+    func inferCategory(for poi: POI) -> ExplorationPOICategory? {
+        for category in ExplorationPOICategory.allCases where category != .all {
+            if matchesCategory(poi, category: category) {
+                return category
+            }
+        }
+
+        return nil
     }
 }
 

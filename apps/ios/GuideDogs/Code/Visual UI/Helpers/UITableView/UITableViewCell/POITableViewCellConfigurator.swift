@@ -121,7 +121,7 @@ class POITableViewCellConfigurator: TableViewCellConfigurator {
     private func configureAccessibilityHint(_ cell: POITableViewCell, poi: Model) {
         // Use the default accessibility label and hint
         cell.accessibilityLabel = nil
-        cell.accessibilityHint = GDLocalizedString("location.select.hint")
+        cell.accessibilityHint = nil
     }
     
     private func configureAccessibilityCustomActions(_ cell: POITableViewCell, poi: Model) {
