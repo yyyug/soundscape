@@ -99,6 +99,40 @@ class HomeViewController: UIViewController {
     private weak var calloutButtonViewController: CalloutButtonPanelViewController?
     private var didAutoAnnounceInitialMyLocation = false
     
+    // Navigation step banner (shown above the callout button panel when a beacon/route is active)
+    private lazy var navigationStepContainerView: UIView = {
+        let container = UIView()
+        container.translatesAutoresizingMaskIntoConstraints = false
+        container.backgroundColor = UIColor(named: "Background 2") ?? UIColor.secondarySystemBackground
+        container.isHidden = true
+        container.accessibilityTraits = .staticText
+        return container
+    }()
+
+    private lazy var navigationStepLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textAlignment = .natural
+        label.numberOfLines = 3
+        label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = UIColor.white
+        label.text = ""
+        return label
+    }()
+
+    private lazy var navigationStepIconView: UIImageView = {
+        let iv = UIImageView()
+        iv.translatesAutoresizingMaskIntoConstraints = false
+        iv.image = UIImage(systemName: "arrow.turn.up.right")
+        iv.tintColor = .white
+        iv.contentMode = .scaleAspectFit
+        iv.setContentHuggingPriority(.required, for: .horizontal)
+        return iv
+    }()
+
+    private var navigationStepObserver: NSObjectProtocol?
+
     // MARK: View Life Cycle
     
     deinit {
@@ -111,6 +145,7 @@ class HomeViewController: UIViewController {
         }
         
         listeners.cancelAndRemoveAll()
+        if let o = navigationStepObserver { NotificationCenter.default.removeObserver(o) }
         
         DDLogDebug("\(String(describing: type(of: self))) deinitialized")
     }
@@ -190,6 +225,12 @@ class HomeViewController: UIViewController {
         }))
         
         NotificationCenter.default.post(name: Notification.Name.homeViewControllerDidLoad, object: self)
+
+        // Start the navigation guidance manager (initialises the singleton and begins observing
+        // destinationChanged / locationUpdated notifications).
+        _ = NavigationGuidanceManager.shared
+
+        setupNavigationStepBanner()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -217,7 +258,12 @@ class HomeViewController: UIViewController {
             return
         }
     }
-    
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        positionNavigationStepBanner()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -487,6 +533,80 @@ extension HomeViewController: UIViewControllerTransitioningDelegate {
             
             self?.performSegue(withIdentifier: segue, sender: self)
         }
+    }
+}
+
+// MARK: Navigation Step Banner
+
+private extension HomeViewController {
+
+    /// Build the navigation step banner view and pin it just above the callout button panel.
+    func setupNavigationStepBanner() {
+        // Build view hierarchy: container → icon + label
+        navigationStepContainerView.addSubview(navigationStepIconView)
+        navigationStepContainerView.addSubview(navigationStepLabel)
+
+        NSLayoutConstraint.activate([
+            navigationStepIconView.leadingAnchor.constraint(equalTo: navigationStepContainerView.leadingAnchor, constant: 16),
+            navigationStepIconView.centerYAnchor.constraint(equalTo: navigationStepContainerView.centerYAnchor),
+            navigationStepIconView.widthAnchor.constraint(equalToConstant: 24),
+            navigationStepIconView.heightAnchor.constraint(equalToConstant: 24),
+
+            navigationStepLabel.leadingAnchor.constraint(equalTo: navigationStepIconView.trailingAnchor, constant: 12),
+            navigationStepLabel.trailingAnchor.constraint(equalTo: navigationStepContainerView.trailingAnchor, constant: -16),
+            navigationStepLabel.topAnchor.constraint(equalTo: navigationStepContainerView.topAnchor, constant: 10),
+            navigationStepLabel.bottomAnchor.constraint(equalTo: navigationStepContainerView.bottomAnchor, constant: -10)
+        ])
+
+        view.addSubview(navigationStepContainerView)
+
+        // Pin leading / trailing to the main view edges
+        NSLayoutConstraint.activate([
+            navigationStepContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            navigationStepContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+
+        // The vertical position (above the callout panel) is set in viewWillLayoutSubviews once
+        // the callout button VC view is available.
+
+        // Subscribe to navigation step updates
+        navigationStepObserver = NotificationCenter.default.addObserver(
+            forName: .navigationStepDidUpdate,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            self?.handleNavigationStepUpdate(notification)
+        }
+    }
+
+    func handleNavigationStepUpdate(_ notification: Notification) {
+        let text = notification.userInfo?[NavigationGuidanceManager.Keys.stepText] as? String
+        let hasText = text != nil && !text!.isEmpty
+
+        navigationStepLabel.text = text
+        navigationStepContainerView.accessibilityLabel = text
+
+        UIView.animate(withDuration: 0.3) {
+            self.navigationStepContainerView.isHidden = !hasText
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    /// Re-anchor the banner above the callout panel whenever the layout changes.
+    func positionNavigationStepBanner() {
+        guard let calloutPanel = calloutButtonViewController?.view?.superview else { return }
+
+        // Remove any existing top constraint for the banner
+        view.constraints.filter { c in
+            (c.firstItem as? UIView) == navigationStepContainerView && c.firstAttribute == .top
+        }.forEach { $0.isActive = false }
+        view.constraints.filter { c in
+            (c.secondItem as? UIView) == navigationStepContainerView && c.secondAttribute == .bottom
+        }.forEach { $0.isActive = false }
+
+        NSLayoutConstraint.activate([
+            navigationStepContainerView.bottomAnchor.constraint(equalTo: calloutPanel.topAnchor)
+        ])
     }
 }
 

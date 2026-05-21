@@ -531,13 +531,17 @@ class RouteGuidance: BehaviorBase {
             AudioSessionManager.removeNowPlayingInfo()
             return
         }
-        
+
         let distance = location.distance(from: userLocation)
         let formattedDistance = LanguageFormatter.formattedDistance(from: distance)
-        
+
         AudioSessionManager.setNowPlayingInfo(title: content.displayName,
                                               subtitle: current.waypoint.displayName,
                                               secondarySubtitle: formattedDistance)
+    }
+
+    private func broadcastNavigationStepUpdate(stepDescription: String) {
+        NotificationCenter.default.post(name: .routeGuidanceStateChanged, object: self, userInfo: ["latestStepDescription": stepDescription])
     }
     
     private func findNearestIntersection() -> String? {

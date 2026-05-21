@@ -412,6 +412,7 @@
 		568480931CBC9CEE004B4227 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568480921CBC9CEE004B4227 /* SettingsViewController.swift */; };
 		568480981CBD6A19004B4227 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568480971CBD6A19004B4227 /* Colors.swift */; };
 		568480A41CBDA685004B4227 /* POITableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 568480A31CBDA685004B4227 /* POITableViewCell.swift */; };
+		369108E811889DBF12D913E9 /* NavigationGuidanceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B6F7BE9771C18476BFB12377 /* NavigationGuidanceManager.swift */; };
 		620118CB24AAB489004B0380 /* LocationAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620118C724AAB489004B0380 /* LocationAction.swift */; };
 		620118CC24AAB489004B0380 /* LocationActionAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620118C824AAB489004B0380 /* LocationActionAlert.swift */; };
 		620118CD24AAB489004B0380 /* LocationActionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 620118C924AAB489004B0380 /* LocationActionDelegate.swift */; };
@@ -1296,6 +1297,7 @@
 		568480971CBD6A19004B4227 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		568480A31CBDA685004B4227 /* POITableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; name = POITableViewCell.swift; path = "Code/Visual UI/Controls/UITableView/POITableViewCell.swift"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		5A99A67E08FC20519550F09D /* Pods-Soundscape.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Soundscape.debug.xcconfig"; path = "Target Support Files/Pods-Soundscape/Pods-Soundscape.debug.xcconfig"; sourceTree = "<group>"; };
+		B6F7BE9771C18476BFB12377 /* NavigationGuidanceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationGuidanceManager.swift; sourceTree = "<group>"; };
 		620118C724AAB489004B0380 /* LocationAction.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationAction.swift; sourceTree = "<group>"; };
 		620118C824AAB489004B0380 /* LocationActionAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationActionAlert.swift; sourceTree = "<group>"; };
 		620118C924AAB489004B0380 /* LocationActionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocationActionDelegate.swift; sourceTree = "<group>"; };
@@ -2302,6 +2304,14 @@
 			path = Helpers;
 			sourceTree = "<group>";
 		};
+		F9A336A646C2FD7DB4C5B09C /* Navigation */ = {
+			isa = PBXGroup;
+			children = (
+				B6F7BE9771C18476BFB12377 /* NavigationGuidanceManager.swift */,
+			);
+			path = Navigation;
+			sourceTree = "<group>";
+		};
 		2870DA7920447DED00971F75 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -2312,6 +2322,7 @@
 				629821AE2510496E00775CC2 /* Nearby Table */,
 				62D73707249A934100BA0A6D /* Location */,
 				28467EE32642041700FB4C9F /* Routes */,
+				F9A336A646C2FD7DB4C5B09C /* Navigation */,
 				28A16132283D86B50081CFA4 /* Guided Tours */,
 				C35F390B23C3DFEA000D0D3D /* Search */,
 				C31BEE1D2215D89A00EE9284 /* UITableView */,
@@ -5953,6 +5964,7 @@
 				2896378726D70D14001694C0 /* VolumeControlSlider.swift in Sources */,
 				624DF69427BEF08A000A634C /* AuthorizedService.swift in Sources */,
 				62B14C1C27B71C7800D24EA1 /* LaunchActivity+Log.swift in Sources */,
+				369108E811889DBF12D913E9 /* NavigationGuidanceManager.swift in Sources */,
 				620118CB24AAB489004B0380 /* LocationAction.swift in Sources */,
 				6254923D243BF26100DC49E5 /* ShareMarkerLinkHandler.swift in Sources */,
 				C324BBE422A1E89100C83439 /* DistancePredicate.swift in Sources */,
