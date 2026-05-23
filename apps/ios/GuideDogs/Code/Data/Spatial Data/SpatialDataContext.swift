@@ -50,6 +50,8 @@ class SpatialDataContext: NSObject, SpatialDataProtocol {
     static let expansionPOISearchDistance: CLLocationDistance = 200
     static let refreshTimeInterval: TimeInterval = 5.0
     static let refreshDistanceInterval: CLLocationDistance = 5.0
+    private static let tileSchemaVersionKey = "GDATileSchemaVersion"
+    private static let tileSchemaVersion = 2
 
     private(set) weak var geolocationManager: GeolocationManagerProtocol?
     private(set) var motionActivityContext: MotionActivityProtocol
@@ -171,6 +173,8 @@ class SpatialDataContext: NSObject, SpatialDataProtocol {
         
         state = .waitingForLocation
         superCategories = categories
+
+        SpatialDataContext.invalidateTileCacheIfNeeded()
         
         // Register to receive a notification when the app has finished initializing
         NotificationCenter.default.addObserver(self, selector: #selector(self.onAppDidInitialize), name: NSNotification.Name.appDidInitialize, object: nil)
@@ -179,6 +183,18 @@ class SpatialDataContext: NSObject, SpatialDataProtocol {
                                                selector: #selector(handleCloudKeyValueStoreDidChange),
                                                name: .cloudKeyValueStoreDidChange,
                                                object: nil)
+    }
+
+    private class func invalidateTileCacheIfNeeded() {
+        let defaults = UserDefaults.standard
+        let cachedVersion = defaults.integer(forKey: tileSchemaVersionKey)
+
+        guard cachedVersion < tileSchemaVersion else {
+            return
+        }
+
+        expireAllTiles()
+        defaults.set(tileSchemaVersion, forKey: tileSchemaVersionKey)
     }
     
     @objc private func onAppDidInitialize() {
