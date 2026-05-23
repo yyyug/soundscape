@@ -135,7 +135,7 @@
 "general.alert.error.message" = "Please try again later.";
 
 /* Text displayed while we are doing work to start an experience */
-"general.loading.start" = "Getting things ready...";
+"general.loading.start" = "正在準備中...";
 
 /* Text displayed while we are doing work to end an experience */
 "general.loading.end" = "Cleaning things up...";
@@ -347,28 +347,28 @@
 "settings.general.voice" = "語音";
 
 /* Settings title unit of measurement, Imperial (Feet) */
-"settings.units.imperial" = "Imperial (Feet)";
+"settings.units.imperial" = "英制（英尺）";
 
 /* Settings title unit of measurement, Metric (Meters) */
 "settings.units.metric" = "公制（公尺）";
 
 /* Settings title, Clear stored map data */
-"settings.clear_data" = "Clear Stored Map Data";
+"settings.clear_data" = "清除已儲存地圖資料";
 
 /* Settings title, About AppName {NumberedPlaceholder="Soundscape"} */
-"settings.about_app" = "About AppName";
+"settings.about_app" = "關於 AppName";
 
 /* Settings title,General Settings */
 "settings.section.general" = "一般設定";
 
 /* Settings title,Units of Measure */
-"settings.section.units" = "Units of Measure";
+"settings.section.units" = "度量單位";
 
 /* Settings title, Troubleshooting */
 "settings.section.troubleshooting" = "疑難排解";
 
 /* Settings title, About */
-"settings.section.about" = "About";
+"settings.section.about" = "關於";
 
 /* Settings title, Telemetry */
 "settings.section.telemetry" = "使用資料";
@@ -380,16 +380,16 @@
 "settings.section.telemetry.footer" = "協助 AppName 改進：自動傳送診斷、錯誤回報與使用資料，不會收集個人資料。";
 
 /* Settings title, Language */
-"settings.language.screen_title" = "Language";
+"settings.language.screen_title" = "語言";
 
 /* Settings title, Language and Region */
 "settings.language.screen_title.2" = "語言與地區";
 
 /* Language selection validation message, %@ is a language name. "Would you like to change the app language to English?" {NumberedPlaceholder="%@"} */
-"settings.language.change_alert" = "Would you like to change the app language to %@?";
+"settings.language.change_alert" = "要將 App 語言變更為 %@ 嗎？";
 
 /* Language selection validation button title. %@ is a language name e.g. "Change to English" {NumberedPlaceholder="%@"} */
-"settings.language.change_alert_action" = "Change to %@";
+"settings.language.change_alert_action" = "變更為 %@";
 
 /* Language display name. %1$@ is a language name, %2$@ is the country name. e.g. "English (United Kingdom)" {NumberedPlaceholder="%1$@", "%2$@"} */
 "settings.language.language_name" = "%1$@ (%2$@)";
@@ -408,14 +408,14 @@
 "settings.audio.mix_with_others.description" = "啟用後可使用耳機按鈕與鎖定畫面媒體按鈕控制 Soundscape。啟用時，若其他媒體（如 Podcast 或音樂）播放中，Soundscape 會暫停。";
 
 /* The detailed description for the alert that confirms where a user wants to turn on the "Enable Media Controls" setting or not {NumberedPlaceholder="Soundscape"} */
-"setting.audio.mix_with_others.confirmation" = "Turning this setting on will cause Soundscape's callouts and other audio to pause whenever you start using a different media app. You can return to Soundscape to resume callouts.";
+"setting.audio.mix_with_others.confirmation" = "啟用此設定後，當你開始使用其他媒體 App 時，Soundscape 的提示與其他音效會暫停。你可以回到 Soundscape 以繼續提示。";
 
 //------------------------------------------------------------------------------
 // MARK: Settings (Volume)
 //------------------------------------------------------------------------------
 
 /* Title of the slider that controls the volume level of all audio other than beacon or speech audio */
-"settings.volume.other" = "Sound Effects";
+"settings.volume.other" = "音效";
 
 //------------------------------------------------------------------------------
 // MARK: Settings (Voice)
@@ -537,7 +537,7 @@
 "troubleshooting.check_audio" = "檢查音訊";
 
 /* Voiceover hint that explains the action of the "Check Audio" button. */
-"troubleshooting.check_audio.hint" = "Double tap to check the status of the headphones you are using with Soundscape.";
+"troubleshooting.check_audio.hint" = "點兩下檢查你目前與 Soundscape 搭配使用的耳機狀態。";
 
 /* Explanation of what the "Check Audio" button does, displayed below the button */
 "troubleshooting.check_audio.explanation" = "Tap this button to hear about the status of the headphones you are using with Soundscape.";
@@ -694,13 +694,13 @@
 "preview.title" = "街道御覽";
 
 /* Text displayed when the current location is not known while previewing */
-"preview.current_intersection_unknown.label" = "Current Location Unknown";
+"preview.current_intersection_unknown.label" = "目前位置未知";
 
 /* Text displaying the next intersection that the user will encounter along a selected road, "To Main St & 2nd Ave" {NumberedPlaceholder="%@"} */
-"preview.next_intersection.label" = "To %@";
+"preview.next_intersection.label" = "前往 %@";
 
 /* Text displayed when the user is approaching an intersection */
-"preview.approaching_intersection.label" = "Approaching Intersection";
+"preview.approaching_intersection.label" = "即將到達路口";
 
 /* Label to display compass orientation, %1$@ is the heading in degrees and %2$@ is the cardinal direction, "230° SW" {NumberedPlaceholder="%1$@", "%2$@"} */
 "preview.content.orientation.text.with_cardinal" = "%1$@° %2$@";
@@ -709,25 +709,25 @@
 "preview.content.orientation.text.without_cardinal" = "%1$@°";
 
 /* Label to display when the user is facing a road that they can travel down, %1$@ is the cardinal direction and %2$@ is the name of the road that they can travel down, "SW on Main Street" {NumberedPlaceholder="%1$@", "%2$@"} */
-"preview.content.edge.text" = "%1$@ on %2$@";
+"preview.content.edge.text" = "%1$@，沿著 %2$@";
 
 /* Accessibility hint for the button to select a direction of travel */
-"preview.content.edge.text.accessibility_hint" = "Double tap to move to the next intersection";
+"preview.content.edge.text.accessibility_hint" = "點兩下前往下一個路口";
 
 /* Title for button to go to the next intersection */
-"preview.go.title" = "Go";
+"preview.go.title" = "前往";
 
 /* Title for button to go back to the previous intersection */
-"preview.go_back.title" = "Previous";
+"preview.go_back.title" = "上一個";
 
 /* Accessibility hint for button to go back */
-"preview.go_back.accessibility_text" = "Double tap to go back to your previous intersection";
+"preview.go_back.accessibility_text" = "點兩下返回上一個路口";
 
 /* Text for the "Search" button */
-"preview.search.label" = "Explore Nearby";
+"preview.search.label" = "探索附近";
 
 /* Accessibility hint for the "Explore" button */
-"preview.search.accessibility_hint" = "Double tap to search or browse nearby places";
+"preview.search.accessibility_hint" = "點兩下搜尋或瀏覽附近地點";
 
 /* Title for the alert displayed when ther user tries to restart the preview experience at a new location */
 "preview.alert.restart.title" = "街道御覽正在進行中";
@@ -798,6 +798,16 @@
 /* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
 "preview.include_unnamed_roads.subtitle" = "在街景預覽中包含未命名道路";
 
+"preview.steering_mode.title" = "道路選擇模式";
+"preview.steering_mode.subtitle" = "選擇以手機朝向或使用左/右按鈕來選擇道路。";
+"preview.steering_mode.orientation" = "手機朝向";
+"preview.steering_mode.buttons" = "左/右按鈕";
+"preview.callout.road_finder.button_instructions" = "使用左與右按鈕選擇道路";
+"preview.steer.left.title" = "左";
+"preview.steer.right.title" = "右";
+"preview.steer.left.hint" = "點兩下聚焦左側道路";
+"preview.steer.right.hint" = "點兩下聚焦右側道路";
+
 "settings.japanese_address_processing" = "日本地址處理";
 "settings.japanese_address_processing.info" = "當道路沒有名稱時，使用區域式地址朗讀。";
 
@@ -814,28 +824,28 @@
 "preview.include_unnamed_roads.hint.on" = "點兩下以在街景預覽中排除未命名道路";
 
 /* Accessibility hint for the button to end the preview tutorial */
-"preview.tutorial.done.hint" = "Double tap to exit the tutorial";
+"preview.tutorial.done.hint" = "點兩下結束教學";
 
 /* Title for the first set of tutorial content. {NumberedPlaceholder="Street Preview"} */
-"preview.tutorial.title.1" = "Welcome to Street Preview!";
+"preview.tutorial.title.1" = "歡迎使用街道預覽！";
 
 /* First set of tutorial content */
-"preview.tutorial.content.1" = "Explore and get a sense of an area anywhere in the world. For the best experience, we recommend that you stand up to turn in place and use stereo headphones.";
+"preview.tutorial.content.1" = "你可以探索世界各地並建立對環境的空間感。為了獲得最佳體驗，建議你站立原地轉向，並使用立體聲耳機。";
 
 /* Title for the second set of tutorial content */
-"preview.tutorial.title.2" = "What’s about to happen";
+"preview.tutorial.title.2" = "接下來會發生什麼";
 
 /* Second set of tutorial content, %@ is the name of the location where the preview experience is starting, Quotes written as \" */
-"preview.tutorial.content.2" = "You have been transported to the middle of the street near the location you selected. Using the phone as a pointer, slowly turn, and the street names will be called out as you turn. When you are facing the street you want to go down, tap \"Go\" and you will advance to the next intersection.";
+"preview.tutorial.content.2" = "你將被帶到所選位置附近的街道中央。把手機當作指向器慢慢轉動，系統會隨著方向朗讀街道名稱。當你面向想前進的道路時，點一下「前往」，就會前進到下一個路口。";
 
 /* Title for the third set of tutorial content */
-"preview.tutorial.title.3" = "Continuing your exploration";
+"preview.tutorial.title.3" = "繼續探索";
 
 /* Third set of tutorial content Quotes written as \" */
-"preview.tutorial.content.3" = "At each intersection, you can use the phone again to choose which road to go down, or you can explore your immediate surroundings using the familiar Soundscape buttons at the bottom of the screen. You can tap \"Search\" to start the audio beacon at any point of interest, change your location, or to just explore the area in more detail.";
+"preview.tutorial.content.3" = "在每個路口，你都可以再次用手機選擇要走的道路；也可以使用畫面底部熟悉的 Soundscape 按鈕探索周遭。你可以點選「探索附近」，在任一興趣點啟動音訊信標、變更位置，或更深入地探索區域。";
 
 /* Fourth set of tutorial content */
-"preview.tutorial.content.4" = "Enjoy and have fun!";
+"preview.tutorial.content.4" = "祝你探索愉快！";
 
 //------------------------------------------------------------------------------
 // MARK: - Location Detail

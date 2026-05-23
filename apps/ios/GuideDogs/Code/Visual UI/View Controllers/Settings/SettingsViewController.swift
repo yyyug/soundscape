@@ -541,38 +541,103 @@ private final class ManageCalloutsSettingsViewController: UITableViewController 
 }
 
 private final class StreetPreviewSettingsViewController: UITableViewController {
+    private enum Row: Int, CaseIterable {
+        case includeUnnamedRoads
+        case steeringMode
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = GDLocalizedString("preview.title")
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "StreetPreviewCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "StreetPreviewValueCell")
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 1
+        return Row.allCases.count
     }
 
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
-        return GDLocalizedString("preview.include_unnamed_roads.subtitle")
+        return GDLocalizedString("preview.steering_mode.subtitle")
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "StreetPreviewCell", for: indexPath)
-        let settingSwitch = UISwitch()
-        settingSwitch.isOn = SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads
-        settingSwitch.addTarget(self, action: #selector(onSwitchValueChanged(_:)), for: .valueChanged)
+        guard let row = Row(rawValue: indexPath.row) else {
+            return tableView.dequeueReusableCell(withIdentifier: "StreetPreviewCell", for: indexPath)
+        }
 
-        cell.backgroundColor = Colors.Background.primary
-        cell.textLabel?.text = GDLocalizedString("preview.include_unnamed_roads.title")
-        cell.textLabel?.textColor = Colors.Foreground.primary
-        cell.textLabel?.numberOfLines = 0
-        cell.textLabel?.adjustsFontForContentSizeCategory = true
-        cell.selectionStyle = .none
-        cell.accessoryView = settingSwitch
-        return cell
+        switch row {
+        case .includeUnnamedRoads:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "StreetPreviewCell", for: indexPath)
+            let settingSwitch = UISwitch()
+            settingSwitch.isOn = SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads
+            settingSwitch.addTarget(self, action: #selector(onSwitchValueChanged(_:)), for: .valueChanged)
+
+            cell.backgroundColor = Colors.Background.primary
+            cell.textLabel?.text = GDLocalizedString("preview.include_unnamed_roads.title")
+            cell.textLabel?.textColor = Colors.Foreground.primary
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.adjustsFontForContentSizeCategory = true
+            cell.selectionStyle = .none
+            cell.accessoryView = settingSwitch
+            cell.detailTextLabel?.text = nil
+            return cell
+
+        case .steeringMode:
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: "StreetPreviewValueCell")
+            cell.backgroundColor = Colors.Background.primary
+            cell.textLabel?.text = GDLocalizedString("preview.steering_mode.title")
+            cell.textLabel?.textColor = Colors.Foreground.primary
+            cell.textLabel?.numberOfLines = 0
+            cell.textLabel?.adjustsFontForContentSizeCategory = true
+            cell.detailTextLabel?.text = SettingsContext.shared.previewSteeringMode.localizedName
+            cell.detailTextLabel?.textColor = Colors.Foreground.secondary
+            cell.detailTextLabel?.adjustsFontForContentSizeCategory = true
+            cell.accessoryType = .disclosureIndicator
+            cell.selectionStyle = .default
+            return cell
+        }
     }
 
     @objc private func onSwitchValueChanged(_ sender: UISwitch) {
         SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads = sender.isOn
         GDATelemetry.track("preview.include_unnamed_roads", with: ["value": "\(sender.isOn)", "context": "app_settings"])
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+
+        guard let row = Row(rawValue: indexPath.row), row == .steeringMode else {
+            return
+        }
+
+        let alert = UIAlertController(title: GDLocalizedString("preview.steering_mode.title"),
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
+
+        [SettingsContext.PreviewSteeringMode.deviceOrientation, SettingsContext.PreviewSteeringMode.buttonSteering].forEach { mode in
+            let current = SettingsContext.shared.previewSteeringMode
+            let title = mode == current ? "✓ \(mode.localizedName)" : mode.localizedName
+            alert.addAction(UIAlertAction(title: title, style: .default, handler: { [weak self] _ in
+                SettingsContext.shared.previewSteeringMode = mode
+                GDATelemetry.track("preview.steering_mode", with: [
+                    "value": mode.rawValue,
+                    "context": "app_settings"
+                ])
+                self?.tableView.reloadData()
+            }))
+        }
+
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
+
+        if let popover = alert.popoverPresentationController,
+           let cell = tableView.cellForRow(at: indexPath) {
+            popover.sourceView = cell
+            popover.sourceRect = cell.bounds
+        }
+
+        present(alert, animated: true)
     }
 }

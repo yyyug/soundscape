@@ -11,6 +11,8 @@ import UIKit
 
 protocol PreviewControlDelegate: AnyObject {
     func previewControl(_ viewController: PreviewControlViewController, didSelect edge: RoadAdjacentDataView?)
+    func previewControlDidSteerLeft(_ viewController: PreviewControlViewController)
+    func previewControlDidSteerRight(_ viewController: PreviewControlViewController)
 }
 
 class PreviewControlViewController: UIViewController {
@@ -23,6 +25,8 @@ class PreviewControlViewController: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var subtitleLabel: UILabel!
     @IBOutlet weak var button: UIButton!
+    @IBOutlet weak var steerLeftButton: UIButton!
+    @IBOutlet weak var steerRightButton: UIButton!
     
     // MARK: Properties
     
@@ -47,6 +51,14 @@ class PreviewControlViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        steerLeftButton.setTitle(GDLocalizedString("preview.steer.left.title"), for: .normal)
+        steerRightButton.setTitle(GDLocalizedString("preview.steer.right.title"), for: .normal)
+
+        steerLeftButton.accessibilityLabel = GDLocalizedString("preview.steer.left.title")
+        steerLeftButton.accessibilityHint = GDLocalizedString("preview.steer.left.hint")
+        steerRightButton.accessibilityLabel = GDLocalizedString("preview.steer.right.title")
+        steerRightButton.accessibilityHint = GDLocalizedString("preview.steer.right.hint")
         
         // Listen for heading updates from the device
         headingSubscriber = AppContext.shared.geolocationManager.heading(orderedBy: [.device])
@@ -120,6 +132,7 @@ class PreviewControlViewController: UIViewController {
             
             // Reset the current view
             self.resetView()
+            self.configureSteeringControls()
             
             switch self.currentState {
             case .orientation:
@@ -189,6 +202,14 @@ class PreviewControlViewController: UIViewController {
     private func configureView(for heading: Double) {
         let text: String
         let accessibilityLabel: String
+
+        if SettingsContext.shared.previewSteeringMode == .buttonSteering {
+            text = GDLocalizedString("preview.callout.road_finder.button_instructions")
+            accessibilityLabel = text
+            configureLabelView(titleText: text, subtitleText: nil, accessibilityLabel: accessibilityLabel)
+            button.transform = CGAffineTransform.identity
+            return
+        }
         
         let headingInt = Int(heading.rounded(.toNearestOrEven))
         let headingStr = String(headingInt)
@@ -213,6 +234,15 @@ class PreviewControlViewController: UIViewController {
         // Rotate the image view
         let angleInRadians = Measurement(value: heading, unit: UnitAngle.degrees).converted(to: .radians).value
         self.button.transform = CGAffineTransform(rotationAngle: CGFloat(angleInRadians))
+    }
+
+    private func configureSteeringControls() {
+        let showSteering = SettingsContext.shared.previewSteeringMode == .buttonSteering && currentState != .transition
+
+        steerLeftButton.isHidden = !showSteering
+        steerRightButton.isHidden = !showSteering
+        steerLeftButton.isEnabled = showSteering
+        steerRightButton.isEnabled = showSteering
     }
     
     private func configureLabelView(titleText: String?, subtitleText: String?, accessibilityLabel: String?) {
@@ -242,6 +272,14 @@ class PreviewControlViewController: UIViewController {
         }
         
         delegate?.previewControl(self, didSelect: selectedEdge)
+    }
+
+    @IBAction private func onSteerLeftTouchUpInside(_ sender: UIButton) {
+        delegate?.previewControlDidSteerLeft(self)
+    }
+
+    @IBAction private func onSteerRightTouchUpInside(_ sender: UIButton) {
+        delegate?.previewControlDidSteerRight(self)
     }
     
 }
