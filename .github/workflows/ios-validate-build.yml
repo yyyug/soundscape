@@ -1,0 +1,96 @@
+name: iOS Validate Build
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/ios-validate-build.yml
+      - apps/ios/**
+  push:
+    branches-ignore:
+      - main
+    paths:
+      - .github/workflows/ios-validate-build.yml
+      - apps/ios/**
+
+jobs:
+  validate:
+    runs-on: macos-latest
+
+    defaults:
+      run:
+        working-directory: apps/ios
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache CocoaPods
+        id: pods-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/ios/Pods
+            ~/Library/Caches/CocoaPods
+            apps/ios/vendor/bundle
+          key: ${{ runner.os }}-pods-${{ hashFiles('apps/ios/Podfile.lock', 'apps/ios/Podfile', 'apps/ios/Gemfile.lock', 'apps/ios/patches/**/*.diff') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: false
+
+      - name: Install Ruby Gems
+        run: |
+          bundle config set path 'vendor/bundle'
+          bundle install --jobs 4 --retry 3
+
+      - name: Install Pods
+        run: bundle exec pod install
+
+      - name: Cache Swift Packages
+        id: spm-cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/ios/build/SourcePackages
+            ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-spm-${{ hashFiles('apps/ios/GuideDogs.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
+      - name: Resolve Swift Packages
+        if: steps.spm-cache.outputs.cache-hit != 'true'
+        run: |
+          xcodebuild \
+            -workspace GuideDogs.xcworkspace \
+            -scheme Soundscape \
+            -resolvePackageDependencies \
+            -derivedDataPath build
+
+      - name: Validate Build (compile only, no packaging)
+        run: |
+          set -euo pipefail
+
+          ANH_ROOT="$PWD/build/SourcePackages/checkouts/azure-notificationhubs-ios/WindowsAzureMessaging/WindowsAzureMessaging"
+          ANH_INCLUDE="$ANH_ROOT/Internal"
+          test -f "$ANH_INCLUDE/ANHAsync.h"
+          test -f "$ANH_ROOT/SBTemplateRegistration.h"
+
+          rm -rf build/ModuleCache.noindex build/Build
+
+          xcodebuild \
+            -workspace GuideDogs.xcworkspace \
+            -scheme Soundscape \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build \
+            OTHER_CFLAGS="-I$ANH_ROOT -I$ANH_INCLUDE" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            -quiet \
+            build

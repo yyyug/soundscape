@@ -540,10 +540,6 @@ class RouteGuidance: BehaviorBase {
                                               secondarySubtitle: formattedDistance)
     }
 
-    private func broadcastNavigationStepUpdate(stepDescription: String) {
-        NotificationCenter.default.post(name: .routeGuidanceStateChanged, object: self, userInfo: ["latestStepDescription": stepDescription])
-    }
-    
     private func findNearestIntersection() -> String? {
         guard let current = currentWaypoint?.waypoint.location else {
             return nil
