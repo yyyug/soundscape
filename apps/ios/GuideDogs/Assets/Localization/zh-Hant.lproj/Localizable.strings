@@ -259,6 +259,29 @@
 /* Error message that Soundscape is having trouble adding a marker to this location. Try again later */
 "general.error.add_marker_error" = "標記此地點時遇到問題。請稍後再試。";
 
+"settings.navigation.menu" = "導航";
+"settings.navigation.title" = "導航";
+"settings.navigation.footer" = "可選擇路線提供者，並設定 Google Routes 與 Live View AR 的 API 憑證。";
+"settings.navigation.provider" = "路線提供者";
+"settings.navigation.provider.apple" = "Apple Maps";
+"settings.navigation.provider.google" = "Google Routes API（Essential）";
+"settings.navigation.google.maps_api_key" = "Google Maps API Key";
+"settings.navigation.google.maps_api_secret" = "Google Maps API Secret";
+"settings.navigation.google.ar_api_key" = "Google AR API Key";
+"settings.navigation.google.ar_api_secret" = "Google AR API Secret";
+"settings.navigation.input.message" = "輸入供 App 直接呼叫 API 使用的值。";
+"settings.navigation.input.placeholder" = "貼上金鑰或密鑰";
+"settings.navigation.not_set" = "尚未設定";
+"liveview.button.title" = "Live View";
+"liveview.screen.title" = "Live View 實景導航";
+"liveview.status.no_destination" = "請先設定 Audio Beacon，再開始 Live View 導航。";
+"liveview.status.no_location" = "正在等待定位...";
+"liveview.status.distance" = "距離：%@";
+"liveview.voice.step" = "Live View，%@";
+"general.error.open_camera" = "無法開啟相機。請在設定中確認相機權限。";
+"navigation.route.google.missing_key" = "Google 路線無法使用。請到設定 > 導航填入 Google Maps API Key。";
+"navigation.route.google.failed" = "目前無法取得 Google 路線。";
+
 /* Error message that Soundscape is having trouble setting a beacon. Try again later */
 "general.error.set_beacon_error" = "目前設定音訊信標時遇到問題。請稍後再試。";
 

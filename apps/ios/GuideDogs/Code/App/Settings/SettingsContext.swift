@@ -19,9 +19,24 @@ extension Notification.Name {
     
     static let previewIntersectionsIncludeUnnamedRoadsDidChange = Notification.Name("PreviewIntersectionsIncludeUnnamedRoadsDidChange")
     static let previewSteeringModeDidChange = Notification.Name("PreviewSteeringModeDidChange")
+    static let navigationProviderDidChange = Notification.Name("NavigationProviderDidChange")
 }
 
 class SettingsContext {
+    enum NavigationRouteProvider: String {
+        case appleMaps
+        case googleRoutesAPI
+
+        var localizedName: String {
+            switch self {
+            case .appleMaps:
+                return GDLocalizedString("settings.navigation.provider.apple")
+            case .googleRoutesAPI:
+                return GDLocalizedString("settings.navigation.provider.google")
+            }
+        }
+    }
+
     enum PreviewSteeringMode: String {
         case deviceOrientation
         case buttonSteering
@@ -89,6 +104,11 @@ class SettingsContext {
         fileprivate static let gpsSpeedEnabled           = "GDAGPSSpeedEnabled"
         fileprivate static let gpsInformationAnnouncementIntervalMeters = "GDAGPSInformationAnnouncementIntervalMeters"
         fileprivate static let calloutRangeMode          = "GDACalloutRangeMode"
+        fileprivate static let navigationRouteProvider   = "GDANavigationRouteProvider"
+        fileprivate static let googleMapsPlatformAPIKey  = "GDAGoogleMapsPlatformAPIKey"
+        fileprivate static let googleMapsPlatformSecret  = "GDAGoogleMapsPlatformSecret"
+        fileprivate static let googleARAPIKey            = "GDAGoogleARAPIKey"
+        fileprivate static let googleARSecret            = "GDAGoogleARSecret"
         
         fileprivate static let ttsGain = "GDATTSAudioGain"
         fileprivate static let beaconGain = "GDABeaconAudioGain"
@@ -146,7 +166,12 @@ class SettingsContext {
             Keys.gpsAccuracyEnabled: true,
             Keys.gpsSpeedEnabled: false,
             Keys.gpsInformationAnnouncementIntervalMeters: 100,
-            Keys.calloutRangeMode: CalloutRangeMode.walking.rawValue
+            Keys.calloutRangeMode: CalloutRangeMode.walking.rawValue,
+            Keys.navigationRouteProvider: NavigationRouteProvider.appleMaps.rawValue,
+            Keys.googleMapsPlatformAPIKey: "",
+            Keys.googleMapsPlatformSecret: "",
+            Keys.googleARAPIKey: "",
+            Keys.googleARSecret: ""
         ])
         
         resetLocaleIfNeeded()
@@ -422,6 +447,57 @@ class SettingsContext {
         }
         set {
             userDefaults.set(newValue.rawValue, forKey: Keys.calloutRangeMode)
+        }
+    }
+
+    var navigationRouteProvider: NavigationRouteProvider {
+        get {
+            guard let rawValue = userDefaults.string(forKey: Keys.navigationRouteProvider),
+                  let provider = NavigationRouteProvider(rawValue: rawValue) else {
+                return .appleMaps
+            }
+
+            return provider
+        }
+        set {
+            userDefaults.set(newValue.rawValue, forKey: Keys.navigationRouteProvider)
+            NotificationCenter.default.post(name: .navigationProviderDidChange, object: self)
+        }
+    }
+
+    var googleMapsPlatformAPIKey: String {
+        get {
+            return userDefaults.string(forKey: Keys.googleMapsPlatformAPIKey) ?? ""
+        }
+        set {
+            userDefaults.set(newValue.trimmingCharacters(in: .whitespacesAndNewlines), forKey: Keys.googleMapsPlatformAPIKey)
+        }
+    }
+
+    var googleMapsPlatformSecret: String {
+        get {
+            return userDefaults.string(forKey: Keys.googleMapsPlatformSecret) ?? ""
+        }
+        set {
+            userDefaults.set(newValue.trimmingCharacters(in: .whitespacesAndNewlines), forKey: Keys.googleMapsPlatformSecret)
+        }
+    }
+
+    var googleARAPIKey: String {
+        get {
+            return userDefaults.string(forKey: Keys.googleARAPIKey) ?? ""
+        }
+        set {
+            userDefaults.set(newValue.trimmingCharacters(in: .whitespacesAndNewlines), forKey: Keys.googleARAPIKey)
+        }
+    }
+
+    var googleARSecret: String {
+        get {
+            return userDefaults.string(forKey: Keys.googleARSecret) ?? ""
+        }
+        set {
+            userDefaults.set(newValue.trimmingCharacters(in: .whitespacesAndNewlines), forKey: Keys.googleARSecret)
         }
     }
     

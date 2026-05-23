@@ -20,6 +20,65 @@ extension Notification.Name {
 /// from Apple Maps (MKDirections) without displaying any map overlay.
 final class NavigationGuidanceManager {
 
+    private struct GoogleStep {
+        let instruction: String
+        let endCoordinate: CLLocationCoordinate2D
+    }
+
+    private enum ActiveRoute {
+        case apple(MKRoute)
+        case google([GoogleStep])
+    }
+
+    private struct GoogleComputeRoutesRequest: Encodable {
+        let origin: Waypoint
+        let destination: Waypoint
+        let travelMode: String
+
+        struct Waypoint: Encodable {
+            let location: Location
+        }
+
+        struct Location: Encodable {
+            let latLng: LatLng
+        }
+
+        struct LatLng: Encodable {
+            let latitude: Double
+            let longitude: Double
+        }
+    }
+
+    private struct GoogleComputeRoutesResponse: Decodable {
+        let routes: [Route]?
+
+        struct Route: Decodable {
+            let legs: [Leg]?
+        }
+
+        struct Leg: Decodable {
+            let steps: [Step]?
+        }
+
+        struct Step: Decodable {
+            let navigationInstruction: NavigationInstruction?
+            let endLocation: EndLocation?
+        }
+
+        struct NavigationInstruction: Decodable {
+            let instructions: String?
+        }
+
+        struct EndLocation: Decodable {
+            let latLng: LatLng?
+        }
+
+        struct LatLng: Decodable {
+            let latitude: Double?
+            let longitude: Double?
+        }
+    }
+
     // MARK: - Keys
 
     struct Keys {
@@ -32,7 +91,7 @@ final class NavigationGuidanceManager {
 
     // MARK: - Private state
 
-    private var currentRoute: MKRoute?
+    private var currentRoute: ActiveRoute?
     private var currentStepIndex: Int = 0
     private var destinationCoordinate: CLLocationCoordinate2D?
 
@@ -118,6 +177,15 @@ final class NavigationGuidanceManager {
     // MARK: - Route calculation
 
     private func requestRoute(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
+        switch SettingsContext.shared.navigationRouteProvider {
+        case .appleMaps:
+            requestAppleRoute(from: origin, to: destination)
+        case .googleRoutesAPI:
+            requestGoogleRoute(from: origin, to: destination)
+        }
+    }
+
+    private func requestAppleRoute(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
         let request = MKDirections.Request()
         request.source = MKMapItem(placemark: MKPlacemark(coordinate: origin))
         request.destination = MKMapItem(placemark: MKPlacemark(coordinate: destination))
@@ -143,10 +211,102 @@ final class NavigationGuidanceManager {
                 let routeDestLocation = CLLocation(latitude: routeDestCoord.latitude, longitude: routeDestCoord.longitude)
                 guard routeDestLocation.distance(from: destLocation) < 200 else { return }
 
-                self.currentRoute = route
+                self.currentRoute = .apple(route)
                 self.currentStepIndex = 0
                 self.postCurrentStep()
             }
+        }
+    }
+
+    private func requestGoogleRoute(from origin: CLLocationCoordinate2D, to destination: CLLocationCoordinate2D) {
+        let key = SettingsContext.shared.googleMapsPlatformAPIKey
+        guard !key.isEmpty else {
+            currentRoute = nil
+            postStepUpdate(GDLocalizedString("navigation.route.google.missing_key"))
+            return
+        }
+
+        guard let url = URL(string: "https://routes.googleapis.com/directions/v2:computeRoutes") else {
+            currentRoute = nil
+            postStepUpdate(GDLocalizedString("navigation.route.google.failed"))
+            return
+        }
+
+        let payload = GoogleComputeRoutesRequest(
+            origin: .init(location: .init(latLng: .init(latitude: origin.latitude, longitude: origin.longitude))),
+            destination: .init(location: .init(latLng: .init(latitude: destination.latitude, longitude: destination.longitude))),
+            travelMode: "WALK"
+        )
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue(key, forHTTPHeaderField: "X-Goog-Api-Key")
+        request.setValue("routes.legs.steps.navigationInstruction.instructions,routes.legs.steps.endLocation", forHTTPHeaderField: "X-Goog-FieldMask")
+
+        do {
+            request.httpBody = try JSONEncoder().encode(payload)
+        } catch {
+            currentRoute = nil
+            postStepUpdate(GDLocalizedString("navigation.route.google.failed"))
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self = self else { return }
+
+            DispatchQueue.main.async {
+                if error != nil {
+                    self.currentRoute = nil
+                    self.postStepUpdate(GDLocalizedString("navigation.route.google.failed"))
+                    return
+                }
+
+                guard let http = response as? HTTPURLResponse, (200 ..< 300).contains(http.statusCode), let data = data else {
+                    self.currentRoute = nil
+                    self.postStepUpdate(GDLocalizedString("navigation.route.google.failed"))
+                    return
+                }
+
+                let decoded: GoogleComputeRoutesResponse
+                do {
+                    decoded = try JSONDecoder().decode(GoogleComputeRoutesResponse.self, from: data)
+                } catch {
+                    self.currentRoute = nil
+                    self.postStepUpdate(GDLocalizedString("navigation.route.google.failed"))
+                    return
+                }
+
+                let steps = self.mapGoogleSteps(decoded)
+                guard !steps.isEmpty else {
+                    self.currentRoute = nil
+                    self.postStepUpdate(GDLocalizedString("navigation.route.google.failed"))
+                    return
+                }
+
+                self.currentRoute = .google(steps)
+                self.currentStepIndex = 0
+                self.postCurrentStep()
+            }
+        }.resume()
+    }
+
+    private func mapGoogleSteps(_ response: GoogleComputeRoutesResponse) -> [GoogleStep] {
+        guard let route = response.routes?.first,
+              let leg = route.legs?.first,
+              let rawSteps = leg.steps else {
+            return []
+        }
+
+        return rawSteps.compactMap { step in
+            guard let text = step.navigationInstruction?.instructions,
+                  !text.isEmpty,
+                  let lat = step.endLocation?.latLng?.latitude,
+                  let lon = step.endLocation?.latLng?.longitude else {
+                return nil
+            }
+
+            return GoogleStep(instruction: text, endCoordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon))
         }
     }
 
@@ -162,10 +322,15 @@ final class NavigationGuidanceManager {
             return
         }
 
-        advanceStepIfNeeded(userLocation: location, route: route)
+        switch route {
+        case .apple(let appleRoute):
+            advanceAppleStepIfNeeded(userLocation: location, route: appleRoute)
+        case .google(let googleSteps):
+            advanceGoogleStepIfNeeded(userLocation: location, steps: googleSteps)
+        }
     }
 
-    private func advanceStepIfNeeded(userLocation: CLLocation, route: MKRoute) {
+    private func advanceAppleStepIfNeeded(userLocation: CLLocation, route: MKRoute) {
         let steps = route.steps.filter { !$0.instructions.isEmpty }
         guard !steps.isEmpty else { return }
 
@@ -188,15 +353,43 @@ final class NavigationGuidanceManager {
         }
     }
 
+    private func advanceGoogleStepIfNeeded(userLocation: CLLocation, steps: [GoogleStep]) {
+        guard !steps.isEmpty else { return }
+
+        var idx = min(currentStepIndex, steps.count - 1)
+
+        if idx < steps.count - 1 {
+            let next = steps[idx + 1]
+            let nextLocation = CLLocation(latitude: next.endCoordinate.latitude, longitude: next.endCoordinate.longitude)
+            if userLocation.distance(from: nextLocation) < stepAdvanceDistance {
+                idx += 1
+            }
+        }
+
+        if idx != currentStepIndex {
+            currentStepIndex = idx
+            postCurrentStep()
+        }
+    }
+
     // MARK: - Posting
 
     private func postCurrentStep() {
         guard let route = currentRoute else { return }
-        let steps = route.steps.filter { !$0.instructions.isEmpty }
-        guard !steps.isEmpty else { postStepUpdate(nil); return }
-        let idx = min(currentStepIndex, steps.count - 1)
-        let step = steps[idx]
-        postStepUpdate(step.instructions)
+
+        switch route {
+        case .apple(let appleRoute):
+            let steps = appleRoute.steps.filter { !$0.instructions.isEmpty }
+            guard !steps.isEmpty else { postStepUpdate(nil); return }
+            let idx = min(currentStepIndex, steps.count - 1)
+            let step = steps[idx]
+            postStepUpdate(step.instructions)
+        case .google(let googleSteps):
+            guard !googleSteps.isEmpty else { postStepUpdate(nil); return }
+            let idx = min(currentStepIndex, googleSteps.count - 1)
+            let step = googleSteps[idx]
+            postStepUpdate(step.instruction)
+        }
     }
 
     private func postStepUpdate(_ text: String?) {

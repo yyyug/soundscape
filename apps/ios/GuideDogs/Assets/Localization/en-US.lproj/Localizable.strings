@@ -259,6 +259,72 @@
 /* Error message that Soundscape is having trouble adding a marker to this location. Try again later */
 "general.error.add_marker_error" = "We are having trouble marking this place. Try again later.";
 
+/* Settings menu entry for Navigation */
+"settings.navigation.menu" = "Navigation";
+
+/* Navigation settings title */
+"settings.navigation.title" = "Navigation";
+
+/* Navigation settings footer text */
+"settings.navigation.footer" = "Choose a route provider and configure Google API credentials for Google Routes and Live View AR.";
+
+/* Navigation provider selector title */
+"settings.navigation.provider" = "Route Provider";
+
+/* Provider option for Apple Maps */
+"settings.navigation.provider.apple" = "Apple Maps";
+
+/* Provider option for Google Routes API */
+"settings.navigation.provider.google" = "Google Routes API (Essential)";
+
+/* Google Maps Platform API key field */
+"settings.navigation.google.maps_api_key" = "Google Maps API Key";
+
+/* Google Maps Platform API secret field */
+"settings.navigation.google.maps_api_secret" = "Google Maps API Secret";
+
+/* Google AR API key field */
+"settings.navigation.google.ar_api_key" = "Google AR API Key";
+
+/* Google AR API secret field */
+"settings.navigation.google.ar_api_secret" = "Google AR API Secret";
+
+/* Prompt shown in credentials input dialog */
+"settings.navigation.input.message" = "Enter the value used for direct API calls from the app.";
+
+/* Placeholder for credentials input dialog */
+"settings.navigation.input.placeholder" = "Paste your key or secret";
+
+/* Display text when no credential has been configured */
+"settings.navigation.not_set" = "Not set";
+
+/* Live View button title */
+"liveview.button.title" = "Live View";
+
+/* Live View screen title */
+"liveview.screen.title" = "Live View Navigation";
+
+/* Live View status text while waiting for destination */
+"liveview.status.no_destination" = "Set an audio beacon first to start live view navigation.";
+
+/* Live View status text while waiting for location */
+"liveview.status.no_location" = "Waiting for location...";
+
+/* Live View status label prefix */
+"liveview.status.distance" = "Distance: %@";
+
+/* Live View voice announcement prefix */
+"liveview.voice.step" = "Live View, %@";
+
+/* Error shown when camera access is unavailable for Live View */
+"general.error.open_camera" = "Unable to open camera. Check camera permission in Settings.";
+
+/* Error shown when Google route key is missing */
+"navigation.route.google.missing_key" = "Google route unavailable. Add Google Maps API key in Settings > Navigation.";
+
+/* Error shown when Google route request fails */
+"navigation.route.google.failed" = "Google route unavailable right now.";
+
 /* Error message that Soundscape is having trouble setting a beacon. Try again later */
 "general.error.set_beacon_error" = "We are having trouble setting the beacon currently. Try again later.";
 

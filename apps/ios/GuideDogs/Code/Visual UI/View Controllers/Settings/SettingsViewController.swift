@@ -19,10 +19,11 @@ class SettingsViewController: BaseTableViewController {
     private enum Section: Int, CaseIterable {
         case general = 0
         case audio = 1
-        case callouts = 2
-        case streetPreview = 3
-        case troubleshooting = 4
-        case telemetry = 5
+        case navigation = 2
+        case callouts = 3
+        case streetPreview = 4
+        case troubleshooting = 5
+        case telemetry = 6
     }
     
     private static let cellIdentifiers: [IndexPath: String] = [
@@ -63,6 +64,7 @@ class SettingsViewController: BaseTableViewController {
         switch sectionType {
         case .general: return 8
         case .audio: return 1
+        case .navigation: return 1
         case .callouts: return 1
         case .streetPreview: return 1
         case .troubleshooting: return 1
@@ -103,6 +105,9 @@ class SettingsViewController: BaseTableViewController {
         case .audio:
             return makeEntryCell(title: GDLocalizedString("settings.audio.media_controls"))
 
+        case .navigation:
+            return makeEntryCell(title: GDLocalizedString("settings.navigation.menu"))
+
         case .callouts:
             return makeEntryCell(title: GDLocalizedString("menu.manage_callouts"))
 
@@ -128,7 +133,7 @@ class SettingsViewController: BaseTableViewController {
 
         switch sectionType {
         case .general: return GDLocalizedString("settings.section.general")
-        case .audio, .callouts, .streetPreview: return nil
+        case .audio, .navigation, .callouts, .streetPreview: return nil
         case .troubleshooting: return GDLocalizedString("settings.section.troubleshooting")
         case .telemetry: return GDLocalizedString("settings.section.telemetry")
         }
@@ -166,6 +171,8 @@ class SettingsViewController: BaseTableViewController {
             }
         case .audio:
             navigationController?.pushViewController(MediaControlsSettingsViewController(style: .insetGrouped), animated: true)
+        case .navigation:
+            navigationController?.pushViewController(NavigationSettingsViewController(style: .insetGrouped), animated: true)
         case .callouts:
             navigationController?.pushViewController(ManageCalloutsSettingsViewController(style: .insetGrouped), animated: true)
         case .streetPreview:
@@ -195,6 +202,200 @@ extension SettingsViewController: LargeBannerContainerView {
         tableView.reloadData()
     }
     
+}
+
+private final class NavigationSettingsViewController: UITableViewController {
+    private enum Row: Int, CaseIterable {
+        case provider
+        case googleMapsPlatformAPIKey
+        case googleMapsPlatformSecret
+        case googleARAPIKey
+        case googleARSecret
+
+        var title: String {
+            switch self {
+            case .provider:
+                return GDLocalizedString("settings.navigation.provider")
+            case .googleMapsPlatformAPIKey:
+                return GDLocalizedString("settings.navigation.google.maps_api_key")
+            case .googleMapsPlatformSecret:
+                return GDLocalizedString("settings.navigation.google.maps_api_secret")
+            case .googleARAPIKey:
+                return GDLocalizedString("settings.navigation.google.ar_api_key")
+            case .googleARSecret:
+                return GDLocalizedString("settings.navigation.google.ar_api_secret")
+            }
+        }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = GDLocalizedString("settings.navigation.title")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "NavigationSettingsCell")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "NavigationSettingsValueCell")
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        tableView.reloadData()
+    }
+
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return Row.allCases.count
+    }
+
+    override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        return GDLocalizedString("settings.navigation.footer")
+    }
+
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let row = Row(rawValue: indexPath.row) else {
+            return tableView.dequeueReusableCell(withIdentifier: "NavigationSettingsCell", for: indexPath)
+        }
+
+        let cell = UITableViewCell(style: .value1, reuseIdentifier: "NavigationSettingsValueCell")
+        cell.backgroundColor = Colors.Background.primary
+        cell.textLabel?.text = row.title
+        cell.textLabel?.textColor = Colors.Foreground.primary
+        cell.textLabel?.numberOfLines = 0
+        cell.textLabel?.adjustsFontForContentSizeCategory = true
+        cell.detailTextLabel?.textColor = Colors.Foreground.secondary
+        cell.detailTextLabel?.adjustsFontForContentSizeCategory = true
+        cell.accessoryType = .disclosureIndicator
+        cell.selectionStyle = .default
+
+        switch row {
+        case .provider:
+            cell.detailTextLabel?.text = SettingsContext.shared.navigationRouteProvider.localizedName
+        case .googleMapsPlatformAPIKey:
+            cell.detailTextLabel?.text = summarize(SettingsContext.shared.googleMapsPlatformAPIKey)
+        case .googleMapsPlatformSecret:
+            cell.detailTextLabel?.text = summarizeSecret(SettingsContext.shared.googleMapsPlatformSecret)
+        case .googleARAPIKey:
+            cell.detailTextLabel?.text = summarize(SettingsContext.shared.googleARAPIKey)
+        case .googleARSecret:
+            cell.detailTextLabel?.text = summarizeSecret(SettingsContext.shared.googleARSecret)
+        }
+
+        return cell
+    }
+
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        defer {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
+
+        guard let row = Row(rawValue: indexPath.row) else {
+            return
+        }
+
+        switch row {
+        case .provider:
+            presentProviderSelector()
+        case .googleMapsPlatformAPIKey:
+            presentTextInput(for: row,
+                             initialValue: SettingsContext.shared.googleMapsPlatformAPIKey,
+                             isSecret: false) { value in
+                SettingsContext.shared.googleMapsPlatformAPIKey = value
+            }
+        case .googleMapsPlatformSecret:
+            presentTextInput(for: row,
+                             initialValue: SettingsContext.shared.googleMapsPlatformSecret,
+                             isSecret: true) { value in
+                SettingsContext.shared.googleMapsPlatformSecret = value
+            }
+        case .googleARAPIKey:
+            presentTextInput(for: row,
+                             initialValue: SettingsContext.shared.googleARAPIKey,
+                             isSecret: false) { value in
+                SettingsContext.shared.googleARAPIKey = value
+            }
+        case .googleARSecret:
+            presentTextInput(for: row,
+                             initialValue: SettingsContext.shared.googleARSecret,
+                             isSecret: true) { value in
+                SettingsContext.shared.googleARSecret = value
+            }
+        }
+    }
+
+    private func presentProviderSelector() {
+        let alert = UIAlertController(title: GDLocalizedString("settings.navigation.provider"),
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
+
+        for provider in [SettingsContext.NavigationRouteProvider.appleMaps, .googleRoutesAPI] {
+            let selected = provider == SettingsContext.shared.navigationRouteProvider
+            let title = selected ? "\u{2713} \(provider.localizedName)" : provider.localizedName
+
+            alert.addAction(UIAlertAction(title: title, style: .default, handler: { [weak self] _ in
+                SettingsContext.shared.navigationRouteProvider = provider
+                GDATelemetry.track("settings.navigation.provider", with: ["provider": provider.rawValue])
+                self?.tableView.reloadData()
+            }))
+        }
+
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
+
+        if let popover = alert.popoverPresentationController,
+           let cell = tableView.cellForRow(at: IndexPath(row: Row.provider.rawValue, section: 0)) {
+            popover.sourceView = cell
+            popover.sourceRect = cell.bounds
+        }
+
+        present(alert, animated: true)
+    }
+
+    private func presentTextInput(for row: Row,
+                                  initialValue: String,
+                                  isSecret: Bool,
+                                  save: @escaping (String) -> Void) {
+        let alert = UIAlertController(title: row.title,
+                                      message: GDLocalizedString("settings.navigation.input.message"),
+                                      preferredStyle: .alert)
+
+        alert.addTextField { textField in
+            textField.text = initialValue
+            textField.clearButtonMode = .whileEditing
+            textField.autocapitalizationType = .none
+            textField.autocorrectionType = .no
+            textField.spellCheckingType = .no
+            textField.isSecureTextEntry = isSecret
+            textField.placeholder = GDLocalizedString("settings.navigation.input.placeholder")
+        }
+
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
+        alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.done"), style: .default, handler: { [weak self] _ in
+            let value = alert.textFields?.first?.text ?? ""
+            save(value)
+            GDATelemetry.track("settings.navigation.value_updated", with: ["field": String(describing: row)])
+            self?.tableView.reloadData()
+        }))
+
+        present(alert, animated: true)
+    }
+
+    private func summarize(_ value: String) -> String {
+        guard !value.isEmpty else {
+            return GDLocalizedString("settings.navigation.not_set")
+        }
+
+        if value.count <= 8 {
+            return value
+        }
+
+        let start = value.prefix(4)
+        let end = value.suffix(4)
+        return "\(start)…\(end)"
+    }
+
+    private func summarizeSecret(_ value: String) -> String {
+        guard !value.isEmpty else {
+            return GDLocalizedString("settings.navigation.not_set")
+        }
+
+        return String(repeating: "•", count: min(value.count, 12))
+    }
 }
 
 private final class GPSInformationSettingsViewController: UITableViewController {

@@ -10,6 +10,7 @@ import UIKit
 import CoreMotion
 import CoreLocation
 import MapKit
+import AVFoundation
 import MessageUI
 import CocoaLumberjackSwift
 import SwiftUI
@@ -84,6 +85,16 @@ class HomeViewController: UIViewController {
         icon.accessibilityLabel = GDLocalizedString("bar_icon.external_GPS.acc_label")
         return icon
     }()
+
+    private lazy var liveViewBarButtonItem: UIBarButtonItem = {
+        let item = UIBarButtonItem(image: UIImage(systemName: "camera.viewfinder"),
+                                   style: .plain,
+                                   target: self,
+                                   action: #selector(onLiveViewTouchUpInside))
+        item.accessibilityLabel = GDLocalizedString("liveview.button.title")
+        item.accessibilityHint = GDLocalizedString("liveview.screen.title")
+        return item
+    }()
     
     private var searchController: UISearchController?
     
@@ -109,223 +120,6 @@ class HomeViewController: UIViewController {
         return container
     }()
 
-    private lazy var navigationStepLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .natural
-        label.numberOfLines = 3
-        label.font = UIFont.preferredFont(forTextStyle: .subheadline)
-        label.adjustsFontForContentSizeCategory = true
-        label.textColor = UIColor.white
-        label.text = ""
-        return label
-    }()
-
-    private lazy var navigationStepIconView: UIImageView = {
-        let iv = UIImageView()
-        iv.translatesAutoresizingMaskIntoConstraints = false
-        iv.image = UIImage(systemName: "arrow.turn.up.right")
-        iv.tintColor = .white
-        iv.contentMode = .scaleAspectFit
-        iv.setContentHuggingPriority(.required, for: .horizontal)
-        return iv
-    }()
-
-    private var navigationStepObserver: NSObjectProtocol?
-
-    // MARK: View Life Cycle
-    
-    deinit {
-        if let token = experienceDidStartObserver {
-            NotificationCenter.default.removeObserver(token)
-        }
-        
-        if let token = experienceDidFailToDownloadObserver {
-            NotificationCenter.default.removeObserver(token)
-        }
-        
-        listeners.cancelAndRemoveAll()
-        if let o = navigationStepObserver { NotificationCenter.default.removeObserver(o) }
-        
-        DDLogDebug("\(String(describing: type(of: self))) deinitialized")
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Initialize the search controller
-        self.searchController = UISearchController(delegate: self)
-        self.searchController?.delegate = self
-        self.searchController?.searchBar.searchTextField.accessibilityIdentifier = GDLocalizationUnnecessary("searchbar.home")
-        
-        // Add search controller to navigation bar
-        configureSearchAndBrowseView()
-        self.navigationItem.hidesSearchBarWhenScrolling = false
-        
-        // Search results will be displayed modally
-        // Use this view controller to define presentation context
-        self.definesPresentationContext = true
-        
-        self.navigationItem.backBarButtonItem = UIBarButtonItem.defaultBackBarButtonItem
-        
-        // Subscribe to notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleLocationUpdatedNotification), name: Notification.Name.locationUpdated, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(self.continueUserAction), name: Notification.Name.continueUserAction, object: nil)
-        
-        AppContext.shared.remoteCommandManager.delegate = self
-        
-        experienceDidStartObserver = NotificationCenter.default.addObserver(forName: Notification.Name.processedActivityDeepLink, object: nil, queue: OperationQueue.main, using: { [weak self] (_) in
-            self?.showOrRefreshExperiences()
-        })
-        
-        experienceDidFailToDownloadObserver = NotificationCenter.default.addObserver(forName: Notification.Name.activityDownloadDidFail, object: nil, queue: OperationQueue.main, using: { [weak self] (_) in
-            let alert = UIAlertController(title: GDLocalizedString("behavior.experiences.download_failed.title"),
-                                          message: GDLocalizedString("behavior.experiences.download_failed.error"),
-                                          preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.dismiss"), style: .cancel, handler: nil))
-            self?.present(alert, animated: true, completion: nil)
-        })
-        
-        listeners.append(NotificationCenter.default.publisher(for: .behaviorActivated).receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] _ in
-            self?.configureSearchAndBrowseView()
-        }))
-        
-        listeners.append(NotificationCenter.default.publisher(for: .behaviorDeactivated).receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] _ in
-            self?.configureSearchAndBrowseView()
-        }))
-        
-        listeners.append(NotificationCenter.default.publisher(for: .didTryActivityUpdate).receive(on: DispatchQueue.main).sink(receiveValue: { [weak self] notification in
-            guard let `self` = self else {
-                return
-            }
-            
-            guard let userInfo = notification.userInfo else {
-                return
-            }
-            
-            guard let updatesAvailable = userInfo[AuthoredActivityLoader.Keys.updateAvailable] as? Bool else {
-                return
-            }
-            
-            guard let success = userInfo[AuthoredActivityLoader.Keys.updateSuccess] as? Bool else {
-                return
-            }
-            
-            let alert: UIAlertController
-            
-            if success {
-                alert = UIAlertController.activityDidUpdate()
-            } else if !updatesAvailable {
-                alert = UIAlertController.activityUpdateUnavailable()
-            } else {
-                alert = UIAlertController.activityDidFailToUpdate()
-            }
-            
-            self.present(alert, animated: true)
-        }))
-        
-        NotificationCenter.default.post(name: Notification.Name.homeViewControllerDidLoad, object: self)
-
-        // Start the navigation guidance manager (initialises the singleton and begins observing
-        // destinationChanged / locationUpdated notifications).
-        _ = NavigationGuidanceManager.shared
-
-        setupNavigationStepBanner()
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-        GDATelemetry.trackScreenView("home")
-        
-        updateCalloutButtonTraits()
-        
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        // Transparent navigation bar
-        navigationController?.navigationBar.configureAppearance(for: .transparentLightTitle)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(self.handleAppWillEnterForeground(_:)), name: Notification.Name.appWillEnterForeground, object: nil)
-        
-        guard checkPermissions() else {
-            // Prevents edge case of New Feature Feature displaying after fixing location services
-            // permissions on first launch (caused because iOS kills the app if you change the Motion
-            // & Fitness setting in the Settings app).
-            if AppContext.shared.isFirstLaunch {
-                SettingsContext.shared.newFeaturesLastDisplayedVersion = AppContext.appVersion
-                didCheckForNewFeatures = true
-            }
-            
-            return
-        }
-    }
-
-    override func viewWillLayoutSubviews() {
-        super.viewWillLayoutSubviews()
-        positionNavigationStepBanner()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-
-        focusAccessibilityOnFirstItemIfNeeded()
-        attemptInitialMyLocationAnnouncementIfNeeded()
-        
-        if shouldFocusOnBeacon, UIAccessibility.isVoiceOverRunning, let vc = cardViewController?.currentVC as? BeaconViewHostingController {
-            GDLogAppInfo("Focusing VoiceOver on the beacon UI")
-            UIAccessibility.post(notification: UIAccessibility.Notification.layoutChanged, argument: vc.view)
-            shouldFocusOnBeacon = false
-        }
-        
-        guard !didCheckForNewFeatures else {
-            return
-        }
-        
-        if AppContext.shared.newFeatures.shouldShowNewFeatures() {
-            let vc = NewFeaturesViewController(nibName: "NewFeaturesView", bundle: nil)
-            
-            vc.newFeatures = AppContext.shared.newFeatures
-            vc.modalPresentationStyle = .fullScreen
-            vc.modalTransitionStyle = .crossDissolve
-            vc.accessibilityViewIsModal = true
-            
-            self.present(vc, animated: !UIAccessibility.isVoiceOverRunning, completion: nil)
-        } else {
-            // Attempt activities (e.g., user survey, share & rate app) that may be scheduled on app launch
-            // Coordinator ensures that only one activity is attempted when the view appears
-            LaunchActivityCoordinator.coordinateActivitiesOnAppLaunch(from: self)
-        }
-        
-        didCheckForNewFeatures = true
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        
-        // Default navigation bar
-        navigationController?.navigationBar.configureAppearance(for: .default)
-        
-        NotificationCenter.default.removeObserver(self, name: Notification.Name.appWillEnterForeground, object: nil)
-    }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        updateCalloutButtonTraits()
-        configureSearchAndBrowseView()
-    }
-    
-    private func updateCalloutButtonTraits() {
-        guard let child = calloutButtonViewController else {
-            return
-        }
-        
-        // When the preferredContentSizeCategory is an accessibility size, we override the default behavior in the
-        // callout button panel because of the limited available space. We cap the maximum content size category to
-        // be `.accessibilityMedium`.
-        if traitCollection.preferredContentSizeCategory.isAccessibilityCategory {
-            setOverrideTraitCollection(UITraitCollection(preferredContentSizeCategory: .accessibilityMedium), forChild: child)
-        } else {
-            setOverrideTraitCollection(nil, forChild: child)
-        }
     }
     
     override func preferredContentSizeDidChange(forChildContentContainer container: UIContentContainer) {
@@ -626,6 +420,11 @@ extension HomeViewController {
         performSegue(withIdentifier: "showStandbyScreen", sender: nil)
         
         return
+    }
+
+    @objc func onLiveViewTouchUpInside() {
+        let vc = LiveViewNavigationViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
 
 }
@@ -1749,4 +1548,221 @@ private extension UIAlertController {
         return alert
     }
     
+}
+
+private final class LiveViewNavigationViewController: UIViewController {
+    private let statusLabel = UILabel()
+    private let distanceLabel = UILabel()
+    private let stepLabel = UILabel()
+    private let arrowView = UIImageView(image: UIImage(systemName: "arrow.up.circle.fill"))
+
+    private let speech = AVSpeechSynthesizer()
+    private var lastSpokenStep: String?
+    private var lastSpokenDate = Date.distantPast
+
+    private var headingObserver: Heading?
+    private var locationObserver: NSObjectProtocol?
+    private var stepObserver: NSObjectProtocol?
+
+    private var captureSession: AVCaptureSession?
+    private var previewLayer: AVCaptureVideoPreviewLayer?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        title = GDLocalizedString("liveview.screen.title")
+        view.backgroundColor = .black
+
+        configureCameraPreview()
+        configureOverlay()
+        subscribeUpdates()
+        refreshOverlay()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer?.frame = view.bounds
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startCameraSessionIfNeeded()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        captureSession?.stopRunning()
+    }
+
+    deinit {
+        if let observer = locationObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+
+        if let observer = stepObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
+    }
+
+    private func configureCameraPreview() {
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+
+        switch status {
+        case .authorized:
+            setupCameraSession()
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
+                DispatchQueue.main.async {
+                    if granted {
+                        self?.setupCameraSession()
+                        self?.startCameraSessionIfNeeded()
+                    } else {
+                        self?.statusLabel.text = GDLocalizedString("general.error.open_camera")
+                    }
+                }
+            }
+        default:
+            statusLabel.text = GDLocalizedString("general.error.open_camera")
+        }
+    }
+
+    private func setupCameraSession() {
+        let session = AVCaptureSession()
+        session.sessionPreset = .high
+
+        guard let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back),
+              let input = try? AVCaptureDeviceInput(device: device),
+              session.canAddInput(input) else {
+            statusLabel.text = GDLocalizedString("general.error.open_camera")
+            return
+        }
+
+        session.addInput(input)
+
+        let layer = AVCaptureVideoPreviewLayer(session: session)
+        layer.videoGravity = .resizeAspectFill
+        layer.frame = view.bounds
+        view.layer.insertSublayer(layer, at: 0)
+
+        previewLayer = layer
+        captureSession = session
+    }
+
+    private func startCameraSessionIfNeeded() {
+        guard let session = captureSession, !session.isRunning else {
+            return
+        }
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            session.startRunning()
+        }
+    }
+
+    private func configureOverlay() {
+        let stack = UIStackView(arrangedSubviews: [statusLabel, distanceLabel, stepLabel])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 10
+        stack.alignment = .fill
+
+        [statusLabel, distanceLabel, stepLabel].forEach { label in
+            label.numberOfLines = 0
+            label.textAlignment = .center
+            label.textColor = .white
+            label.backgroundColor = UIColor.black.withAlphaComponent(0.45)
+            label.layer.cornerRadius = 8
+            label.layer.masksToBounds = true
+            label.font = UIFont.preferredFont(forTextStyle: .body)
+            label.adjustsFontForContentSizeCategory = true
+        }
+
+        arrowView.translatesAutoresizingMaskIntoConstraints = false
+        arrowView.contentMode = .scaleAspectFit
+        arrowView.tintColor = .systemGreen
+        arrowView.backgroundColor = UIColor.black.withAlphaComponent(0.45)
+        arrowView.layer.cornerRadius = 52
+        arrowView.layer.masksToBounds = true
+
+        view.addSubview(arrowView)
+        view.addSubview(stack)
+
+        NSLayoutConstraint.activate([
+            arrowView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            arrowView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            arrowView.widthAnchor.constraint(equalToConstant: 104),
+            arrowView.heightAnchor.constraint(equalToConstant: 104),
+
+            stack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            stack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            stack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        ])
+    }
+
+    private func subscribeUpdates() {
+        headingObserver = AppContext.shared.geolocationManager.heading(orderedBy: [.user, .device, .course])
+        headingObserver?.onHeadingDidUpdate { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.refreshOverlay()
+            }
+        }
+
+        locationObserver = NotificationCenter.default.addObserver(forName: .locationUpdated,
+                                                                  object: nil,
+                                                                  queue: .main) { [weak self] _ in
+            self?.refreshOverlay()
+        }
+
+        stepObserver = NotificationCenter.default.addObserver(forName: .navigationStepDidUpdate,
+                                                              object: nil,
+                                                              queue: .main) { [weak self] notification in
+            guard let self = self else { return }
+            let step = notification.userInfo?[NavigationGuidanceManager.Keys.stepText] as? String
+            self.stepLabel.text = step
+            self.speakIfNeeded(step)
+        }
+    }
+
+    private func refreshOverlay() {
+        guard let destination = AppContext.shared.spatialDataContext.destinationManager.destination else {
+            statusLabel.text = GDLocalizedString("liveview.status.no_destination")
+            distanceLabel.text = nil
+            arrowView.transform = .identity
+            return
+        }
+
+        guard let userLocation = AppContext.shared.geolocationManager.location else {
+            statusLabel.text = GDLocalizedString("liveview.status.no_location")
+            distanceLabel.text = nil
+            arrowView.transform = .identity
+            return
+        }
+
+        let destinationLocation = CLLocation(latitude: destination.latitude, longitude: destination.longitude)
+        let distance = userLocation.distance(from: destinationLocation)
+        statusLabel.text = destination.localizedName
+        distanceLabel.text = GDLocalizedString("liveview.status.distance", LanguageFormatter.string(from: distance))
+
+        let userHeading = headingObserver?.value ?? Heading.defaultValue
+        let bearing = userLocation.bearing(to: destinationLocation)
+        let relative = (bearing - userHeading + 360).truncatingRemainder(dividingBy: 360)
+        let radians = CGFloat(relative * .pi / 180.0)
+        arrowView.transform = CGAffineTransform(rotationAngle: radians)
+    }
+
+    private func speakIfNeeded(_ step: String?) {
+        guard let step = step, !step.isEmpty else {
+            return
+        }
+
+        guard step != lastSpokenStep || Date().timeIntervalSince(lastSpokenDate) > 8 else {
+            return
+        }
+
+        lastSpokenStep = step
+        lastSpokenDate = Date()
+
+        let utterance = AVSpeechUtterance(string: GDLocalizedString("liveview.voice.step", step))
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        speech.speak(utterance)
+    }
 }
