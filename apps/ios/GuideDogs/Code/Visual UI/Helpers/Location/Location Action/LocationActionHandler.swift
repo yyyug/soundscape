@@ -139,13 +139,21 @@ struct LocationActionHandler {
         guard let dataView = AppContext.shared.spatialDataContext.getDataView(for: locationDetail.location) else {
             let stateDescription = String(describing: AppContext.shared.spatialDataContext.state)
             return .failure(PreviewBootstrapDiagnostics(code: .dataViewUnavailable,
-                                                        details: ["state": stateDescription]))
+                                                        details: ["state": stateDescription,
+                                                                  "services_host": ServiceModel.servicesHostName]))
         }
+
+        let roadKeys = Set(dataView.roads.map { $0.key })
+        let intersectionsWithRoadMatch = dataView.intersections.filter { intersection in
+            intersection.roadIds.contains { roadKeys.contains($0.id) }
+        }.count
+        let intersectionMismatchCount = max(0, dataView.intersections.count - intersectionsWithRoadMatch)
 
         if dataView.roads.isEmpty && dataView.intersections.isEmpty {
             return .failure(PreviewBootstrapDiagnostics(code: .noSpatialFeatures,
                                                         details: ["roads": "0",
-                                                                  "intersections": "0"]))
+                                                                  "intersections": "0",
+                                                                  "services_host": ServiceModel.servicesHostName]))
         }
 
         let nearestRoadDistance = dataView.roads
@@ -185,8 +193,11 @@ struct LocationActionHandler {
         return .failure(PreviewBootstrapDiagnostics(code: .noDecisionPointEdges,
                                                     details: ["roads": "\(dataView.roads.count)",
                                                               "intersections": "\(dataView.intersections.count)",
+                                                              "intersections_with_road_match": "\(intersectionsWithRoadMatch)",
+                                                              "intersections_road_mismatch": "\(intersectionMismatchCount)",
                                                               "nearest_road_m": "\(Int(nearestRoadDistance.rounded()))",
-                                                              "include_unnamed_roads": "\(SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads)"]))
+                                                              "include_unnamed_roads": "\(SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads)",
+                                                              "services_host": ServiceModel.servicesHostName]))
     }
 
     private static func makePreviewError(from diagnostics: PreviewBootstrapDiagnostics) -> LocationActionError {
