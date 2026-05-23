@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Cache CocoaPods
         id: pods-cache
@@ -118,7 +118,7 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent Payload Soundscape-unsigned.ipa
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: Soundscape-unsigned-ipa
           path: apps/ios/Soundscape-unsigned.ipa

@@ -70,6 +70,29 @@ class LocationDetailViewController: UIViewController {
         self.navigationController?.navigationBar.configureAppearance(for: .default)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        updateAccessibilityOrder()
+    }
+    
+    private func updateAccessibilityOrder() {
+        // Enforce VoiceOver reading order to match visual layout:
+        // location info → action buttons → map (instead of the default DOM order)
+        var elements: [Any] = []
+        if let detailView = detailViewController?.view {
+            elements.append(detailView)
+        }
+        if let actionView = actionViewController?.view {
+            elements.append(actionView)
+        }
+        if let mapView = detailMapViewController?.view {
+            elements.append(mapView)
+        }
+        if elements.count > 0 {
+            scrollViewContentView.accessibilityElements = elements
+        }
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         

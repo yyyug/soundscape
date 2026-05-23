@@ -444,13 +444,12 @@ Location</string>
                                             </view>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cPB-bG-Vj7">
                                                 <rect key="frame" x="8" y="8" width="87.5" height="55.5"/>
-                                                <accessibility key="accessibilityConfiguration" hint="Double tap to hear about your current location" label="My Location"/>
+                                                <accessibility key="accessibilityConfiguration" label="My Location"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="20" maxY="0.0"/>
                                                 <inset key="imageEdgeInsets" minX="30" minY="0.0" maxX="0.0" maxY="15"/>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="string" keyPath="accLabelLocalization" value="directions.my_location"/>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="accHintLocalization" value="ui.action_button.my_location.acc_hint"/>
                                                 </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="onLocateTouchUpInside:" destination="gdB-jw-QN3" eventType="touchUpInside" id="Apk-XP-Ypd"/>
@@ -529,13 +528,12 @@ Me</string>
                                             </view>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gIk-4T-xgf">
                                                 <rect key="frame" x="8" y="8" width="87.5" height="55.5"/>
-                                                <accessibility key="accessibilityConfiguration" hint="Double tap to hear about places in the four quadrants around you." label="Around Me"/>
+                                                <accessibility key="accessibilityConfiguration" label="Around Me"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="20" maxY="0.0"/>
                                                 <inset key="imageEdgeInsets" minX="30" minY="0.0" maxX="0.0" maxY="15"/>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="string" keyPath="accLabelLocalization" value="help.orient.page_title"/>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="accHintLocalization" value="ui.action_button.around_me.acc_hint"/>
                                                 </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="onOrientateTouchUpInside:" destination="gdB-jw-QN3" eventType="touchUpInside" id="JUw-xA-ixO"/>
@@ -611,13 +609,12 @@ of Me</string>
                                             </view>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="iot-Tk-VNv">
                                                 <rect key="frame" x="8" y="8" width="87.5" height="55.5"/>
-                                                <accessibility key="accessibilityConfiguration" hint="Double tap to hear about places in front of you." label="Ahead of Me"/>
+                                                <accessibility key="accessibilityConfiguration" label="Ahead of Me"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="20" maxY="0.0"/>
                                                 <inset key="imageEdgeInsets" minX="30" minY="0.0" maxX="0.0" maxY="15"/>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="string" keyPath="accLabelLocalization" value="help.explore.page_title"/>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="accHintLocalization" value="ui.action_button.ahead_of_me.acc_hint"/>
                                                 </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="onLookAheadTouchUpInside:" destination="gdB-jw-QN3" eventType="touchUpInside" id="4nI-7i-JoQ"/>
@@ -693,13 +690,12 @@ Markers</string>
                                             </view>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="AZx-Ls-lTi">
                                                 <rect key="frame" x="8" y="8" width="87.5" height="55.5"/>
-                                                <accessibility key="accessibilityConfiguration" hint="Double tap to hear about nearby places that you have marked" label="Nearby Markers"/>
+                                                <accessibility key="accessibilityConfiguration" label="Nearby Markers"/>
                                                 <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
                                                 <inset key="titleEdgeInsets" minX="0.0" minY="30" maxX="20" maxY="0.0"/>
                                                 <inset key="imageEdgeInsets" minX="30" minY="0.0" maxX="0.0" maxY="15"/>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="string" keyPath="accLabelLocalization" value="callouts.nearby_markers"/>
-                                                    <userDefinedRuntimeAttribute type="string" keyPath="accHintLocalization" value="ui.action_button.nearby_markers.acc_hint"/>
                                                 </userDefinedRuntimeAttributes>
                                                 <connections>
                                                     <action selector="onMarkedPointsTouchUpInside:" destination="gdB-jw-QN3" eventType="touchUpInside" id="hMY-6n-wFW"/>

@@ -102,6 +102,7 @@ class CalloutButtonPanelViewController: UIViewController {
         if let element = UIView.setGroupAccessibilityElement(for: locateContainer,
                                                              label: GDLocalizedString("directions.my_location"),
                                                              hint: nil) {
+            element.accessibilityTraits = .button
             element.accessibilityIdentifier = "btn.mylocation"
             element.accessibilityCustomActions = [
                 UIAccessibilityCustomAction(name: GDLocalizedString("ui.action_button.my_location.action.start_audio_beacon"), target: self, selector: #selector(onStartAudioBeaconAccessibilityAction)),
@@ -112,6 +113,7 @@ class CalloutButtonPanelViewController: UIViewController {
         if let element = UIView.setGroupAccessibilityElement(for: orientContainer,
                                                              label: GDLocalizedString("help.orient.page_title"),
                                                              hint: nil) {
+            element.accessibilityTraits = .button
             element.accessibilityIdentifier = "btn.aroundme"
             element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAroundPOIListAccessibilityAction))]
         }
@@ -119,6 +121,7 @@ class CalloutButtonPanelViewController: UIViewController {
         if let element = UIView.setGroupAccessibilityElement(for: exploreContainer,
                                                              label: GDLocalizedString("help.explore.page_title"),
                                                              hint: nil) {
+            element.accessibilityTraits = .button
             element.accessibilityIdentifier = "btn.aheadofme"
             element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAheadPOIListAccessibilityAction))]
         }
@@ -126,6 +129,7 @@ class CalloutButtonPanelViewController: UIViewController {
         if let element = UIView.setGroupAccessibilityElement(for: markedPointsContainer,
                                                              label: SettingsContext.shared.calloutRangeMode.localizedName,
                                                              hint: nil) {
+            element.accessibilityTraits = .button
             element.accessibilityIdentifier = "btn.nearbymarkers"
         }
     }

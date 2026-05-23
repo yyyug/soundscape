@@ -59,8 +59,8 @@ extension Address: SelectablePOI {
 extension Address {
     
     static func addressContainsStreet(address: String, streetName: String) -> Bool {
-        let addressNorm = LanguageFormatter.expandCodedDirection(for: address).lowercasedWithAppLocale()
-        let streetNameNorm = PostalAbbreviations.format(streetName, locale: LocalizationContext.currentAppLocale).lowercasedWithAppLocale()
+        let addressNorm = PostalAbbreviations.format(LanguageFormatter.expandCodedDirection(for: address), locale: LocalizationContext.currentAppLocale).lowercasedWithAppLocale()
+        let streetNameNorm = PostalAbbreviations.format(LanguageFormatter.expandCodedDirection(for: streetName), locale: LocalizationContext.currentAppLocale).lowercasedWithAppLocale()
 
         return addressNorm.contains(streetNameNorm)
     }
