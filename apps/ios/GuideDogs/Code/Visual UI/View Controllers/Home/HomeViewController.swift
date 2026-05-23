@@ -120,7 +120,25 @@ class HomeViewController: UIViewController {
         return container
     }()
 
-    }
+    private lazy var navigationStepIconView: UIImageView = {
+        let view = UIImageView(image: UIImage(systemName: "figure.walk"))
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.tintColor = .label
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
+
+    private lazy var navigationStepLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.numberOfLines = 2
+        label.font = UIFont.preferredFont(forTextStyle: .subheadline)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = .label
+        return label
+    }()
+
+    private var navigationStepObserver: NSObjectProtocol?
     
     override func preferredContentSizeDidChange(forChildContentContainer container: UIContentContainer) {
         super.preferredContentSizeDidChange(forChildContentContainer: container)
@@ -296,6 +314,12 @@ class HomeViewController: UIViewController {
         
         // Transparent navigation bar
         navigationController?.navigationBar.configureAppearance(for: .transparentLightTitle)
+    }
+
+    deinit {
+        if let observer = navigationStepObserver {
+            NotificationCenter.default.removeObserver(observer)
+        }
     }
 }
 
@@ -1559,6 +1583,9 @@ private final class LiveViewNavigationViewController: UIViewController {
     private let speech = AVSpeechSynthesizer()
     private var lastSpokenStep: String?
     private var lastSpokenDate = Date.distantPast
+    private var lastSpokenClockPosition: Int?
+    private var lastSpokenDistanceBucket: Int?
+    private var lastDirectionSpokenDate = Date.distantPast
 
     private var headingObserver: Heading?
     private var locationObserver: NSObjectProtocol?
@@ -1747,6 +1774,8 @@ private final class LiveViewNavigationViewController: UIViewController {
         let relative = (bearing - userHeading + 360).truncatingRemainder(dividingBy: 360)
         let radians = CGFloat(relative * .pi / 180.0)
         arrowView.transform = CGAffineTransform(rotationAngle: radians)
+
+        speakDirectionIfNeeded(relativeBearing: relative, distance: distance)
     }
 
     private func speakIfNeeded(_ step: String?) {
@@ -1764,5 +1793,38 @@ private final class LiveViewNavigationViewController: UIViewController {
         let utterance = AVSpeechUtterance(string: GDLocalizedString("liveview.voice.step", step))
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         speech.speak(utterance)
+    }
+
+    private func speakDirectionIfNeeded(relativeBearing: CLLocationDirection, distance: CLLocationDistance) {
+        let clockPosition = clockFacePosition(from: relativeBearing)
+        let distanceBucket = Int(distance / 8.0)
+        let now = Date()
+
+        let hasMeaningfulDirectionChange = (clockPosition != lastSpokenClockPosition)
+            || (lastSpokenDistanceBucket == nil)
+            || abs(distanceBucket - (lastSpokenDistanceBucket ?? distanceBucket)) >= 2
+
+        guard hasMeaningfulDirectionChange,
+              now.timeIntervalSince(lastDirectionSpokenDate) > 6 else {
+            return
+        }
+
+        lastSpokenClockPosition = clockPosition
+        lastSpokenDistanceBucket = distanceBucket
+        lastDirectionSpokenDate = now
+
+        let distanceText = LanguageFormatter.string(from: distance, rounded: true)
+        let voiceText = GDLocalizedString("liveview.voice.direction", String(clockPosition), distanceText)
+        let utterance = AVSpeechUtterance(string: voiceText)
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        speech.speak(utterance)
+    }
+
+    private func clockFacePosition(from relativeBearing: CLLocationDirection) -> Int {
+        // Map 0...360 degrees to 12 clock-face sectors.
+        let normalized = (relativeBearing + 360).truncatingRemainder(dividingBy: 360)
+        let index = Int((normalized + 15).truncatingRemainder(dividingBy: 360) / 30)
+        let position = (index == 0) ? 12 : index
+        return position
     }
 }

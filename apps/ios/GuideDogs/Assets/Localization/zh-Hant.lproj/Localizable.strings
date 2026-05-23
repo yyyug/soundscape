@@ -278,6 +278,7 @@
 "liveview.status.no_location" = "正在等待定位...";
 "liveview.status.distance" = "距離：%@";
 "liveview.voice.step" = "Live View，%@";
+"liveview.voice.direction" = "方向在 %1$@ 點鐘，距離 %2$@。";
 "general.error.open_camera" = "無法開啟相機。請在設定中確認相機權限。";
 "navigation.route.google.missing_key" = "Google 路線無法使用。請到設定 > 導航填入 Google Maps API Key。";
 "navigation.route.google.failed" = "目前無法取得 Google 路線。";

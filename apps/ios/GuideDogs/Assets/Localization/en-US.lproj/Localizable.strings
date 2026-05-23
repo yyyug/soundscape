@@ -316,6 +316,9 @@
 /* Live View voice announcement prefix */
 "liveview.voice.step" = "Live View, %@";
 
+/* Live View directional voice guidance: clock position and distance */
+"liveview.voice.direction" = "Direction %1$@ o'clock, %2$@.";
+
 /* Error shown when camera access is unavailable for Live View */
 "general.error.open_camera" = "Unable to open camera. Check camera permission in Settings.";
 
