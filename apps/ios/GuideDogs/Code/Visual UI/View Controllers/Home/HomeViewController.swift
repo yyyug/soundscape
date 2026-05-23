@@ -1789,7 +1789,7 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
 
         let destinationLocation = CLLocation(latitude: destination.latitude, longitude: destination.longitude)
         let distance = userLocation.distance(from: destinationLocation)
-        statusLabel.text = destination.localizedName
+        statusLabel.text = destination.name
         distanceLabel.text = GDLocalizedString("liveview.status.distance", LanguageFormatter.string(from: distance))
 
         let userHeading = cameraAssistedHeading ?? headingObserver?.value ?? Heading.defaultValue
