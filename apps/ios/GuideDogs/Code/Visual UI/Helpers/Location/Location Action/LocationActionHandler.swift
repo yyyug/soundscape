@@ -136,8 +136,7 @@ struct LocationActionHandler {
     }
     
     private static func previewDecisionPoint(for locationDetail: LocationDetail) -> Result<IntersectionDecisionPoint, PreviewBootstrapDiagnostics> {
-        guard let dataView = AppContext.shared.spatialDataContext.getDataView(for: locationDetail.location,
-                                                                               searchDistance: SpatialDataContext.cacheDistance) else {
+        guard let dataView = AppContext.shared.spatialDataContext.getDataView(for: locationDetail.location) else {
             let stateDescription = String(describing: AppContext.shared.spatialDataContext.state)
             return .failure(PreviewBootstrapDiagnostics(code: .dataViewUnavailable,
                                                         details: ["state": stateDescription]))
