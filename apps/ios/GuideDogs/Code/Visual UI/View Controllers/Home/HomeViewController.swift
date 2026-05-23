@@ -11,6 +11,7 @@ import CoreMotion
 import CoreLocation
 import MapKit
 import AVFoundation
+import ARKit
 import MessageUI
 import CocoaLumberjackSwift
 import SwiftUI
@@ -1574,7 +1575,7 @@ private extension UIAlertController {
     
 }
 
-private final class LiveViewNavigationViewController: UIViewController {
+private final class LiveViewNavigationViewController: UIViewController, ARSessionDelegate {
     private let statusLabel = UILabel()
     private let distanceLabel = UILabel()
     private let stepLabel = UILabel()
@@ -1590,6 +1591,10 @@ private final class LiveViewNavigationViewController: UIViewController {
     private var headingObserver: Heading?
     private var locationObserver: NSObjectProtocol?
     private var stepObserver: NSObjectProtocol?
+    private let arSession = ARSession()
+    private var arReferenceYaw: CLLocationDirection?
+    private var arReferenceHeading: CLLocationDirection?
+    private var cameraAssistedHeading: CLLocationDirection?
 
     private var captureSession: AVCaptureSession?
     private var previewLayer: AVCaptureVideoPreviewLayer?
@@ -1614,11 +1619,13 @@ private final class LiveViewNavigationViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         startCameraSessionIfNeeded()
+        startCameraAssistedTrackingIfNeeded()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         captureSession?.stopRunning()
+        arSession.pause()
     }
 
     deinit {
@@ -1683,6 +1690,22 @@ private final class LiveViewNavigationViewController: UIViewController {
         DispatchQueue.global(qos: .userInitiated).async {
             session.startRunning()
         }
+    }
+
+    private func startCameraAssistedTrackingIfNeeded() {
+        guard ARWorldTrackingConfiguration.isSupported else {
+            return
+        }
+
+        let configuration = ARWorldTrackingConfiguration()
+        configuration.worldAlignment = .gravity
+
+        arReferenceYaw = nil
+        arReferenceHeading = headingObserver?.value ?? Heading.defaultValue
+        cameraAssistedHeading = nil
+
+        arSession.delegate = self
+        arSession.run(configuration, options: [.resetTracking, .removeExistingAnchors])
     }
 
     private func configureOverlay() {
@@ -1769,7 +1792,7 @@ private final class LiveViewNavigationViewController: UIViewController {
         statusLabel.text = destination.localizedName
         distanceLabel.text = GDLocalizedString("liveview.status.distance", LanguageFormatter.string(from: distance))
 
-        let userHeading = headingObserver?.value ?? Heading.defaultValue
+        let userHeading = cameraAssistedHeading ?? headingObserver?.value ?? Heading.defaultValue
         let bearing = userLocation.bearing(to: destinationLocation)
         let relative = (bearing - userHeading + 360).truncatingRemainder(dividingBy: 360)
         let radians = CGFloat(relative * .pi / 180.0)
@@ -1826,5 +1849,36 @@ private final class LiveViewNavigationViewController: UIViewController {
         let index = Int((normalized + 15).truncatingRemainder(dividingBy: 360) / 30)
         let position = (index == 0) ? 12 : index
         return position
+    }
+
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        // Use camera yaw drift to smooth relative heading changes between compass updates.
+        let yaw = normalizeDegrees(Double(frame.camera.eulerAngles.y) * 180.0 / .pi)
+
+        if arReferenceYaw == nil {
+            arReferenceYaw = yaw
+            return
+        }
+
+        guard let referenceYaw = arReferenceYaw,
+              let referenceHeading = arReferenceHeading else {
+            return
+        }
+
+        let delta = normalizeSignedDegrees(yaw - referenceYaw)
+        cameraAssistedHeading = normalizeDegrees(referenceHeading + delta)
+    }
+
+    private func normalizeDegrees(_ value: CLLocationDirection) -> CLLocationDirection {
+        return (value + 360).truncatingRemainder(dividingBy: 360)
+    }
+
+    private func normalizeSignedDegrees(_ value: CLLocationDirection) -> CLLocationDirection {
+        var normalized = normalizeDegrees(value)
+        if normalized > 180 {
+            normalized -= 360
+        }
+
+        return normalized
     }
 }
