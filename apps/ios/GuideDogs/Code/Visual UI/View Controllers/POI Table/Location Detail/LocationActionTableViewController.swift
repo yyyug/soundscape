@@ -184,7 +184,6 @@ class LocationActionTableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: identifier, for: indexPath)
         
         cell.textLabel?.text = action.text
-        cell.accessibilityHint = action.accessibilityHint
         cell.accessibilityIdentifier = action.accessibilityIdentifier
         cell.imageView?.image = action.image
         

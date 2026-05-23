@@ -13,6 +13,8 @@
             <connections>
                 <outlet property="button" destination="0yD-gc-Hlz" id="Nfm-Lo-Yus"/>
                 <outlet property="labelContainerView" destination="JFd-BO-mZq" id="WiK-H2-nfD"/>
+                <outlet property="steerLeftButton" destination="tvr-vX-pL0" id="6yq-K8-kGM"/>
+                <outlet property="steerRightButton" destination="bL3-CB-ZxX" id="svB-cK-2CU"/>
                 <outlet property="subtitleLabel" destination="zz5-SJ-ogM" id="9BN-5j-9X1"/>
                 <outlet property="titleLabel" destination="SXA-F8-zbv" id="ndJ-A0-nhw"/>
                 <outlet property="view" destination="YBn-gs-iQk" id="dIa-Bu-YsI"/>
@@ -76,6 +78,26 @@
                         <action selector="onButtonTouchUpInside:" destination="-1" eventType="touchUpInside" id="Yp0-Ql-bQb"/>
                     </connections>
                 </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" translatesAutoresizingMaskIntoConstraints="NO" id="tvr-vX-pL0" userLabel="Steer Left">
+                    <rect key="frame" x="16" y="803" width="96" height="30"/>
+                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                    <state key="normal" title="Left">
+                        <color key="titleColor" name="Foreground 1"/>
+                    </state>
+                    <connections>
+                        <action selector="onSteerLeftTouchUpInside:" destination="-1" eventType="touchUpInside" id="cf4-qN-10P"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" translatesAutoresizingMaskIntoConstraints="NO" id="bL3-CB-ZxX" userLabel="Steer Right">
+                    <rect key="frame" x="302" y="803" width="96" height="30"/>
+                    <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
+                    <state key="normal" title="Right">
+                        <color key="titleColor" name="Foreground 1"/>
+                    </state>
+                    <connections>
+                        <action selector="onSteerRightTouchUpInside:" destination="-1" eventType="touchUpInside" id="HUq-um-GdG"/>
+                    </connections>
+                </button>
             </subviews>
             <viewLayoutGuide key="safeArea" id="BR0-hU-hYa"/>
             <constraints>
@@ -86,6 +108,12 @@
                 <constraint firstItem="BR0-hU-hYa" firstAttribute="trailing" secondItem="JFd-BO-mZq" secondAttribute="trailing" id="V9r-mN-BHu"/>
                 <constraint firstItem="BR0-hU-hYa" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="0yD-gc-Hlz" secondAttribute="trailing" id="c3R-qU-tCW"/>
                 <constraint firstItem="0yD-gc-Hlz" firstAttribute="centerX" secondItem="BR0-hU-hYa" secondAttribute="centerX" id="cj8-NW-ytb"/>
+                <constraint firstItem="0yD-gc-Hlz" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="tvr-vX-pL0" secondAttribute="trailing" constant="12" id="JgN-J8-DO6"/>
+                <constraint firstItem="bL3-CB-ZxX" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="0yD-gc-Hlz" secondAttribute="trailing" constant="12" id="Qb6-5M-Ld2"/>
+                <constraint firstItem="tvr-vX-pL0" firstAttribute="centerY" secondItem="0yD-gc-Hlz" secondAttribute="centerY" id="TYX-RQ-ep2"/>
+                <constraint firstItem="bL3-CB-ZxX" firstAttribute="centerY" secondItem="0yD-gc-Hlz" secondAttribute="centerY" id="Wa6-Gf-lYh"/>
+                <constraint firstItem="tvr-vX-pL0" firstAttribute="leading" secondItem="BR0-hU-hYa" secondAttribute="leading" constant="16" id="Yw5-vf-Hbn"/>
+                <constraint firstItem="BR0-hU-hYa" firstAttribute="trailing" secondItem="bL3-CB-ZxX" secondAttribute="trailing" constant="16" id="pQv-UO-67B"/>
                 <constraint firstItem="0yD-gc-Hlz" firstAttribute="top" secondItem="JFd-BO-mZq" secondAttribute="bottom" constant="12" id="pSy-xl-bym"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>

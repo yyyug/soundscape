@@ -40,7 +40,6 @@ struct LocationActionButton: View {
         .disabled(action.isEnabled == false)
         // Disabled appearance
         .if(action.isEnabled == false, transform: { $0.opacity(0.4) })
-        .ifLet(action.accessibilityHint, transform: { $0.accessibilityHint($1) })
         .ifLet(action.accessibilityIdentifier, transform: { $0.accessibilityIdentifier($1) })
     }
     

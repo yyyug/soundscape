@@ -798,6 +798,33 @@
 /* Subtitle for a setting to include unnamed roads. {NumberedPlaceholder="Street Preview"} */
 "preview.include_unnamed_roads.subtitle" = "Include unnamed roads during Street Preview";
 
+/* Title for setting that controls how road direction is selected in Street Preview */
+"preview.steering_mode.title" = "Road Selection Mode";
+
+/* Subtitle for setting that controls how road direction is selected in Street Preview */
+"preview.steering_mode.subtitle" = "Choose whether to point your phone or use Left/Right buttons to select roads.";
+
+/* Option label for selecting roads by pointing the phone */
+"preview.steering_mode.orientation" = "Phone Orientation";
+
+/* Option label for selecting roads by tapping directional buttons */
+"preview.steering_mode.buttons" = "Left/Right Buttons";
+
+/* Instruction shown when button steering mode is active */
+"preview.callout.road_finder.button_instructions" = "Use Left and Right to choose a road";
+
+/* Title for the left steering button in Street Preview */
+"preview.steer.left.title" = "Left";
+
+/* Title for the right steering button in Street Preview */
+"preview.steer.right.title" = "Right";
+
+/* Accessibility hint for the left steering button in Street Preview */
+"preview.steer.left.hint" = "Double tap to focus the road on the left";
+
+/* Accessibility hint for the right steering button in Street Preview */
+"preview.steer.right.hint" = "Double tap to focus the road on the right";
+
 "settings.japanese_address_processing" = "Japanese Address Processing";
 "settings.japanese_address_processing.info" = "Use area-based address speech when roads have no name.";
 

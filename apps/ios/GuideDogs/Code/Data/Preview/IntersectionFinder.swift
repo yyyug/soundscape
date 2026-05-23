@@ -123,7 +123,7 @@ struct IntersectionFinder {
             let ids = intersection.roadIds.map { $0.id }
             return Set(ids).count > 1
         }
-        
+
         guard !intersections.isEmpty else {
             return nil
         }

@@ -17,6 +17,25 @@ struct LocationActionHandler {
     
     typealias PreviewResult = Result<PreviewBehavior<IntersectionDecisionPoint>, LocationActionError>
     typealias PreviewCompletion = (PreviewResult) -> Void
+
+    private enum PreviewBootstrapFailure: String {
+        case dataViewUnavailable = "data_view_unavailable"
+        case noSpatialFeatures = "no_spatial_features"
+        case noDecisionPointEdges = "no_decision_point_edges"
+    }
+
+    private struct PreviewBootstrapDiagnostics: Error {
+        let code: PreviewBootstrapFailure
+        let details: [String: String]
+
+        var reasonString: String {
+            let summary = details.keys.sorted().map { key in
+                "\(key)=\(details[key] ?? "")"
+            }.joined(separator: "; ")
+
+            return summary.isEmpty ? code.rawValue : "\(code.rawValue) | \(summary)"
+        }
+    }
     
     // MARK: `LocationAction` Methods
     
@@ -116,10 +135,30 @@ struct LocationActionHandler {
         return synthesized
     }
     
-    private static func previewDecisionPoint(for locationDetail: LocationDetail) -> IntersectionDecisionPoint? {
+    private static func previewDecisionPoint(for locationDetail: LocationDetail) -> Result<IntersectionDecisionPoint, PreviewBootstrapDiagnostics> {
         guard let dataView = AppContext.shared.spatialDataContext.getDataView(for: locationDetail.location) else {
-            return nil
+            let stateDescription = String(describing: AppContext.shared.spatialDataContext.state)
+            return .failure(PreviewBootstrapDiagnostics(code: .dataViewUnavailable,
+                                                        details: ["state": stateDescription,
+                                                                  "services_host": ServiceModel.servicesHostName]))
         }
+
+        let roadKeys = Set(dataView.roads.map { $0.key })
+        let intersectionsWithRoadMatch = dataView.intersections.filter { intersection in
+            intersection.roadIds.contains { roadKeys.contains($0.id) }
+        }.count
+        let intersectionMismatchCount = max(0, dataView.intersections.count - intersectionsWithRoadMatch)
+
+        if dataView.roads.isEmpty && dataView.intersections.isEmpty {
+            return .failure(PreviewBootstrapDiagnostics(code: .noSpatialFeatures,
+                                                        details: ["roads": "0",
+                                                                  "intersections": "0",
+                                                                  "services_host": ServiceModel.servicesHostName]))
+        }
+
+        let nearestRoadDistance = dataView.roads
+            .map { $0.distanceToClosestLocation(from: locationDetail.location, useEntranceIfAvailable: false) }
+            .min() ?? CLLocationDistanceMax
         
         let sortedRoads = dataView.roads.sorted {
             $0.distanceToClosestLocation(from: locationDetail.location, useEntranceIfAvailable: false)
@@ -129,7 +168,7 @@ struct LocationActionHandler {
         for road in sortedRoads {
             let decisionPoint = IntersectionDecisionPoint(node: makePreviewRootIntersection(on: road, near: locationDetail.location))
             if !decisionPoint.edges.isEmpty {
-                return decisionPoint
+                return .success(decisionPoint)
             }
         }
 
@@ -140,18 +179,30 @@ struct LocationActionHandler {
         for intersection in nearestIntersections {
             let decisionPoint = IntersectionDecisionPoint(node: intersection)
             if !decisionPoint.edges.isEmpty {
-                return decisionPoint
+                return .success(decisionPoint)
             }
         }
         
         if let closest = ReverseGeocoderContext.closestIntersection(for: locationDetail) {
             let decisionPoint = IntersectionDecisionPoint(node: closest)
             if !decisionPoint.edges.isEmpty {
-                return decisionPoint
+                return .success(decisionPoint)
             }
         }
 
-        return nil
+        return .failure(PreviewBootstrapDiagnostics(code: .noDecisionPointEdges,
+                                                    details: ["roads": "\(dataView.roads.count)",
+                                                              "intersections": "\(dataView.intersections.count)",
+                                                              "intersections_with_road_match": "\(intersectionsWithRoadMatch)",
+                                                              "intersections_road_mismatch": "\(intersectionMismatchCount)",
+                                                              "nearest_road_m": "\(Int(nearestRoadDistance.rounded()))",
+                                                              "include_unnamed_roads": "\(SettingsContext.shared.previewIntersectionsIncludeUnnamedRoads)",
+                                                              "services_host": ServiceModel.servicesHostName]))
+    }
+
+    private static func makePreviewError(from diagnostics: PreviewBootstrapDiagnostics) -> LocationActionError {
+        GDATelemetry.track("preview.error.\(diagnostics.code.rawValue)", with: diagnostics.details)
+        return .failedToStartPreviewWithReason(diagnostics.reasonString)
     }
 
     private static func appleMapsURL(for locationDetail: LocationDetail) -> URL? {
@@ -180,27 +231,45 @@ struct LocationActionHandler {
     static func preview(locationDetail: LocationDetail, completion: @escaping PreviewCompletion) -> Progress? {
         // Save selection
         locationDetail.updateLastSelectedDate()
-        
-        return AppContext.shared.spatialDataContext.updateSpatialData(at: locationDetail.location) {
-            guard let decisionPoint = previewDecisionPoint(for: locationDetail) else {
-                GDATelemetry.track("preview.error.closest_intersection_not_found")
-                completion(.failure(.failedToStartPreviewWithReason("closest_intersection_not_found")))
-                return
+
+        var retriesRemaining = 1
+        var initialProgress: Progress?
+
+        func attemptStart() {
+            let progress = AppContext.shared.spatialDataContext.updateSpatialData(at: locationDetail.location) {
+                switch previewDecisionPoint(for: locationDetail) {
+                case .success(let decisionPoint):
+                    let behavior = PreviewBehavior(at: decisionPoint,
+                                                   from: locationDetail,
+                                                   geolocationManager: AppContext.shared.geolocationManager,
+                                                   destinationManager: AppContext.shared.spatialDataContext.destinationManager)
+                    completion(.success(behavior))
+
+                case .failure(let diagnostics):
+                    let shouldRetry = retriesRemaining > 0
+                        && (diagnostics.code == .dataViewUnavailable || diagnostics.code == .noSpatialFeatures)
+
+                    if shouldRetry {
+                        retriesRemaining -= 1
+                        GDATelemetry.track("preview.retry.\(diagnostics.code.rawValue)")
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.75) {
+                            attemptStart()
+                        }
+                        return
+                    }
+
+                    completion(.failure(makePreviewError(from: diagnostics)))
+                }
             }
-            
-            guard decisionPoint.edges.count > 0 else {
-                GDATelemetry.track("preview.error.edges_not_found")
-                completion(.failure(.failedToStartPreviewWithReason("decision_point_edges_not_found")))
-                return
+
+            if initialProgress == nil {
+                initialProgress = progress
             }
-            
-            let behavior = PreviewBehavior(at: decisionPoint,
-                                           from: locationDetail,
-                                           geolocationManager: AppContext.shared.geolocationManager,
-                                           destinationManager: AppContext.shared.spatialDataContext.destinationManager)
-            
-            completion(.success(behavior))
         }
+
+        attemptStart()
+        return initialProgress
     }
     
     static func share(locationDetail: LocationDetail) throws -> URL {

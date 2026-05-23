@@ -18,9 +18,24 @@ extension Notification.Name {
     static let beaconGainChanged = Notification.Name("GDABeaconGainChanged")
     
     static let previewIntersectionsIncludeUnnamedRoadsDidChange = Notification.Name("PreviewIntersectionsIncludeUnnamedRoadsDidChange")
+    static let previewSteeringModeDidChange = Notification.Name("PreviewSteeringModeDidChange")
 }
 
 class SettingsContext {
+    enum PreviewSteeringMode: String {
+        case deviceOrientation
+        case buttonSteering
+
+        var localizedName: String {
+            switch self {
+            case .deviceOrientation:
+                return GDLocalizedString("preview.steering_mode.orientation")
+            case .buttonSteering:
+                return GDLocalizedString("preview.steering_mode.buttons")
+            }
+        }
+    }
+
     enum CalloutRangeMode: String {
         case walking
         case automotive
@@ -64,6 +79,7 @@ class SettingsContext {
         fileprivate static let apnsDeviceToken           = "GDASettingsAPNsDeviceToken"
         fileprivate static let pushNotificationTags      = "GDASettingsPushNotificationTags"
         fileprivate static let previewIntersectionsIncludeUnnamedRoads = "GDASettingsPreviewIntersectionsIncludeUnnamedRoads"
+        fileprivate static let previewSteeringMode = "GDASettingsPreviewSteeringMode"
         fileprivate static let japaneseAddressProcessing  = "GDASettingsJapaneseAddressProcessingEnabled"
         fileprivate static let audioSessionMixesWithOthers = "GDAAudioSessionMixesWithOthers"
         fileprivate static let markerSortStyle           = "GDAMarkerSortStyle"
@@ -121,6 +137,7 @@ class SettingsContext {
             Keys.senseIntersection: true,
             Keys.senseDestination: true,
             Keys.previewIntersectionsIncludeUnnamedRoads: false,
+            Keys.previewSteeringMode: PreviewSteeringMode.deviceOrientation.rawValue,
             Keys.japaneseAddressProcessing: false,
             Keys.audioSessionMixesWithOthers: true,
             Keys.markerSortStyle: SortStyle.distance.rawValue,
@@ -300,6 +317,21 @@ class SettingsContext {
             userDefaults.set(newValue, forKey: Keys.previewIntersectionsIncludeUnnamedRoads)
             
             NotificationCenter.default.post(name: .previewIntersectionsIncludeUnnamedRoadsDidChange, object: self, userInfo: [Keys.enabled: newValue])
+        }
+    }
+
+    var previewSteeringMode: PreviewSteeringMode {
+        get {
+            guard let rawValue = userDefaults.string(forKey: Keys.previewSteeringMode),
+                  let mode = PreviewSteeringMode(rawValue: rawValue) else {
+                return .deviceOrientation
+            }
+
+            return mode
+        }
+        set {
+            userDefaults.set(newValue.rawValue, forKey: Keys.previewSteeringMode)
+            NotificationCenter.default.post(name: .previewSteeringModeDidChange, object: self)
         }
     }
 

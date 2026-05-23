@@ -187,6 +187,16 @@ class PreviewBehavior<DecisionPoint: RootedPreviewGraph>: BehaviorBase {
             
             self.startWands()
         }))
+
+        cancellationTokens.append(NotificationCenter.default.publisher(for: .previewSteeringModeDidChange).sink(receiveValue: { [weak self] _ in
+            guard let `self` = self else {
+                return
+            }
+
+            self.stopWands()
+            self.currentlyFocussedRoad.value = nil
+            self.startWands()
+        }))
         
         cancellationTokens.append(NotificationCenter.default.publisher(for: .audioEngineStateChanged).sink(receiveValue: { [weak self] (notification) in
             guard let `self` = self else {
@@ -461,6 +471,11 @@ class PreviewBehavior<DecisionPoint: RootedPreviewGraph>: BehaviorBase {
         guard isStartedSubject.value else {
             return
         }
+
+        if SettingsContext.shared.previewSteeringMode == .buttonSteering {
+            (self as? PreviewBehavior<IntersectionDecisionPoint>)?.focusInitialRoadForButtonSteering()
+            return
+        }
         
         let compassTargets = (0 ..< 12).map { WandTarget(CompassOrientation(bearing: Double($0) * 30.0)) }
         compassWand.start(with: compassTargets, heading: AppContext.shared.geolocationManager.heading(orderedBy: [.device]))
@@ -503,6 +518,10 @@ extension PreviewBehavior: WandDelegate {
         
         // Check to make sure this is a wand event for a road targets
         guard let wand = wand as? PreviewWand, wand !== compassWand else {
+            return
+        }
+
+        guard SettingsContext.shared.previewSteeringMode == .deviceOrientation else {
             return
         }
         
@@ -548,6 +567,10 @@ extension PreviewBehavior: WandDelegate {
             // This is just a compass update. Perform compass haptics
             engine.trigger(for: compassFeedbackStyle)
             engine.prepare(for: compassFeedbackStyle)
+            return
+        }
+
+        guard SettingsContext.shared.previewSteeringMode == .deviceOrientation else {
             return
         }
         
@@ -596,6 +619,10 @@ extension PreviewBehavior: WandDelegate {
             // This is just a compass update. Return without doing anything
             return
         }
+
+        guard SettingsContext.shared.previewSteeringMode == .deviceOrientation else {
+            return
+        }
         
         guard let roadTarget = target as? DecisionPoint.EdgeData.Path else {
             return
@@ -640,6 +667,10 @@ extension PreviewBehavior: WandDelegate {
         guard let wand = wand as? PreviewWand, wand !== compassWand else {
             return
         }
+
+        guard SettingsContext.shared.previewSteeringMode == .deviceOrientation else {
+            return
+        }
         
         guard let roadTarget = target as? DecisionPoint.EdgeData.Path else {
             return
@@ -658,6 +689,10 @@ extension PreviewBehavior: WandDelegate {
             // This is just a compass update. Return without doing anything
             return
         }
+
+        guard SettingsContext.shared.previewSteeringMode == .deviceOrientation else {
+            return
+        }
         
         guard let roadTarget = target as? DecisionPoint.EdgeData.Path else {
             return
@@ -669,6 +704,95 @@ extension PreviewBehavior: WandDelegate {
         
         GDLogPreviewInfo("Lost focus on road")
         currentlyFocussedRoad.value = nil
+    }
+}
+
+extension PreviewBehavior where DecisionPoint == IntersectionDecisionPoint {
+    func focusInitialRoadForButtonSteering() {
+        guard isStartedSubject.value,
+              !isTransitioningSubject.value,
+              SettingsContext.shared.previewSteeringMode == .buttonSteering else {
+            return
+        }
+
+        if let current = currentlyFocussedRoad.value, current.isSupported {
+            return
+        }
+
+        guard let edge = preferredButtonSteeringEdge() else {
+            return
+        }
+
+        setFocusedRoadForButtonSteering(edge)
+    }
+
+    func focusAdjacentRoadForButtonSteering(step: Int) {
+        guard isStartedSubject.value,
+              !isTransitioningSubject.value,
+              SettingsContext.shared.previewSteeringMode == .buttonSteering else {
+            return
+        }
+
+        let edges = supportedEdgesSortedByBearing()
+        guard !edges.isEmpty else {
+            return
+        }
+
+        let current = currentlyFocussedRoad.value
+        let currentIndex = current.flatMap { edge in
+            edges.firstIndex(where: { $0.endpoint == edge.endpoint })
+        } ?? edges.firstIndex(where: { $0.endpoint == preferredButtonSteeringEdge()?.endpoint }) ?? 0
+
+        let wrapped = (currentIndex + step + edges.count) % edges.count
+        setFocusedRoadForButtonSteering(edges[wrapped])
+    }
+
+    private func setFocusedRoadForButtonSteering(_ edge: RoadAdjacentDataView) {
+        currentlyFocussedRoad.value = edge
+        mostRecentFocussedRoad = edge
+        didCalloutFocussedTarget = true
+
+        engine.trigger(for: roadFeedbackStyle)
+        engine.prepare(for: roadFeedbackStyle)
+
+        delegate?.interruptCurrent(clearQueue: true, playHush: false)
+        delegate?.process(PreviewFoundRoadEvent(edge))
+    }
+
+    private func preferredButtonSteeringEdge() -> RoadAdjacentDataView? {
+        let edges = supportedEdgesSortedByBearing()
+        guard !edges.isEmpty else {
+            return nil
+        }
+
+        guard let heading = AppContext.shared.geolocationManager.heading(orderedBy: [.device]).value else {
+            return edges.first
+        }
+
+        return edges.min(by: { lhs, rhs in
+            headingDistance(from: heading, to: lhs.direction.bearing) < headingDistance(from: heading, to: rhs.direction.bearing)
+        })
+    }
+
+    private func supportedEdgesSortedByBearing() -> [RoadAdjacentDataView] {
+        return currentDecisionPoint.value.edges
+            .filter { $0.isSupported }
+            .sorted { normalizeBearing($0.direction.bearing) < normalizeBearing($1.direction.bearing) }
+    }
+
+    private func normalizeBearing(_ value: CLLocationDirection) -> CLLocationDirection {
+        if (0.0 ..< 360.0).contains(value) {
+            return value
+        }
+
+        return fmod(value + 360.0, 360.0)
+    }
+
+    private func headingDistance(from source: CLLocationDirection, to target: CLLocationDirection) -> CLLocationDirection {
+        let sourceNorm = normalizeBearing(source)
+        let targetNorm = normalizeBearing(target)
+        let diff = abs(sourceNorm - targetNorm)
+        return min(diff, 360.0 - diff)
     }
 }
 

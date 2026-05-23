@@ -52,6 +52,7 @@ class VirtualLocationViewController: UIViewController {
     
     private var contentViewController: PreviewControlViewController?
     private var focusedEdgeSubscriber: AnyCancellable?
+    private var steeringModeSubscriber: AnyCancellable?
     private var isTransitioning = false
     private var focussedEdge: RoadAdjacentDataView?
     private var decisionPoint: IntersectionDecisionPoint?
@@ -88,11 +89,32 @@ class VirtualLocationViewController: UIViewController {
                     self.isTransitioning = isTransitioning
                     self.focussedEdge = edge
                     self.decisionPoint = decisionPoint
+
+                    if SettingsContext.shared.previewSteeringMode == .buttonSteering,
+                       !isTransitioning,
+                       edge == nil {
+                        behavior.focusInitialRoadForButtonSteering()
+                    }
                     
                     // If `isTransitioning` has changed, post a notification
                     // to ensure that Voiceover is aware of the new layout
                     self.configureView(postNotification: oldIsTransitioning != isTransitioning)
             })
+
+            steeringModeSubscriber?.cancel()
+            steeringModeSubscriber = NotificationCenter.default
+                .publisher(for: .previewSteeringModeDidChange)
+                .sink { [weak self] _ in
+                    guard let self = self else {
+                        return
+                    }
+
+                    if SettingsContext.shared.previewSteeringMode == .buttonSteering {
+                        behavior.focusInitialRoadForButtonSteering()
+                    }
+
+                    self.configureView(postNotification: true)
+                }
         }
     }
     
@@ -143,6 +165,7 @@ class VirtualLocationViewController: UIViewController {
     deinit {
         // Stop updates
         focusedEdgeSubscriber?.cancel()
+        steeringModeSubscriber?.cancel()
     }
     
     override func viewDidLayoutSubviews() {
@@ -252,6 +275,22 @@ extension VirtualLocationViewController: PreviewControlDelegate {
     
     func previewControl(_ viewController: PreviewControlViewController, didSelect edge: RoadAdjacentDataView?) {
         behavior?.select(edge)
+    }
+
+    func previewControlDidSteerLeft(_ viewController: PreviewControlViewController) {
+        guard !isTransitioning else {
+            return
+        }
+
+        behavior?.focusAdjacentRoadForButtonSteering(step: -1)
+    }
+
+    func previewControlDidSteerRight(_ viewController: PreviewControlViewController) {
+        guard !isTransitioning else {
+            return
+        }
+
+        behavior?.focusAdjacentRoadForButtonSteering(step: 1)
     }
     
 }
