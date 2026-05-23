@@ -473,7 +473,7 @@ class PreviewBehavior<DecisionPoint: RootedPreviewGraph>: BehaviorBase {
         }
 
         if SettingsContext.shared.previewSteeringMode == .buttonSteering {
-            focusInitialRoadForButtonSteering()
+            (self as? PreviewBehavior<IntersectionDecisionPoint>)?.focusInitialRoadForButtonSteering()
             return
         }
         
