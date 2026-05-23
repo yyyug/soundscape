@@ -24,7 +24,7 @@ struct LocationActionHandler {
         case noDecisionPointEdges = "no_decision_point_edges"
     }
 
-    private struct PreviewBootstrapDiagnostics {
+    private struct PreviewBootstrapDiagnostics: Error {
         let code: PreviewBootstrapFailure
         let details: [String: String]
 
