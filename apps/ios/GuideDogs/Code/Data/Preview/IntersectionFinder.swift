@@ -124,28 +124,8 @@ struct IntersectionFinder {
             return Set(ids).count > 1
         }
 
-        if intersections.isEmpty {
-            // Fallback for backend tiles where intersection road IDs are not linked to road IDs.
-            // We can still let preview proceed by navigating to the end of the current road segment.
-            guard let endpoint = coordinatesFromRoot.last else {
-                return nil
-            }
-
-            let combinedCoordinatesToIntersection = trailingCoordinates.isEmpty ?
-                coordinatesFromRoot :
-                (trailingCoordinates + coordinatesFromRoot.dropFirst())
-
-            let intersection = Intersection()
-            intersection.key = "-1\(road.key)\(endpoint.latitude)\(endpoint.longitude)"
-            intersection.latitude = endpoint.latitude
-            intersection.longitude = endpoint.longitude
-            intersection.roadIds.append(IntersectionRoadId(withId: road.key))
-
-            return IntersectionSearchResult(intersection: intersection,
-                                            road: road,
-                                            rootCoordinate: rootCoordinate,
-                                            coordinatesToIntersection: combinedCoordinatesToIntersection,
-                                            style: .roadEnd)
+        guard !intersections.isEmpty else {
+            return nil
         }
         
         let coordinatesFromRootExcludingRoot = Array(coordinatesFromRoot.dropFirst())
