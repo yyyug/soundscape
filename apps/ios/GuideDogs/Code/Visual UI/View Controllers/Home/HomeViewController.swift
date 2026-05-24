@@ -12,6 +12,9 @@ import CoreLocation
 import MapKit
 import AVFoundation
 import ARKit
+#if canImport(ARCore)
+import ARCore
+#endif
 import MessageUI
 import CocoaLumberjackSwift
 import SwiftUI
@@ -1774,6 +1777,13 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
     private var arReferenceHeading: CLLocationDirection?
     private var cameraAssistedHeading: CLLocationDirection?
     private var isUsingGeospatialTracking = false
+#if canImport(ARCore)
+    private var arCoreSession: GARSession?
+    private var isUsingARCoreGeospatial = false
+    private var arCoreHorizontalAccuracy: CLLocationAccuracy?
+    private var arCoreVerticalAccuracy: CLLocationAccuracy?
+    private var arCoreYawAccuracy: CLLocationDirectionAccuracy?
+#endif
 
     private var captureSession: AVCaptureSession?
     private var previewLayer: AVCaptureVideoPreviewLayer?
@@ -1876,6 +1886,20 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
         arReferenceHeading = headingObserver?.value ?? Heading.defaultValue
         cameraAssistedHeading = nil
 
+#if canImport(ARCore)
+        if configureARCoreGeospatialSession() {
+            guard ARWorldTrackingConfiguration.isSupported else {
+                return
+            }
+
+            let configuration = ARWorldTrackingConfiguration()
+            configuration.worldAlignment = .gravity
+            arSession.delegate = self
+            arSession.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+            return
+        }
+#endif
+
         arSession.delegate = self
 
         if #available(iOS 14.0, *), ARGeoTrackingConfiguration.isSupported {
@@ -1894,6 +1918,75 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
         isUsingGeospatialTracking = false
         arSession.run(configuration, options: [.resetTracking, .removeExistingAnchors])
     }
+
+#if canImport(ARCore)
+    private func configureARCoreGeospatialSession() -> Bool {
+        let apiKey = SettingsContext.shared.googleARAPIKey
+        guard !apiKey.isEmpty else {
+            isUsingARCoreGeospatial = false
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_missing_key")
+            return false
+        }
+
+        do {
+            let session = try GARSession(apiKey: apiKey, bundleIdentifier: Bundle.main.bundleIdentifier)
+            guard session.isGeospatialModeSupported(.enabled) else {
+                isUsingARCoreGeospatial = false
+                statusLabel.text = GDLocalizedString("liveview.status.geospatial_unavailable")
+                return false
+            }
+
+            let configuration = GARSessionConfiguration()
+            configuration.geospatialMode = .enabled
+            try session.setConfiguration(configuration)
+
+            arCoreSession = session
+            isUsingARCoreGeospatial = true
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_localizing")
+            return true
+        } catch {
+            isUsingARCoreGeospatial = false
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_unavailable")
+            GDLogAppInfo("LiveView: failed to configure ARCore geospatial session - \(error.localizedDescription)")
+            return false
+        }
+    }
+
+    private func updateARCoreGeospatialPose(from frame: ARFrame) -> Bool {
+        guard isUsingARCoreGeospatial,
+              let session = arCoreSession else {
+            return false
+        }
+
+        do {
+            let garFrame = try session.update(frame)
+
+            guard let earth = garFrame.earth,
+                  earth.trackingState == .tracking,
+                  let geospatial = earth.cameraGeospatialTransform else {
+                statusLabel.text = GDLocalizedString("liveview.status.geospatial_localizing")
+                return false
+            }
+
+            arCoreHorizontalAccuracy = geospatial.horizontalAccuracy
+            arCoreVerticalAccuracy = geospatial.verticalAccuracy
+            arCoreYawAccuracy = geospatial.orientationYawAccuracy
+
+            // Use ARCore heading only after yaw estimate converges to a stable range.
+            if geospatial.orientationYawAccuracy > 0.0 && geospatial.orientationYawAccuracy <= 25.0 {
+                cameraAssistedHeading = normalizeDegrees(geospatial.heading)
+                return true
+            }
+
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_localizing")
+            return false
+        } catch {
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_unavailable")
+            GDLogAppInfo("LiveView: ARCore frame update failed - \(error.localizedDescription)")
+            return false
+        }
+    }
+#endif
 
     private func configureOverlay() {
         let stack = UIStackView(arrangedSubviews: [statusLabel, distanceLabel, stepLabel])
@@ -1977,7 +2070,21 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
         let destinationLocation = CLLocation(latitude: destination.latitude, longitude: destination.longitude)
         let distance = userLocation.distance(from: destinationLocation)
         statusLabel.text = destination.name
-        distanceLabel.text = GDLocalizedString("liveview.status.distance", LanguageFormatter.string(from: distance))
+        var distanceText = GDLocalizedString("liveview.status.distance", LanguageFormatter.string(from: distance))
+
+    #if canImport(ARCore)
+        if let horizontal = arCoreHorizontalAccuracy,
+           let vertical = arCoreVerticalAccuracy,
+           let yaw = arCoreYawAccuracy,
+           isUsingARCoreGeospatial {
+            distanceText += "\n" + GDLocalizedString("liveview.status.geospatial_accuracy",
+                                   LanguageFormatter.string(from: horizontal, rounded: true),
+                                   LanguageFormatter.string(from: vertical, rounded: true),
+                                   String(format: "%.0f", yaw))
+        }
+    #endif
+
+        distanceLabel.text = distanceText
 
         let userHeading = cameraAssistedHeading ?? headingObserver?.value ?? Heading.defaultValue
         let bearing = userLocation.bearing(to: destinationLocation)
@@ -2039,6 +2146,12 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
     }
 
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+#if canImport(ARCore)
+        if updateARCoreGeospatialPose(from: frame) {
+            return
+        }
+#endif
+
         // Use camera yaw drift to smooth relative heading changes between compass updates.
         let yaw = normalizeDegrees(Double(frame.camera.eulerAngles.y) * 180.0 / .pi)
 

@@ -279,6 +279,8 @@
 "liveview.status.geospatial_localizing" = "正在對齊 Geospatial 定位...";
 "liveview.status.geospatial_ready" = "Geospatial 定位已就緒。";
 "liveview.status.geospatial_unavailable" = "Geospatial 定位目前無法使用，改用相機輔助導引。";
+"liveview.status.geospatial_missing_key" = "請到設定 > 導航新增 Google AR API Key 以啟用 ARCore Geospatial。";
+"liveview.status.geospatial_accuracy" = "ARCore VPS 精度 水平:%1$@ 垂直:%2$@ 航向:%3$@°";
 "liveview.status.distance" = "距離：%@";
 "liveview.voice.step" = "Live View，%@";
 "liveview.voice.direction" = "方向在 %1$@ 點鐘，距離 %2$@。";

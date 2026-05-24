@@ -319,6 +319,12 @@
 /* Live View status text when geospatial tracking is not available */
 "liveview.status.geospatial_unavailable" = "Geospatial tracking unavailable. Using camera-assisted guidance.";
 
+/* Live View status text when Google AR key is missing for ARCore Geospatial */
+"liveview.status.geospatial_missing_key" = "Add Google AR API Key in Settings > Navigation to enable ARCore Geospatial.";
+
+/* Live View geospatial accuracy summary shown with distance. {NumberedPlaceholder="%@"} */
+"liveview.status.geospatial_accuracy" = "ARCore VPS accuracy H:%1$@ V:%2$@ Yaw:%3$@°";
+
 /* Live View status label prefix */
 "liveview.status.distance" = "Distance: %@";
 
