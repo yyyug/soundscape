@@ -1880,7 +1880,6 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
 
         if #available(iOS 14.0, *), ARGeoTrackingConfiguration.isSupported {
             let geospatialConfiguration = ARGeoTrackingConfiguration()
-            geospatialConfiguration.worldAlignment = .gravity
             isUsingGeospatialTracking = true
             arSession.run(geospatialConfiguration, options: [.resetTracking, .removeExistingAnchors])
             return
