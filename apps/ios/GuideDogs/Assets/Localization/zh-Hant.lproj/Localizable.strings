@@ -276,6 +276,9 @@
 "liveview.screen.title" = "Live View 實景導航";
 "liveview.status.no_destination" = "請先設定 Audio Beacon，再開始 Live View 導航。";
 "liveview.status.no_location" = "正在等待定位...";
+"liveview.status.geospatial_localizing" = "正在對齊 Geospatial 定位...";
+"liveview.status.geospatial_ready" = "Geospatial 定位已就緒。";
+"liveview.status.geospatial_unavailable" = "Geospatial 定位目前無法使用，改用相機輔助導引。";
 "liveview.status.distance" = "距離：%@";
 "liveview.voice.step" = "Live View，%@";
 "liveview.voice.direction" = "方向在 %1$@ 點鐘，距離 %2$@。";

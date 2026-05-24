@@ -45,6 +45,7 @@ class CalloutButtonPanelViewController: UIViewController {
     @IBOutlet weak var markedPointsAnimation: NVActivityIndicatorView!
     
     var logContext: String?
+    var onShowLiveViewRequested: (() -> Void)?
     var onShowLocationDetailsRequested: (() -> Void)?
     var onShowAroundPOIListRequested: (() -> Void)?
     var onShowAheadPOIListRequested: (() -> Void)?
@@ -123,14 +124,20 @@ class CalloutButtonPanelViewController: UIViewController {
                                                              hint: nil) {
             element.accessibilityTraits = .button
             element.accessibilityIdentifier = "btn.aheadofme"
-            element.accessibilityCustomActions = [UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAheadPOIListAccessibilityAction))]
+            element.accessibilityCustomActions = [
+                UIAccessibilityCustomAction(name: GDLocalizedString("exploration.poi.list.action"), target: self, selector: #selector(onAheadPOIListAccessibilityAction)),
+                UIAccessibilityCustomAction(name: GDLocalizedString("help.explore.page_title"), target: self, selector: #selector(onAheadModeAccessibilityAction))
+            ]
         }
         
         if let element = UIView.setGroupAccessibilityElement(for: markedPointsContainer,
-                                                             label: SettingsContext.shared.calloutRangeMode.localizedName,
+                                                             label: GDLocalizedString("liveview.button.title"),
                                                              hint: nil) {
             element.accessibilityTraits = .button
-            element.accessibilityIdentifier = "btn.nearbymarkers"
+            element.accessibilityIdentifier = "btn.liveview"
+            element.accessibilityCustomActions = [
+                UIAccessibilityCustomAction(name: GDLocalizedString("user_activity.nearby_markers.title"), target: self, selector: #selector(onNearbyMarkersAccessibilityAction))
+            ]
         }
     }
     
@@ -177,7 +184,7 @@ class CalloutButtonPanelViewController: UIViewController {
         }
 
         modeLabel.isHidden = false
-        modeLabel.text = SettingsContext.shared.calloutRangeMode.localizedName
+        modeLabel.text = GDLocalizedString("liveview.button.title")
     }
 
     private func updateGPSStatus() {
@@ -284,6 +291,10 @@ class CalloutButtonPanelViewController: UIViewController {
     }
     
     @IBAction private func onLookAheadTouchUpInside(_ sender: AnyObject?) {
+        presentCalloutModeSelector(sourceView: sender as? UIView)
+    }
+
+    private func triggerAheadOfMe(_ sender: AnyObject?) {
         updateAnimation(exploreImageView, exploreAnimation, true)
         
         runExplorationModeWithFreshSpatialData(.aheadOfMe, sender: sender) { [weak self] _ in
@@ -300,7 +311,7 @@ class CalloutButtonPanelViewController: UIViewController {
     }
     
     @IBAction private func onMarkedPointsTouchUpInside(_ sender: AnyObject?) {
-        presentCalloutModeSelector(sourceView: sender as? UIView)
+        onShowLiveViewRequested?()
     }
 
     private func presentCalloutModeSelector(sourceView: UIView?) {
@@ -320,8 +331,8 @@ class CalloutButtonPanelViewController: UIViewController {
         alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.cancel"), style: .cancel))
 
         if let popover = alert.popoverPresentationController {
-            popover.sourceView = sourceView ?? markedPointsContainer
-            popover.sourceRect = (sourceView ?? markedPointsContainer).bounds
+            popover.sourceView = sourceView ?? exploreContainer
+            popover.sourceRect = (sourceView ?? exploreContainer).bounds
         }
 
         present(alert, animated: true)
@@ -372,7 +383,7 @@ class CalloutButtonPanelViewController: UIViewController {
     }
     
     @objc func handleDidToggleLookAheadNotification(_ notification: Notification) {
-        onLookAheadTouchUpInside(notification.object as AnyObject?)
+        triggerAheadOfMe(notification.object as AnyObject?)
     }
     
     @objc func handleDidToggleMarkedPointsNotification(_ notification: Notification) {
@@ -413,6 +424,16 @@ class CalloutButtonPanelViewController: UIViewController {
 
     @objc private func onAheadPOIListAccessibilityAction() -> Bool {
         onShowAheadPOIListRequested?()
+        return true
+    }
+
+    @objc private func onAheadModeAccessibilityAction() -> Bool {
+        triggerAheadOfMe(nil)
+        return true
+    }
+
+    @objc private func onNearbyMarkersAccessibilityAction() -> Bool {
+        playNearbyMarkers(nil)
         return true
     }
     

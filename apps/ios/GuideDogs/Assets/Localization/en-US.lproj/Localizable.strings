@@ -310,6 +310,15 @@
 /* Live View status text while waiting for location */
 "liveview.status.no_location" = "Waiting for location...";
 
+/* Live View status text while geospatial tracking is localizing */
+"liveview.status.geospatial_localizing" = "Aligning geospatial tracking...";
+
+/* Live View status text when geospatial tracking is ready */
+"liveview.status.geospatial_ready" = "Geospatial tracking ready.";
+
+/* Live View status text when geospatial tracking is not available */
+"liveview.status.geospatial_unavailable" = "Geospatial tracking unavailable. Using camera-assisted guidance.";
+
 /* Live View status label prefix */
 "liveview.status.distance" = "Distance: %@";
 

@@ -260,6 +260,169 @@ class HomeViewController: UIViewController {
         
         return true
     }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        // Restore the original top navigation search field behavior.
+        self.searchController = UISearchController(delegate: self)
+        self.searchController?.delegate = self
+        self.searchController?.searchBar.searchTextField.accessibilityIdentifier = GDLocalizationUnnecessary("searchbar.home")
+
+        configureSearchAndBrowseView()
+        self.navigationItem.hidesSearchBarWhenScrolling = false
+        self.definesPresentationContext = true
+        self.navigationItem.backBarButtonItem = UIBarButtonItem.defaultBackBarButtonItem
+
+        setupNavigationStepBanner()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(self.handleLocationUpdatedNotification), name: Notification.Name.locationUpdated, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.continueUserAction), name: Notification.Name.continueUserAction, object: nil)
+
+        AppContext.shared.remoteCommandManager.delegate = self
+
+        experienceDidStartObserver = NotificationCenter.default.addObserver(forName: Notification.Name.processedActivityDeepLink,
+                                                                            object: nil,
+                                                                            queue: OperationQueue.main,
+                                                                            using: { [weak self] _ in
+            self?.showOrRefreshExperiences()
+        })
+
+        experienceDidFailToDownloadObserver = NotificationCenter.default.addObserver(forName: Notification.Name.activityDownloadDidFail,
+                                                                                     object: nil,
+                                                                                     queue: OperationQueue.main,
+                                                                                     using: { [weak self] _ in
+            let alert = UIAlertController(title: GDLocalizedString("behavior.experiences.download_failed.title"),
+                                          message: GDLocalizedString("behavior.experiences.download_failed.error"),
+                                          preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: GDLocalizedString("general.alert.dismiss"), style: .cancel, handler: nil))
+            self?.present(alert, animated: true, completion: nil)
+        })
+
+        listeners.append(NotificationCenter.default.publisher(for: .behaviorActivated)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+                self?.configureSearchAndBrowseView()
+            }))
+
+        listeners.append(NotificationCenter.default.publisher(for: .behaviorDeactivated)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] _ in
+                self?.configureSearchAndBrowseView()
+            }))
+
+        listeners.append(NotificationCenter.default.publisher(for: .didTryActivityUpdate)
+            .receive(on: DispatchQueue.main)
+            .sink(receiveValue: { [weak self] notification in
+                guard let self = self else {
+                    return
+                }
+
+                guard let userInfo = notification.userInfo,
+                      let updatesAvailable = userInfo[AuthoredActivityLoader.Keys.updateAvailable] as? Bool,
+                      let success = userInfo[AuthoredActivityLoader.Keys.updateSuccess] as? Bool else {
+                    return
+                }
+
+                let alert: UIAlertController
+                if success {
+                    alert = UIAlertController.activityDidUpdate()
+                } else if !updatesAvailable {
+                    alert = UIAlertController.activityUpdateUnavailable()
+                } else {
+                    alert = UIAlertController.activityDidFailToUpdate()
+                }
+
+                self.present(alert, animated: true)
+            }))
+
+        NotificationCenter.default.post(name: Notification.Name.homeViewControllerDidLoad, object: self)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        GDATelemetry.trackScreenView("home")
+        updateCalloutButtonTraits()
+
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        navigationController?.navigationBar.configureAppearance(for: .transparentLightTitle)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.handleAppWillEnterForeground(_:)),
+                                               name: Notification.Name.appWillEnterForeground,
+                                               object: nil)
+
+        guard checkPermissions() else {
+            if AppContext.shared.isFirstLaunch {
+                SettingsContext.shared.newFeaturesLastDisplayedVersion = AppContext.appVersion
+                didCheckForNewFeatures = true
+            }
+
+            return
+        }
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if shouldFocusOnBeacon,
+           UIAccessibility.isVoiceOverRunning,
+           let vc = cardViewController?.currentVC as? BeaconViewHostingController {
+            GDLogAppInfo("Focusing VoiceOver on the beacon UI")
+            UIAccessibility.post(notification: .layoutChanged, argument: vc.view)
+            shouldFocusOnBeacon = false
+        }
+
+        focusAccessibilityOnFirstItemIfNeeded()
+
+        guard !didCheckForNewFeatures else {
+            return
+        }
+
+        if AppContext.shared.newFeatures.shouldShowNewFeatures() {
+            let vc = NewFeaturesViewController(nibName: "NewFeaturesView", bundle: nil)
+            vc.newFeatures = AppContext.shared.newFeatures
+            vc.modalPresentationStyle = .fullScreen
+            vc.modalTransitionStyle = .crossDissolve
+            vc.accessibilityViewIsModal = true
+            self.present(vc, animated: !UIAccessibility.isVoiceOverRunning, completion: nil)
+        } else {
+            LaunchActivityCoordinator.coordinateActivitiesOnAppLaunch(from: self)
+        }
+
+        didCheckForNewFeatures = true
+    }
+
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+        positionNavigationStepBanner()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        navigationController?.navigationBar.configureAppearance(for: .default)
+        NotificationCenter.default.removeObserver(self, name: Notification.Name.appWillEnterForeground, object: nil)
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        updateCalloutButtonTraits()
+        configureSearchAndBrowseView()
+    }
+
+    private func updateCalloutButtonTraits() {
+        guard let child = calloutButtonViewController else {
+            return
+        }
+
+        if traitCollection.preferredContentSizeCategory.isAccessibilityCategory {
+            setOverrideTraitCollection(UITraitCollection(preferredContentSizeCategory: .accessibilityMedium), forChild: child)
+        } else {
+            setOverrideTraitCollection(nil, forChild: child)
+        }
+    }
     
     // MARK: Navigation
 
@@ -287,6 +450,9 @@ class HomeViewController: UIViewController {
         } else if let vc = segue.destination as? CalloutButtonPanelViewController {
             calloutButtonViewController = vc
             calloutButtonViewController?.logContext = telemetryContext
+            calloutButtonViewController?.onShowLiveViewRequested = { [weak self] in
+                self?.onLiveViewTouchUpInside()
+            }
             calloutButtonViewController?.onShowLocationDetailsRequested = { [weak self] in
                 self?.showLocationDetailsForCurrentLocation()
             }
@@ -318,9 +484,21 @@ class HomeViewController: UIViewController {
     }
 
     deinit {
+        if let token = experienceDidStartObserver {
+            NotificationCenter.default.removeObserver(token)
+        }
+
+        if let token = experienceDidFailToDownloadObserver {
+            NotificationCenter.default.removeObserver(token)
+        }
+
+        listeners.cancelAndRemoveAll()
+
         if let observer = navigationStepObserver {
             NotificationCenter.default.removeObserver(observer)
         }
+
+        DDLogDebug("\(String(describing: type(of: self))) deinitialized")
     }
 }
 
@@ -1595,6 +1773,7 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
     private var arReferenceYaw: CLLocationDirection?
     private var arReferenceHeading: CLLocationDirection?
     private var cameraAssistedHeading: CLLocationDirection?
+    private var isUsingGeospatialTracking = false
 
     private var captureSession: AVCaptureSession?
     private var previewLayer: AVCaptureVideoPreviewLayer?
@@ -1693,18 +1872,27 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
     }
 
     private func startCameraAssistedTrackingIfNeeded() {
+        arReferenceYaw = nil
+        arReferenceHeading = headingObserver?.value ?? Heading.defaultValue
+        cameraAssistedHeading = nil
+
+        arSession.delegate = self
+
+        if #available(iOS 14.0, *), ARGeoTrackingConfiguration.isSupported {
+            let geospatialConfiguration = ARGeoTrackingConfiguration()
+            geospatialConfiguration.worldAlignment = .gravity
+            isUsingGeospatialTracking = true
+            arSession.run(geospatialConfiguration, options: [.resetTracking, .removeExistingAnchors])
+            return
+        }
+
         guard ARWorldTrackingConfiguration.isSupported else {
             return
         }
 
         let configuration = ARWorldTrackingConfiguration()
         configuration.worldAlignment = .gravity
-
-        arReferenceYaw = nil
-        arReferenceHeading = headingObserver?.value ?? Heading.defaultValue
-        cameraAssistedHeading = nil
-
-        arSession.delegate = self
+        isUsingGeospatialTracking = false
         arSession.run(configuration, options: [.resetTracking, .removeExistingAnchors])
     }
 
@@ -1867,6 +2055,24 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
 
         let delta = normalizeSignedDegrees(yaw - referenceYaw)
         cameraAssistedHeading = normalizeDegrees(referenceHeading + delta)
+    }
+
+    @available(iOS 14.0, *)
+    func session(_ session: ARSession, didChange geoTrackingStatus: ARGeoTrackingStatus) {
+        guard isUsingGeospatialTracking else {
+            return
+        }
+
+        switch geoTrackingStatus.state {
+        case .localized:
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_ready")
+        case .localizing:
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_localizing")
+        case .notAvailable:
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_unavailable")
+        @unknown default:
+            statusLabel.text = GDLocalizedString("liveview.status.geospatial_localizing")
+        }
     }
 
     private func normalizeDegrees(_ value: CLLocationDirection) -> CLLocationDirection {

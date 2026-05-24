@@ -9,6 +9,10 @@ on:
       - .github/workflows/ios-unsigned-build.yml
       - apps/ios/**
 
+concurrency:
+  group: ios-unsigned-build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: macos-latest
@@ -19,11 +23,11 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Cache CocoaPods
         id: pods-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             apps/ios/Pods
@@ -37,7 +41,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: "3.2"
-          bundler-cache: false
+          bundler-cache: true
 
       - name: Install Ruby Gems
         run: |
@@ -49,7 +53,7 @@ jobs:
 
       - name: Cache Swift Packages
         id: spm-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v4.2.3
         with:
           path: |
             apps/ios/build/SourcePackages
@@ -118,7 +122,7 @@ jobs:
           ditto -c -k --sequesterRsrc --keepParent Payload Soundscape-unsigned.ipa
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: Soundscape-unsigned-ipa
           path: apps/ios/Soundscape-unsigned.ipa
