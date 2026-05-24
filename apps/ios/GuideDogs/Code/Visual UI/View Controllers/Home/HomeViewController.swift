@@ -1938,7 +1938,11 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
 
             let configuration = GARSessionConfiguration()
             configuration.geospatialMode = .enabled
-            try session.setConfiguration(configuration)
+            var configurationError: NSError?
+            session.setConfiguration(configuration, error: &configurationError)
+            if let configurationError {
+                throw configurationError
+            }
 
             arCoreSession = session
             isUsingARCoreGeospatial = true
