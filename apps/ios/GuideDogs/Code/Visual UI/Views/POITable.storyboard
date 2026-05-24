@@ -390,7 +390,7 @@
         <!--Markers And Routes List Host View Controller-->
         <scene sceneID="pBK-p3-evM">
             <objects>
-                <hostingController id="Y3c-3p-aZi" customClass="MarkersAndRoutesListHostViewController" customModule="Soundscape" customModuleProvider="target" sceneMemberID="viewController">
+                <hostingController storyboardIdentifier="MarkersAndRoutesListHostViewController" id="Y3c-3p-aZi" customClass="MarkersAndRoutesListHostViewController" customModule="Soundscape" customModuleProvider="target" sceneMemberID="viewController">
                     <navigationItem key="navigationItem" id="pPr-Nu-LQt"/>
                     <connections>
                         <segue destination="uPd-F8-MdR" kind="show" identifier="LocationDetailView" id="yhL-LE-vZQ"/>

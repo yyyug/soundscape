@@ -456,6 +456,9 @@ class HomeViewController: UIViewController {
             calloutButtonViewController?.onShowLiveViewRequested = { [weak self] in
                 self?.onLiveViewTouchUpInside()
             }
+            calloutButtonViewController?.onShowMarkersAndRoutesRequested = { [weak self] in
+                self?.showMarkersAndRoutesFromHome()
+            }
             calloutButtonViewController?.onShowLocationDetailsRequested = { [weak self] in
                 self?.showLocationDetailsForCurrentLocation()
             }
@@ -630,7 +633,24 @@ extension HomeViewController {
 
     @objc func onLiveViewTouchUpInside() {
         let vc = LiveViewNavigationViewController()
-        navigationController?.pushViewController(vc, animated: true)
+        let nav = UINavigationController(rootViewController: vc)
+        nav.modalPresentationStyle = .fullScreen
+        nav.navigationBar.configureAppearance(for: .default)
+        present(nav, animated: true)
+    }
+
+    private func showMarkersAndRoutesFromHome() {
+        let storyboard = UIStoryboard(name: "POITable", bundle: Bundle.main)
+        guard let viewController = storyboard.instantiateViewController(withIdentifier: "MarkersAndRoutesListHostViewController") as? MarkersAndRoutesListHostViewController else {
+            GDLogAppError("Failed to instantiate MarkersAndRoutesListHostViewController")
+            return
+        }
+
+        viewController.onDismissPreviewHandler = { [weak self] in
+            self?.navigationController?.popToRootViewController(animated: true)
+        }
+
+        navigationController?.pushViewController(viewController, animated: true)
     }
 
 }
@@ -1794,6 +1814,13 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
         title = GDLocalizedString("liveview.screen.title")
         view.backgroundColor = .black
 
+        // Live View is presented modally to avoid nav-bar back button rendering crashes on some iOS versions.
+        if presentingViewController != nil || navigationController?.presentingViewController != nil {
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .close,
+                                                               target: self,
+                                                               action: #selector(onCloseTouchUpInside))
+        }
+
         configureCameraPreview()
         configureOverlay()
         subscribeUpdates()
@@ -2202,5 +2229,9 @@ private final class LiveViewNavigationViewController: UIViewController, ARSessio
         }
 
         return normalized
+    }
+
+    @objc private func onCloseTouchUpInside() {
+        dismiss(animated: true)
     }
 }

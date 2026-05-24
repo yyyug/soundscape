@@ -46,9 +46,50 @@ class CalloutButtonPanelViewController: UIViewController {
     
     var logContext: String?
     var onShowLiveViewRequested: (() -> Void)?
+    var onShowMarkersAndRoutesRequested: (() -> Void)?
     var onShowLocationDetailsRequested: (() -> Void)?
     var onShowAroundPOIListRequested: (() -> Void)?
     var onShowAheadPOIListRequested: (() -> Void)?
+
+    private lazy var modeAndMarkersRow: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [calloutModeButton, markersRoutesButton])
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.alignment = .fill
+        stack.distribution = .fillEqually
+        stack.spacing = 8.0
+        return stack
+    }()
+
+    private lazy var calloutModeButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.18)
+        button.layer.cornerRadius = 8.0
+        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .footnote)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
+        button.contentHorizontalAlignment = .leading
+        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        button.addTarget(self, action: #selector(onCalloutModeButtonTouchUpInside), for: .touchUpInside)
+        return button
+    }()
+
+    private lazy var markersRoutesButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.18)
+        button.layer.cornerRadius = 8.0
+        button.titleLabel?.font = UIFont.preferredFont(forTextStyle: .footnote)
+        button.titleLabel?.adjustsFontForContentSizeCategory = true
+        button.contentHorizontalAlignment = .leading
+        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 10, bottom: 8, right: 10)
+        button.setTitle(GDLocalizedString("search.view_markers"), for: .normal)
+        button.accessibilityLabel = GDLocalizedString("search.view_markers")
+        button.addTarget(self, action: #selector(onMarkersAndRoutesTouchUpInside), for: .touchUpInside)
+        return button
+    }()
 
     private var headingObserver: Heading?
     private lazy var statusFooterLabel: UILabel = {
@@ -74,6 +115,8 @@ class CalloutButtonPanelViewController: UIViewController {
         // Configure header
         headerLabel.text = GDLocalizedString("callouts.panel.title").uppercasedWithAppLocale()
         headerLabel.isHidden = true
+
+        configureModeAndMarkersRow()
                 
         configureButtonLabels()
         updateModeLabel()
@@ -159,6 +202,21 @@ class CalloutButtonPanelViewController: UIViewController {
         }
     }
 
+    private func configureModeAndMarkersRow() {
+        view.addSubview(modeAndMarkersRow)
+
+        NSLayoutConstraint.activate([
+            modeAndMarkersRow.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8.0),
+            modeAndMarkersRow.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8.0),
+            modeAndMarkersRow.topAnchor.constraint(equalTo: view.topAnchor, constant: 8.0),
+            modeAndMarkersRow.heightAnchor.constraint(greaterThanOrEqualToConstant: 34.0)
+        ])
+
+        if let buttonStack = locateContainer.superview {
+            modeAndMarkersRow.bottomAnchor.constraint(lessThanOrEqualTo: buttonStack.topAnchor, constant: -6.0).isActive = true
+        }
+    }
+
     private func configureStatusFooter() {
         view.addSubview(statusFooterLabel)
 
@@ -178,13 +236,13 @@ class CalloutButtonPanelViewController: UIViewController {
     }
 
     private func updateModeLabel() {
-        guard let modeLabel = modeLabel else {
-            GDLogAppError("modeLabel is not initialized")
-            return
-        }
+        let mode = SettingsContext.shared.calloutRangeMode
+        calloutModeButton.setTitle(mode.localizedName, for: .normal)
+        calloutModeButton.accessibilityLabel = GDLocalizedString("callout_mode.selector.title")
+        calloutModeButton.accessibilityValue = mode.localizedName
 
-        modeLabel.isHidden = false
-        modeLabel.text = GDLocalizedString("liveview.button.title")
+        // Keep the original fourth label text unchanged from storyboard localization.
+        modeLabel?.isHidden = false
     }
 
     private func updateGPSStatus() {
@@ -292,6 +350,14 @@ class CalloutButtonPanelViewController: UIViewController {
     
     @IBAction private func onLookAheadTouchUpInside(_ sender: AnyObject?) {
         presentCalloutModeSelector(sourceView: sender as? UIView)
+    }
+
+    @objc private func onCalloutModeButtonTouchUpInside() {
+        presentCalloutModeSelector(sourceView: calloutModeButton)
+    }
+
+    @objc private func onMarkersAndRoutesTouchUpInside() {
+        onShowMarkersAndRoutesRequested?()
     }
 
     private func triggerAheadOfMe(_ sender: AnyObject?) {
