@@ -60,6 +60,8 @@
 	<string>AppName uses Bluetooth LE to connect to accessories.</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>AppName uses Bluetooth LE to connect to accessories.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Soundscape uses the camera to show your surroundings in Live View.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>AppName uses your location to provide you with relevant information about your surroundings.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
